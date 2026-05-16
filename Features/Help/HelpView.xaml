@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Help.HelpView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:help="clr-namespace:HannaUIDemo.Features.Help"
+    x:DataType="help:HelpViewModel"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="HelpItemTemplate" x:DataType="help:HelpItem">
+            <VerticalStackLayout Spacing="0">
+                <HorizontalStackLayout
+                    IsVisible="{Binding IsSection}"
+                    Margin="0,0,0,4"
+                    Spacing="8">
+                    <Label
+                        FontSize="18"
+                        Text="{Binding Icon}"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Text="{Binding Title}"
+                        TextColor="{DynamicResource OnSurface}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Border
+                    Margin="0,0,0,16"
+                    BackgroundColor="{DynamicResource Surface}"
+                    IsVisible="{Binding IsSection, Converter={StaticResource InvertedBoolConverter}}"
+                    StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Offset="0,2" Opacity="0.08" Radius="10" />
+                    </Border.Shadow>
+                    <Grid
+                        Padding="16"
+                        ColumnDefinitions="Auto,*"
+                        ColumnSpacing="12">
+                        <Border
+                            HeightRequest="44"
+                            WidthRequest="44"
+                            BackgroundColor="#1A0EA5C6"
+                            StrokeThickness="0"
+                            VerticalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="{Binding Icon}"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="6">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="15"
+                                Text="{Binding Title}"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="13"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding Body}"
+                                TextColor="{DynamicResource OnSurfaceMuted}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="24">
+            <VerticalStackLayout
+                BindableLayout.ItemTemplate="{StaticResource HelpItemTemplate}"
+                BindableLayout.ItemsSource="{Binding Items}"
+                Spacing="8" />
+            <Button
+                BackgroundColor="{StaticResource Primary}"
+                Command="{Binding OpenDevicesCommand}"
+                CornerRadius="14"
+                FontAttributes="Bold"
+                HeightRequest="48"
+                Text="Open Devices"
+                TextColor="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

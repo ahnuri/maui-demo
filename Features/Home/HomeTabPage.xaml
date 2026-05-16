@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Home.HomeTabPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:home="clr-namespace:HannaUIDemo.Features.Home"
+    Title="Home"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="True"
+    Shell.BackgroundColor="{DynamicResource StoreGroupedBackground}">
+    <home:HomeView x:Name="RootView" />
+</ContentPage>

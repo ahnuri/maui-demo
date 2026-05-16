@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Device.DeviceView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:device="clr-namespace:HannaUIDemo.Features.Device"
+    x:DataType="device:DeviceViewModel"
+    x:Name="RootDeviceView"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+
+        <!-- ── Typography ────────────────────────────────────────────── -->
+        <Style x:Key="DeviceNameStyle" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="LineBreakMode" Value="TailTruncation" />
+            <Setter Property="MaxLines" Value="2" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
+        </Style>
+
+        <Style x:Key="DeviceMetaStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceMuted}" />
+        </Style>
+
+        <Style x:Key="SectionTitleStyle" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
+        </Style>
+
+        <Style x:Key="SectionSubStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
+        </Style>
+
+        <!-- ── Card shells ───────────────────────────────────────────── -->
+        <Style x:Key="SectionCardStyle" TargetType="Border">
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="16" />
+            </Setter>
+        </Style>
+
+        <!-- Inner row card — neutral (associated / nearby) -->
+        <Style x:Key="DeviceRowStyle" TargetType="Border">
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Padding" Value="11,10" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
+            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="12" />
+            </Setter>
+        </Style>
+
+        <!-- Inner row card — connected (tinted border) -->
+        <Style x:Key="ConnectedRowStyle" TargetType="Border" BasedOn="{StaticResource DeviceRowStyle}">
+            <Setter Property="Stroke" Value="{Binding RowStrokeColor}" />
+        </Style>
+
+        <!-- Device icon container -->
+        <Style x:Key="DeviceIconBorderStyle" TargetType="Border">
+            <Setter Property="WidthRequest" Value="44" />
+            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="12" />
+            </Setter>
+        </Style>
+
+        <!-- ── Connected device row template ────────────────────────── -->
+        <DataTemplate x:Key="ConnectedDeviceTemplate" x:DataType="device:DeviceListItem">
+            <Border Style="{StaticResource ConnectedRowStyle}">
+                <VerticalStackLayout Spacing="8">
+
+                    <!-- Top row: icon | info | battery -->
+                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10">
+
+                        <!-- Device icon / thumb -->
+                        <Border Style="{StaticResource DeviceIconBorderStyle}" Stroke="{StaticResource Primary}" VerticalOptions="Start">
+                            <Grid>
+                                <Image
+                                    Aspect="AspectFit"
+                                    HeightRequest="26"
+                                    WidthRequest="26"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding ShowDeviceIcon}"
+                                    Source="{Binding DeviceIcon}" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding ShowThumb}"
+                                    Text="{Binding ThumbText}"
+                                    TextColor="{StaticResource Primary}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Name + serial + firmware + signal -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Style="{StaticResource DeviceNameStyle}" Text="{Binding Name}" />
+
+                            <Label
+                                Style="{StaticResource DeviceMetaStyle}"
+                                IsVisible="{Binding ShowSerialLine}"
+                                Text="{Binding SerialNumber}" />
+
+                            <Label
+                                Style="{StaticResource DeviceMetaStyle}"
+                                IsVisible="{Binding ShowSecondaryLine}"
+                                Text="{Binding SecondaryLine}" />
+
+                            <!-- Signal indicator -->
+                            <HorizontalStackLayout Spacing="5" Margin="0,2,0,0">
+                                <BoxView
+                                    CornerRadius="3"
+                                    HeightRequest="6"
+                                    WidthRequest="6"
+                                    VerticalOptions="Center"
+                                    Color="{Binding SignalDotColor}" />
+                                <Label
+                                    FontSize="11"
+                                    VerticalOptions="Center"
+                                    Text="{Binding SignalStatusText}"
+                                    TextColor="{Binding SignalTextColor}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- Battery pill -->
+                        <Border
+                            Grid.Column="2"
+                            Padding="7,3"
+                            BackgroundColor="#1A0EA5C6"
+                            IsVisible="{Binding ShowBattery}"
+                            StrokeThickness="0"
+                            VerticalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="11"
+                                Text="{Binding BatteryPillText}"
+                                TextColor="{StaticResource Primary}" />
+                        </Border>
+
+                    </Grid>
+
+                    <!-- Action buttons -->
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="6">
+                        <Button
+                            Padding="12,6"
+                            BackgroundColor="Transparent"
+                            BorderColor="{StaticResource Primary}"
+                            BorderWidth="1"
+                            Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.OpenMeasureCommand}"
+                            CommandParameter="{Binding .}"
+                            CornerRadius="10"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            HeightRequest="36"
+                            IsVisible="{Binding ShowMeasureLink}"
+                            Text="Measure"
+                            TextColor="{StaticResource Primary}" />
+                        <Button
+                            Padding="12,6"
+                            BackgroundColor="{Binding ConnectionButtonBg}"
+                            BorderColor="{Binding ConnectionButtonBorderColor}"
+                            BorderWidth="1"
+                            Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
+                            CommandParameter="{Binding .}"
+                            CornerRadius="10"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            HeightRequest="36"
+                            Text="{Binding ConnectionButtonText}"
+                            TextColor="{Binding ConnectionButtonTextColor}" />
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+
+        <!-- ── Discovered / associated device row template ───────────── -->
+        <DataTemplate x:Key="DiscoveredDeviceTemplate" x:DataType="device:DeviceListItem">
+            <Border Style="{StaticResource DeviceRowStyle}">
+                <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10">
+
+                    <!-- Device icon / thumb -->
+                    <Border Style="{StaticResource DeviceIconBorderStyle}" Stroke="{DynamicResource Divider}" VerticalOptions="Center">
+                        <Grid>
+                            <Image
+                                Aspect="AspectFit"
+                                HeightRequest="26"
+                                WidthRequest="26"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding ShowDeviceIcon}"
+                                Source="{Binding DeviceIcon}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding ShowThumb}"
+                                Text="{Binding ThumbText}"
+                                TextColor="{StaticResource Primary}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Name + serial + signal -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Style="{StaticResource DeviceNameStyle}" Text="{Binding Name}" />
+
+                        <Label
+                            Style="{StaticResource DeviceMetaStyle}"
+                            IsVisible="{Binding ShowSerialLine}"
+                            Text="{Binding SerialNumber}" />
+
+                        <HorizontalStackLayout Spacing="5" Margin="0,2,0,0">
+                            <BoxView
+                                CornerRadius="3"
+                                HeightRequest="6"
+                                WidthRequest="6"
+                                VerticalOptions="Center"
+                                Color="{Binding SignalDotColor}" />
+                            <Label
+                                FontSize="11"
+                                VerticalOptions="Center"
+                                Text="{Binding SignalText}"
+                                TextColor="{Binding SignalTextColor}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Connect button -->
+                    <Button
+                        Grid.Column="2"
+                        Padding="12,6"
+                        BackgroundColor="{Binding ConnectionButtonBg}"
+                        BorderColor="{Binding ConnectionButtonBorderColor}"
+                        BorderWidth="1"
+                        Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
+                        CommandParameter="{Binding .}"
+                        CornerRadius="10"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        HeightRequest="36"
+                        Text="{Binding ConnectionButtonText}"
+                        TextColor="{Binding ConnectionButtonTextColor}"
+                        VerticalOptions="Center" />
+
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+    </ContentView.Resources>
+
+    <!-- ── Page body ──────────────────────────────────────────────────── -->
+    <ScrollView Padding="14,8,14,24">
+        <VerticalStackLayout Spacing="12">
+
+            <!-- Subtitle -->
+            <Label
+                FontSize="13"
+                LineBreakMode="WordWrap"
+                Text="{Binding PageSubtitle}"
+                TextColor="{DynamicResource OnSurfaceVariant}" />
+
+            <!-- Scanning banner -->
+            <Border
+                IsVisible="{Binding ShowScanBanner}"
+                Padding="13,11"
+                BackgroundColor="#120EA5C6"
+                Stroke="#2E0EA5C6"
+                StrokeThickness="0.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="10">
+                    <ActivityIndicator
+                        IsRunning="True"
+                        WidthRequest="16"
+                        HeightRequest="16"
+                        VerticalOptions="Center"
+                        Color="{StaticResource Primary}" />
+                    <Label
+                        FontSize="12"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding ScanStatusText}"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- ── Connected section ── -->
+            <Border Style="{StaticResource SectionCardStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Spacing="1">
+                            <Label Style="{StaticResource SectionTitleStyle}" Text="Connected" />
+                            <Label Style="{StaticResource SectionSubStyle}" Text="Active Bluetooth links" />
+                        </VerticalStackLayout>
+                        <Border
+                            Grid.Column="1"
+                            Padding="9,3"
+                            BackgroundColor="#1A0EA5C6"
+                            StrokeThickness="0"
+                            VerticalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="{Binding ConnectedCount}"
+                                TextColor="{StaticResource Primary}" />
+                        </Border>
+                    </Grid>
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemTemplate="{StaticResource ConnectedDeviceTemplate}"
+                        BindableLayout.ItemsSource="{Binding ConnectedDevices}" />
+
+                    <Label
+                        FontSize="12"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding ShowNoConnectedHint}"
+                        Padding="0,4"
+                        Text="No devices connected. Connect one from Associated or Nearby."
+                        TextColor="{DynamicResource OnSurfaceMuted}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Associated section ── -->
+            <Border Style="{StaticResource SectionCardStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <VerticalStackLayout Spacing="1">
+                        <Label Style="{StaticResource SectionTitleStyle}" Text="Associated" />
+                        <Label Style="{StaticResource SectionSubStyle}" Text="Paired on this account" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout
+                        BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
+                        BindableLayout.ItemsSource="{Binding AssociatedDevices}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Nearby section ── -->
+            <Border Style="{StaticResource SectionCardStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <VerticalStackLayout Spacing="1">
+                        <Label Style="{StaticResource SectionTitleStyle}" Text="Nearby" />
+                        <Label Style="{StaticResource SectionSubStyle}" Text="Discovered over Bluetooth" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout
+                        BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
+                        BindableLayout.ItemsSource="{Binding AvailableDevices}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Hint banner ── -->
+            <Border
+                Padding="13,11"
+                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                Stroke="{DynamicResource Divider}"
+                StrokeThickness="0.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="10">
+                    <Label
+                        FontSize="15"
+                        Text="&#x2139;"
+                        TextColor="{DynamicResource OnSurfaceMuted}"
+                        VerticalOptions="Start" />
+                    <Label
+                        FontSize="12"
+                        LineBreakMode="WordWrap"
+                        Text="Keep Bluetooth on while scanning or maintaining a connection. Use Scan in the toolbar to find instruments."
+                        TextColor="{DynamicResource OnSurfaceMuted}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

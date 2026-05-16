@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Home.HomeView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:home="clr-namespace:HannaUIDemo.Features.Home"
+    x:DataType="home:HomeViewModel"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="LogRowTemplate" x:DataType="home:HomeLogRow">
+            <Grid
+                Padding="0,10"
+                ColumnDefinitions="Auto,*,Auto"
+                ColumnSpacing="12">
+                <Border
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    BackgroundColor="{DynamicResource SubtleTeal}"
+                    StrokeThickness="0"
+                    VerticalOptions="Start">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        HorizontalOptions="Center"
+                        Text="{Binding Initials}"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label
+                        FontAttributes="Bold"
+                        LineBreakMode="TailTruncation"
+                        MaxLines="1"
+                        Text="{Binding Title}"
+                        TextColor="{DynamicResource OnSurface}" />
+                    <Label
+                        FontSize="12"
+                        Text="{Binding Subtitle}"
+                        TextColor="{DynamicResource OnSurfaceVariant}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout
+                    Grid.Column="2"
+                    HorizontalOptions="End"
+                    Spacing="0">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HorizontalTextAlignment="End"
+                        Text="{Binding Value}"
+                        TextColor="{DynamicResource OnSurface}" />
+                </VerticalStackLayout>
+            </Grid>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,8,20,28" Spacing="22">
+
+            <Border
+                Padding="22"
+                BackgroundColor="{DynamicResource Surface}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="22" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow
+                        Opacity="0.08"
+                        Radius="16"
+                        Offset="0,3" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="18">
+                    <Label
+                        Margin="0,0,0,-4"
+                        CharacterSpacing="1.2"
+                        FontAttributes="Bold"
+                        FontSize="11"
+                        Text="DEVICES"
+                        TextColor="{DynamicResource OnSurfaceVariant}" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border
+                            HeightRequest="64"
+                            WidthRequest="64"
+                            BackgroundColor="{DynamicResource SubtleTeal}"
+                            StrokeThickness="0"
+                            VerticalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontSize="28"
+                                HorizontalOptions="Center"
+                                Text="&#x26A1;"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="6"
+                            VerticalOptions="Center">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="22"
+                                LineBreakMode="WordWrap"
+                                Text="No device connected"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="14"
+                                LineBreakMode="WordWrap"
+                                Text="Connect your Hanna device for live readings and cloud sync."
+                                TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Button
+                        BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding ConnectDeviceCommand}"
+                        CornerRadius="25"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        Text="&#x224B;  Connect device"
+                        TextColor="White" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                <Border
+                    Padding="18,16"
+                    BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="18" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow
+                            Opacity="0.06"
+                            Radius="12"
+                            Offset="0,2" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label
+                            FontSize="12"
+                            Text="Today's logs"
+                            TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <Label
+                            Grid.Row="1"
+                            FontAttributes="Bold"
+                            FontSize="28"
+                            Text="{Binding TodayLogsCount}"
+                            TextColor="{DynamicResource OnSurface}" />
+                        <Label
+                            Grid.Column="1"
+                            Grid.RowSpan="2"
+                            FontSize="24"
+                            Text="&#x25F7;"
+                            TextColor="{StaticResource Primary}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <Border
+                    Grid.Column="1"
+                    Padding="18,16"
+                    BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="18" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow
+                            Opacity="0.06"
+                            Radius="12"
+                            Offset="0,2" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label
+                            FontSize="12"
+                            Text="Connected"
+                            TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <Label
+                            Grid.Row="1"
+                            FontAttributes="Bold"
+                            FontSize="28"
+                            Text="{Binding ConnectedDevicesCount}"
+                            TextColor="{DynamicResource OnSurface}" />
+                        <Label
+                            Grid.Column="1"
+                            Grid.RowSpan="2"
+                            FontSize="24"
+                            Text="&#x224B;"
+                            TextColor="{StaticResource Primary}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border
+                Padding="18,18,18,20"
+                BackgroundColor="{DynamicResource Surface}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="22" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow
+                        Opacity="0.07"
+                        Radius="14"
+                        Offset="0,3" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="18">
+                    <Label
+                        CharacterSpacing="1.2"
+                        FontAttributes="Bold"
+                        FontSize="11"
+                        Text="RECENT"
+                        TextColor="{DynamicResource OnSurfaceVariant}" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="22"
+                                Text="Measurements"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="13"
+                                Text="Latest synced activity"
+                                TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                        <Border
+                            Grid.Column="1"
+                            Padding="10,7"
+                            BackgroundColor="{DynamicResource SubtleTeal}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ViewAllLogsCommand}" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="13"
+                                    Text="View all"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    FontSize="18"
+                                    Text="&#x203A;"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Border
+                        Padding="4"
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="*,*,*">
+                            <Border
+                                Padding="10,9"
+                                BackgroundColor="{Binding TabHaloBackground}"
+                                StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectLogTabCommand}" CommandParameter="0" />
+                                </Border.GestureRecognizers>
+                                <Label
+                                    FontAttributes="{Binding TabHaloFont}"
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    Text="Halo"
+                                    TextColor="{Binding TabHaloLabelColor}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                            <Border
+                                Grid.Column="1"
+                                Padding="10,9"
+                                BackgroundColor="{Binding TabPhotoBackground}"
+                                StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectLogTabCommand}" CommandParameter="1" />
+                                </Border.GestureRecognizers>
+                                <Label
+                                    FontAttributes="{Binding TabPhotoFont}"
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    Text="HI97115"
+                                    TextColor="{Binding TabPhotoLabelColor}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                            <Border
+                                Grid.Column="2"
+                                Padding="10,9"
+                                BackgroundColor="{Binding TabMultiBackground}"
+                                StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectLogTabCommand}" CommandParameter="2" />
+                                </Border.GestureRecognizers>
+                                <Label
+                                    FontAttributes="{Binding TabMultiFont}"
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    Text="HI98x94"
+                                    TextColor="{Binding TabMultiLabelColor}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <CollectionView
+                        IsVisible="{Binding IsHaloLogListVisible}"
+                        ItemTemplate="{StaticResource LogRowTemplate}"
+                        ItemsSource="{Binding HaloLogs}"
+                        SelectionMode="None"
+                        VerticalOptions="Start" />
+                    <CollectionView
+                        IsVisible="{Binding IsPhotoLogListVisible}"
+                        ItemTemplate="{StaticResource LogRowTemplate}"
+                        ItemsSource="{Binding PhotoLogs}"
+                        SelectionMode="None"
+                        VerticalOptions="Start" />
+                    <CollectionView
+                        IsVisible="{Binding IsMultiLogListVisible}"
+                        ItemTemplate="{StaticResource LogRowTemplate}"
+                        ItemsSource="{Binding MultiLogs}"
+                        SelectionMode="None"
+                        VerticalOptions="Start" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

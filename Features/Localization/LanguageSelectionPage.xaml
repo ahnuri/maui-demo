@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:loc="clr-namespace:HannaUIDemo.Features.Localization"
+             x:Class="HannaUIDemo.Features.Localization.LanguageSelectionPage"
+             x:DataType="loc:LanguageSelectionViewModel"
+             x:Name="RootLanguagePage"
+             Title=""
+             BackgroundColor="{DynamicResource PageBackground}"
+             Shell.NavBarIsVisible="True"
+             Shell.NavBarHasShadow="False"
+             Shell.BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="LanguageRowTemplate" x:DataType="loc:LanguageOptionViewModel">
+            <Border
+                Margin="0,0,0,10"
+                Padding="16,14"
+                BackgroundColor="{DynamicResource Surface}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Offset="0,2" Opacity="0.06" Radius="10" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Source={x:Reference RootLanguagePage}, Path=BindingContext.SelectLanguageCommand}"
+                        CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="17"
+                        Text="{Binding DisplayName}"
+                        TextColor="{DynamicResource OnSurface}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Column="1"
+                        FontSize="18"
+                        IsVisible="{Binding IsSelected}"
+                        Text="&#x2713;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <ScrollView Padding="16,8,16,24">
+        <VerticalStackLayout Spacing="10">
+            <Label
+                FontSize="14"
+                LineBreakMode="WordWrap"
+                Text="{Binding Subtitle}"
+                TextColor="{DynamicResource OnSurfaceVariant}" />
+            <VerticalStackLayout
+                BindableLayout.ItemTemplate="{StaticResource LanguageRowTemplate}"
+                BindableLayout.ItemsSource="{Binding Languages}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

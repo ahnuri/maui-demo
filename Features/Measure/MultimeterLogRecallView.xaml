@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Measure.MultimeterLogRecallView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:measure="clr-namespace:HannaUIDemo.Features.Measure"
+    x:DataType="measure:MultimeterLogRecallViewModel"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="LogCardTemplate" x:DataType="measure:MultimeterLogItemViewModel">
+            <Border
+                Margin="0,0,0,12"
+                Padding="16"
+                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <HorizontalStackLayout Spacing="6">
+                            <Label FontAttributes="Bold" FontSize="14" Text="{Binding Title}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="14" Text="{Binding StatusGlyph}" TextColor="{Binding StatusColor}" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label Grid.Column="1" Text="&#x22EE;" TextColor="{DynamicResource OnSurfaceVariant}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label FontSize="12" Text="{Binding Recorded, StringFormat='Start: {0}'}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontSize="12" Text="{Binding Recorded, StringFormat='Stop: {0}'}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                        <Label
+                            Grid.Column="1"
+                            FontAttributes="Bold"
+                            FontSize="12"
+                            Text="{Binding Samples, StringFormat='{0} samples'}"
+                            TextColor="{DynamicResource OnSurfaceVariant}"
+                            VerticalOptions="End" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+            <Grid ColumnDefinitions="Auto,*,Auto" Padding="4,12,0,8">
+                <VerticalStackLayout Spacing="2">
+                    <Label FontAttributes="Bold" FontSize="18" Text="{Binding TotalLogs}" TextColor="{DynamicResource OnSurface}" />
+                    <Label FontSize="12" Text="Total logs" TextColor="{DynamicResource OnSurfaceVariant}" />
+                </VerticalStackLayout>
+                <Border
+                    Grid.Column="2"
+                    Padding="14,8"
+                    Stroke="{StaticResource Primary}"
+                    StrokeThickness="1"
+                    VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SyncLogsCommand}" />
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="&#x21BB;" TextColor="{StaticResource Primary}" />
+                        <Label FontAttributes="Bold" FontSize="12" Text="Sync Meter logs" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
+            <VerticalStackLayout
+                BindableLayout.ItemTemplate="{StaticResource LogCardTemplate}"
+                BindableLayout.ItemsSource="{Binding Logs}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

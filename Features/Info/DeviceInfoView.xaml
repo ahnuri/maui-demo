@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Info.DeviceInfoView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:info="clr-namespace:HannaUIDemo.Features.Info"
+    x:DataType="info:DeviceInfoViewModel"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="InfoRowTemplate" x:DataType="info:InfoRowViewModel">
+            <Grid ColumnDefinitions="*,Auto" Padding="0,8">
+                <Label Text="{Binding Label}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                <Label
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="End"
+                    Text="{Binding Value}"
+                    TextColor="{DynamicResource OnSurface}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="InfoSectionTemplate" x:DataType="info:InfoSectionViewModel">
+            <Border
+                Padding="16"
+                BackgroundColor="{DynamicResource Surface}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Offset="0,2" Opacity="0.08" Radius="10" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="16">
+                    <HorizontalStackLayout Spacing="12">
+                        <Border Padding="8" BackgroundColor="#1A0EA5C6" StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Label FontSize="18" Text="{Binding Icon}" TextColor="{StaticResource Primary}" />
+                        </Border>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="{Binding Title}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <VerticalStackLayout
+                        BindableLayout.ItemTemplate="{StaticResource InfoRowTemplate}"
+                        BindableLayout.ItemsSource="{Binding Rows}" />
+                    <Border
+                        Padding="14,10"
+                        BackgroundColor="#1A0EA5C6"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding ShowFirmwareBanner}"
+                        StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18" />
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="8">
+                            <Label FontSize="18" Text="&#x233E;" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Text="Firmware Update Available"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="24">
+            <Border
+                Padding="16"
+                BackgroundColor="{DynamicResource Surface}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="20">
+                    <Border
+                        HeightRequest="65"
+                        WidthRequest="65"
+                        Stroke="#4D0EA5C6"
+                        StrokeThickness="2">
+                        <Border.StrokeShape>
+                            <Ellipse />
+                        </Border.StrokeShape>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="HI"
+                            TextColor="{StaticResource Primary}"
+                            VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="1"
+                                Text="{Binding DeviceName}"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                Grid.Column="1"
+                                FontSize="18"
+                                Text="&#x270E;"
+                                TextColor="{StaticResource Primary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding RenameDeviceCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                        <HorizontalStackLayout Spacing="8">
+                            <BoxView
+                                CornerRadius="5"
+                                HeightRequest="10"
+                                WidthRequest="10"
+                                Color="{StaticResource Success}"
+                                VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Text="Connected"
+                                TextColor="{StaticResource Success}"
+                                VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <VerticalStackLayout
+                BindableLayout.ItemTemplate="{StaticResource InfoSectionTemplate}"
+                BindableLayout.ItemsSource="{Binding Sections}"
+                Spacing="24" />
+
+            <Button
+                BackgroundColor="{StaticResource Primary}"
+                Command="{Binding OpenDevicesCommand}"
+                CornerRadius="14"
+                FontAttributes="Bold"
+                HeightRequest="48"
+                Text="Open Devices"
+                TextColor="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>
