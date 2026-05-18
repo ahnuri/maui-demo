@@ -1,4 +1,4 @@
-using HannaUIDemo.Constants;
+using HannaUIDemo.Core.Constants;
 
 namespace HannaUIDemo.Features.Halo2;
 

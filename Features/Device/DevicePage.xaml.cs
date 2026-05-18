@@ -1,3 +1,6 @@
+using HannaUIDemo.Core.Localization;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace HannaUIDemo.Features.Device;
 
 /// <summary>Modal devices list — hosts <see cref="DeviceView"/> with <see cref="DeviceViewModel"/>.</summary>
@@ -32,7 +35,18 @@ public partial class DevicePage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
+		ApplyPageLocalization();
 		UpdateScanToolbar();
+	}
+
+	void ApplyPageLocalization()
+	{
+		if (Application.Current is not App app)
+			return;
+
+		var loc = app.Services.GetRequiredService<LocalizationService>();
+		Title = loc.T("Device_PageTitle");
+		_viewModel.RefreshLocalization();
 	}
 
 	void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -58,7 +72,11 @@ public partial class DevicePage : ContentPage
 		_scanToolbarItem.Text = _viewModel.ScanToolbarText;
 	}
 
-	public void ApplyTheme() => RootView.RefreshForTheme();
+	public void ApplyTheme()
+	{
+		_viewModel.RefreshLocalization();
+		RootView.RefreshForTheme();
+	}
 
 	protected override void OnDisappearing()
 	{

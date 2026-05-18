@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using HannaUIDemo.Constants;
+using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Localization;
 using HannaUIDemo.Theme;

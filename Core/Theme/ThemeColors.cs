@@ -31,4 +31,13 @@ public static class ThemeColors
 	public static Color TabUnselected => IsDark ? Color.FromRgb(148, 163, 184) : Color.FromRgb(100, 116, 139);
 	public static Color SoftShadow => IsDark ? Color.FromRgba(0, 0, 0, 102) : Color.FromRgba(0, 0, 0, 24);
 	public static Color MutedSignalDot => IsDark ? Color.FromRgb(100, 116, 139) : Color.FromRgb(189, 189, 189);
+
+	/// <summary>Primary brand at ~10% opacity (pills, badges).</summary>
+	public static Color PrimarySubtleFill => IsDark ? Color.FromRgba(14, 165, 198, 38) : Color.FromRgba(14, 165, 198, 26);
+
+	/// <summary>Primary brand at ~7% opacity (scan banners).</summary>
+	public static Color PrimarySubtleBanner => IsDark ? Color.FromRgba(14, 165, 198, 31) : Color.FromRgba(14, 165, 198, 18);
+
+	/// <summary>Primary brand at ~18% opacity (banner strokes).</summary>
+	public static Color PrimarySubtleStroke => IsDark ? Color.FromRgba(14, 165, 198, 64) : Color.FromRgba(14, 165, 198, 46);
 }

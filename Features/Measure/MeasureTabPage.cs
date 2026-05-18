@@ -1,9 +1,9 @@
 using HannaUIDemo;
-using HannaUIDemo.Constants;
+using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Device;
-using HannaUIDemo.Helpers;
+using HannaUIDemo.Core.Helpers;
 using HannaUIDemo.Theme;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -372,7 +372,7 @@ public sealed class MeasureTabPage : ContentPage
 		if (_viewModel.ActiveDevice == MeasureDeviceKind.Halo2)
 			Title = _viewModel.NavigationTitle;
 		else if (_viewModel.ActiveDevice is null)
-			_viewModel.RefreshLocalizedEmptyMessage();
+			_viewModel.RefreshForTheme();
 		RefreshMeasureToolbar();
 	}
 }

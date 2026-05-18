@@ -27,5 +27,8 @@ public static class SemanticResources
 		r["SoftShadow"] = ThemeColors.SoftShadow;
 		r["TabBarBackground"] = ThemeColors.Surface;
 		r["TabBarUnselected"] = ThemeColors.TabUnselected;
+		r["PrimarySubtleFill"] = ThemeColors.PrimarySubtleFill;
+		r["PrimarySubtleBanner"] = ThemeColors.PrimarySubtleBanner;
+		r["PrimarySubtleStroke"] = ThemeColors.PrimarySubtleStroke;
 	}
 }

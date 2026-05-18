@@ -1,9 +1,9 @@
 using System.Globalization;
 using HannaUIDemo;
-using HannaUIDemo.Constants;
+using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Halo2;
-using HannaUIDemo.Helpers;
+using HannaUIDemo.Core.Helpers;
 
 namespace HannaUIDemo.Features.Measure;
 

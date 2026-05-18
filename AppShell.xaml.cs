@@ -1,3 +1,4 @@
+using HannaUIDemo.Core.Helpers;
 using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Features.Halo2;
 using HannaUIDemo.Features.Help;
@@ -6,7 +7,6 @@ using HannaUIDemo.Features.Info;
 using HannaUIDemo.Features.Localization;
 using HannaUIDemo.Features.Logs;
 using HannaUIDemo.Features.Measure;
-using HannaUIDemo.Helpers;
 using HannaUIDemo.Theme;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.ApplicationModel;
@@ -54,9 +54,11 @@ public partial class AppShell : Shell
 		FlyoutCopyrightLabel.Text = _localization.T("Flyout_Copyright", DateTime.Now.Year.ToString());
 		FlyoutPrivacyPolicyLabel.Text = _localization.T("Flyout_PrivacyPolicy");
 		FlyoutLanguageLabel.Text = _localization.T("Flyout_LanguageLine", _localization.GetAutonym(_localization.CurrentLanguageCode));
+		FlyoutBrandLabel.Text = _localization.T("Shell_Home");
+		FlyoutTaglineLabel.Text = _localization.T("Flyout_Tagline");
 
 		if (HomeShellContent.Content is HomeTabPage home)
-			NavToolbar.Configure(home, "Shell_Home");
+			NavToolbar.ConfigureLanding(home);
 		if (MeasureShellContent.Content is MeasureTabPage measure)
 			NavToolbar.Configure(measure, "Shell_Measure");
 		if (LogsShellContent.Content is LogsTabPage logs)
@@ -65,33 +67,39 @@ public partial class AppShell : Shell
 			NavToolbar.Configure(info, "PageToolbar_Info");
 		if (HelpShellContent.Content is HelpTabPage help)
 			NavToolbar.Configure(help, "PageToolbar_Help");
+
+		RefreshPushedPagesLocalization();
 	}
 
-	void OnHannaCloudMenuClicked(object? sender, EventArgs e) => _ = OpenHannaCloudAsync();
-
-	static async Task OpenHannaCloudAsync()
+	void RefreshPushedPagesLocalization()
 	{
-		try
+		if (CurrentPage?.Navigation?.NavigationStack is not { } stack)
+			return;
+
+		foreach (var page in stack)
 		{
-			await Launcher.Default.OpenAsync(new Uri("https://www.hannainst.com/", UriKind.Absolute));
-		}
-		catch
-		{
-			// Demo: ignore launcher failures
+			switch (page)
+			{
+				case Features.Device.DevicePage device:
+					device.ApplyTheme();
+					break;
+				case Features.Settings.SettingsPage settings:
+					settings.ApplyTheme();
+					break;
+			}
 		}
 	}
 
-	async void OnFlyoutPrivacyPolicyTapped(object? sender, TappedEventArgs e)
-	{
-		try
-		{
-			await Launcher.Default.OpenAsync(new Uri("https://www.hannainst.com/", UriKind.Absolute));
-		}
-		catch
-		{
-			await DisplayAlertAsync("Privacy", "Unable to open the privacy page.", "OK");
-		}
-	}
+	void OnHannaCloudMenuClicked(object? sender, EventArgs e) =>
+		_ = AppLinks.OpenAsync(AppLinks.HannaInstruments);
+
+	async void OnFlyoutPrivacyPolicyTapped(object? sender, TappedEventArgs e) =>
+		await AppLinks.OpenAsync(
+			AppLinks.HannaInstruments,
+			() => DisplayAlertAsync(
+				_localization?.T("Alert_Privacy_Title") ?? "Privacy",
+				_localization?.T("Alert_Privacy_Message") ?? "Unable to open the privacy page.",
+				_localization?.T("Alert_OK") ?? "OK"));
 
 	async void OnFlyoutLanguageTapped(object? sender, TappedEventArgs e)
 	{

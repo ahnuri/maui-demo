@@ -44,7 +44,7 @@
                         <Border
                             HeightRequest="44"
                             WidthRequest="44"
-                            BackgroundColor="#1A0EA5C6"
+                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
                             StrokeThickness="0"
                             VerticalOptions="Start">
                             <Border.StrokeShape>

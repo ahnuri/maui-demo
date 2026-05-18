@@ -1,5 +1,5 @@
 using HannaUIDemo.Core.Mvvm;
-using HannaUIDemo.Helpers;
+using HannaUIDemo.Core.Helpers;
 
 namespace HannaUIDemo.Features.Home;
 
@@ -9,7 +9,7 @@ public partial class HomeTabPage : ContentPage
 	{
 		InitializeComponent();
 		RootView.BindingContext = AppServices.Get<HomeViewModel>();
-		NavToolbar.Configure(this, "Shell_Home");
+		NavToolbar.ConfigureLanding(this);
 	}
 
 	internal void ApplyTheme()

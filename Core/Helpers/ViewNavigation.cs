@@ -1,4 +1,4 @@
-namespace HannaUIDemo.Helpers;
+namespace HannaUIDemo.Core.Helpers;
 
 internal static class ViewNavigation
 {

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:device="clr-namespace:HannaUIDemo.Features.Device"
              x:Class="HannaUIDemo.Features.Device.DevicePage"
-             Title="Devices"
+             Title=""
              BackgroundColor="{DynamicResource PageBackground}"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarHasShadow="False">

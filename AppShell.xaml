@@ -51,9 +51,36 @@
                          Color="{StaticResource Primary}" />
     </Shell.FlyoutIcon>
 
+    <Shell.FlyoutHeader>
+        <Grid
+            Padding="20,52,20,16"
+            BackgroundColor="{DynamicResource SurfaceSecondary}"
+            RowDefinitions="Auto,Auto">
+            <Image
+                Aspect="AspectFit"
+                HeightRequest="32"
+                HorizontalOptions="Start"
+                SemanticProperties.Description="Hanna Instruments logo"
+                Source="hanna_instruments_logo.png" />
+            <VerticalStackLayout Grid.Row="1" Margin="0,12,0,0" Spacing="4">
+                <Label
+                    x:Name="FlyoutBrandLabel"
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    Text="Hanna Lab"
+                    TextColor="{DynamicResource OnSurface}" />
+                <Label
+                    x:Name="FlyoutTaglineLabel"
+                    FontSize="13"
+                    Text="Wireless Measurement Platform"
+                    TextColor="{DynamicResource OnSurfaceVariant}" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
     <ShellContent
         x:Name="HomeShellContent"
-        Title="Home"
+        Title="Hanna Lab"
         Route="home"
         Icon="tab_halo">
         <home:HomeTabPage />

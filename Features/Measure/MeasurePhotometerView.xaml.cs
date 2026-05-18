@@ -1,8 +1,8 @@
-using HannaUIDemo.Constants;
+using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Settings;
-using HannaUIDemo.Helpers;
+using HannaUIDemo.Core.Helpers;
 using HannaUIDemo;
 using Microsoft.Extensions.DependencyInjection;
 using PhotometerState = HannaUIDemo.Features.Measure.PhotometerMeasureViewModel.MeasureState;

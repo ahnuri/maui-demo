@@ -1,5 +1,5 @@
 using HannaUIDemo.Core.Mvvm;
-using HannaUIDemo.Helpers;
+using HannaUIDemo.Core.Helpers;
 
 namespace HannaUIDemo.Features.Help;
 

@@ -138,7 +138,7 @@
                         <Border
                             Grid.Column="2"
                             Padding="7,3"
-                            BackgroundColor="#1A0EA5C6"
+                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
                             IsVisible="{Binding ShowBattery}"
                             StrokeThickness="0"
                             VerticalOptions="Start">
@@ -168,7 +168,7 @@
                             FontAttributes="Bold"
                             HeightRequest="36"
                             IsVisible="{Binding ShowMeasureLink}"
-                            Text="Measure"
+                            Text="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.MeasureButtonText}"
                             TextColor="{StaticResource Primary}" />
                         <Button
                             Padding="12,6"
@@ -267,19 +267,34 @@
     <ScrollView Padding="14,8,14,24">
         <VerticalStackLayout Spacing="12">
 
-            <!-- Subtitle -->
-            <Label
-                FontSize="13"
-                LineBreakMode="WordWrap"
-                Text="{Binding PageSubtitle}"
-                TextColor="{DynamicResource OnSurfaceVariant}" />
+            <Border
+                Padding="16,14"
+                BackgroundColor="{DynamicResource Surface}"
+                Stroke="{DynamicResource Divider}"
+                StrokeThickness="0.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="6">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="20"
+                        Text="{Binding HeaderTitle}"
+                        TextColor="{DynamicResource OnSurface}" />
+                    <Label
+                        FontSize="13"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding PageSubtitle}"
+                        TextColor="{DynamicResource OnSurfaceVariant}" />
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Scanning banner -->
             <Border
                 IsVisible="{Binding ShowScanBanner}"
                 Padding="13,11"
-                BackgroundColor="#120EA5C6"
-                Stroke="#2E0EA5C6"
+                BackgroundColor="{DynamicResource PrimarySubtleBanner}"
+                Stroke="{DynamicResource PrimarySubtleStroke}"
                 StrokeThickness="0.5">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
@@ -306,13 +321,13 @@
 
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                         <VerticalStackLayout Spacing="1">
-                            <Label Style="{StaticResource SectionTitleStyle}" Text="Connected" />
-                            <Label Style="{StaticResource SectionSubStyle}" Text="Active Bluetooth links" />
+                            <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding ConnectedTitle}" />
+                            <Label Style="{StaticResource SectionSubStyle}" Text="{Binding ConnectedSubtitle}" />
                         </VerticalStackLayout>
                         <Border
                             Grid.Column="1"
                             Padding="9,3"
-                            BackgroundColor="#1A0EA5C6"
+                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
                             StrokeThickness="0"
                             VerticalOptions="Start">
                             <Border.StrokeShape>
@@ -335,7 +350,7 @@
                         HorizontalOptions="Center"
                         IsVisible="{Binding ShowNoConnectedHint}"
                         Padding="0,4"
-                        Text="No devices connected. Connect one from Associated or Nearby."
+                        Text="{Binding NoConnectedHint}"
                         TextColor="{DynamicResource OnSurfaceMuted}" />
                 </VerticalStackLayout>
             </Border>
@@ -344,8 +359,8 @@
             <Border Style="{StaticResource SectionCardStyle}">
                 <VerticalStackLayout Spacing="10">
                     <VerticalStackLayout Spacing="1">
-                        <Label Style="{StaticResource SectionTitleStyle}" Text="Associated" />
-                        <Label Style="{StaticResource SectionSubStyle}" Text="Paired on this account" />
+                        <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding AssociatedTitle}" />
+                        <Label Style="{StaticResource SectionSubStyle}" Text="{Binding AssociatedSubtitle}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout
                         BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
@@ -357,8 +372,8 @@
             <Border Style="{StaticResource SectionCardStyle}">
                 <VerticalStackLayout Spacing="10">
                     <VerticalStackLayout Spacing="1">
-                        <Label Style="{StaticResource SectionTitleStyle}" Text="Nearby" />
-                        <Label Style="{StaticResource SectionSubStyle}" Text="Discovered over Bluetooth" />
+                        <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding NearbyTitle}" />
+                        <Label Style="{StaticResource SectionSubStyle}" Text="{Binding NearbySubtitle}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout
                         BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
@@ -384,7 +399,7 @@
                     <Label
                         FontSize="12"
                         LineBreakMode="WordWrap"
-                        Text="Keep Bluetooth on while scanning or maintaining a connection. Use Scan in the toolbar to find instruments."
+                        Text="{Binding HintText}"
                         TextColor="{DynamicResource OnSurfaceMuted}"
                         VerticalOptions="Center" />
                 </HorizontalStackLayout>

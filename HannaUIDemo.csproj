@@ -71,8 +71,12 @@
 		<MauiImage Update="Resources\Images\tab_logs.svg" BaseSize="28,28" />
 		<MauiImage Update="Resources\Images\tab_info.svg" BaseSize="28,28" />
 		<MauiImage Update="Resources\Images\tab_help.svg" BaseSize="28,28" />
-		<MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\bluetooth_icon.svg" BaseSize="24,24" />
 		<MauiImage Update="Resources\Images\hanna_instruments_logo.png" Resize="True" BaseSize="280,72" />
+		<MauiImage Update="Resources\Images\photometer_hi97115.png" Resize="True" BaseSize="120,120" />
+		<MauiImage Update="Resources\Images\hi98594_new.png" Resize="True" BaseSize="120,120" />
+		<MauiImage Update="Resources\Images\halo2_device_icon.png" Resize="True" BaseSize="120,120" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
