@@ -17,7 +17,7 @@ public partial class Halo2MeasureViewModel : PageViewModelBase
 	[ObservableProperty] private double _ph = 7.02;
 	[ObservableProperty] private double _millivolts = -12.4;
 	[ObservableProperty] private double _temperatureC = 25.3;
-	[ObservableProperty] private string _stabilityLabel = "STABLE";
+	[ObservableProperty] private string _stabilityLabel = "Stable";
 	[ObservableProperty] private int _batteryPercent = 44;
 	[ObservableProperty] private int _probeConditionPercent = 94;
 	[ObservableProperty] private bool _isTagged;

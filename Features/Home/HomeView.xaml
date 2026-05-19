@@ -38,6 +38,28 @@
             <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
         </Style>
 
+        <Style x:Key="HeroChipStyle" TargetType="Border">
+            <Setter Property="Padding" Value="9,5" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource LabHeroBadgeFill}" />
+            <Setter Property="Stroke" Value="{DynamicResource LabHeroBadgeStroke}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="12" />
+            </Setter>
+        </Style>
+
+        <Style x:Key="QuickActionIconBoxStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{DynamicResource FlyoutIconBadge}" />
+            <Setter Property="HeightRequest" Value="42" />
+            <Setter Property="WidthRequest" Value="42" />
+            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
+            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="HorizontalOptions" Value="Start" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="14" />
+            </Setter>
+        </Style>
+
     </ContentView.Resources>
 
     <ScrollView>
@@ -58,7 +80,7 @@
                     <Shadow Opacity="0.20" Radius="22" Offset="0,8" />
                 </Border.Shadow>
 
-                <Grid Padding="20,22" RowDefinitions="Auto,Auto,Auto" RowSpacing="18">
+                <Grid Padding="20,22" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="16">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
                         <VerticalStackLayout Spacing="8">
                             <Border
@@ -84,7 +106,7 @@
 	                                    <Label
 	                                        FontAttributes="Bold"
 	                                        FontSize="11"
-	                                        Text="MULTI-DEVICE LAB"
+	                                        Text="{Binding HeroBadge}"
 	                                        TextColor="{DynamicResource LabHeroText}"
 	                                        VerticalOptions="Center" />
                                 </HorizontalStackLayout>
@@ -92,14 +114,14 @@
 
                             <Label
                                 FontAttributes="Bold"
-                                FontSize="30"
+                                FontSize="26"
                                 LineBreakMode="WordWrap"
-	                                Text="Connected laboratory workspace"
+	                                Text="{Binding HeroTitle}"
 	                                TextColor="{DynamicResource LabHeroText}" />
 	                            <Label
 	                                FontSize="13"
 	                                LineBreakMode="WordWrap"
-	                                Text="Stream readings, annotate results, store logs, export reports, and sync Hanna instrument data from one clean control surface."
+	                                Text="{Binding HeroSubtitle}"
 	                                TextColor="{DynamicResource LabHeroMuted}" />
                         </VerticalStackLayout>
 
@@ -167,7 +189,7 @@
                             <VerticalStackLayout Spacing="4">
                                 <Label
                                     FontSize="11"
-                                    Text="Connected"
+                                    Text="{Binding ConnectedLabel}"
                                     TextColor="{DynamicResource LabHeroMuted}" />
                                 <Label
                                     FontAttributes="Bold"
@@ -186,7 +208,7 @@
                             <VerticalStackLayout Spacing="4">
                                 <Label
                                     FontSize="11"
-	                                    Text="Records today"
+	                                    Text="{Binding RecordsTodayLabel}"
                                     TextColor="{DynamicResource LabHeroMuted}" />
                                 <Label
                                     FontAttributes="Bold"
@@ -195,21 +217,76 @@
                                     TextColor="{DynamicResource LabHeroText}" />
                                 <Label
                                     FontSize="11"
-	                                    Text="Auto or manual logs"
+	                                    Text="{Binding RecordsTodaySub}"
                                     TextColor="{DynamicResource LabHeroMuted}" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
+                    <VerticalStackLayout Grid.Row="2" Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="10"
+                            CharacterSpacing="0.8"
+                            Text="{Binding SupportedFamiliesLabel}"
+                            TextColor="{DynamicResource LabHeroMuted}" />
+                        <FlexLayout
+                            AlignItems="Start"
+                            Direction="Row"
+                            JustifyContent="Start"
+                            Wrap="Wrap">
+                            <Border Margin="0,0,6,6" Style="{StaticResource HeroChipStyle}">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="10"
+                                    Text="{Binding ChipHalo}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                            </Border>
+
+                                <Border Margin="0,0,6,6" Style="{StaticResource HeroChipStyle}">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="10"
+                                    Text="{Binding ChipMarineMaster}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                            </Border>
+
+                            <Border Margin="0,0,6,6" Style="{StaticResource HeroChipStyle}">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="10"
+                                    Text="{Binding ChipPhotometer}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                            </Border>
+
+                               <Border Margin="0,0,6,6" Style="{StaticResource HeroChipStyle}">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="10"
+                                    Text="{Binding ChipMultiparameter}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                            </Border>
+
+                            <Border Margin="0,0,6,6" Style="{StaticResource HeroChipStyle}">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="10"
+                                    Text="{Binding ChipMeter}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                            </Border>
+                      
+                        </FlexLayout>
+                    </VerticalStackLayout>
+
                     <Button
-                        Grid.Row="2"
+                        Grid.Row="3"
                         BackgroundColor="{StaticResource Primary}"
                         Command="{Binding ScanDevicesCommand}"
                         CornerRadius="24"
                         FontAttributes="Bold"
                         FontSize="15"
                         HeightRequest="50"
-                        Text="Scan Instruments"
+                        Text="{Binding ScanInstrumentsLabel}"
                         TextColor="White" />
                 </Grid>
             </Border>
@@ -220,33 +297,25 @@
                         <TapGestureRecognizer Command="{Binding DemoModeCommand}" />
                     </Border.GestureRecognizers>
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
-                        <Border
-                            BackgroundColor="{DynamicResource SubtleTeal}"
-                            HeightRequest="42"
-                            StrokeThickness="0"
-                            WidthRequest="42"
-                            HorizontalOptions="Start">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="14" />
-                            </Border.StrokeShape>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="20"
+                        <Border Style="{StaticResource QuickActionIconBoxStyle}">
+                            <Image
+                                Aspect="AspectFit"
+                                HeightRequest="22"
                                 HorizontalOptions="Center"
-                                Text="&#x2697;"
-                                TextColor="{StaticResource Primary}"
-                                VerticalOptions="Center" />
+                                Source="measure_icon"
+                                VerticalOptions="Center"
+                                WidthRequest="22" />
                         </Border>
                         <VerticalStackLayout Grid.Row="1" Spacing="3">
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="14"
-                                Text="Measure"
+                                Text="{Binding MeasureTitle}"
                                 TextColor="{DynamicResource OnSurface}" />
                             <Label
                                 FontSize="12"
                                 LineBreakMode="WordWrap"
-                                Text="Start live analysis"
+                                Text="{Binding MeasureSub}"
                                 TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Grid>
@@ -257,33 +326,25 @@
                         <TapGestureRecognizer Command="{Binding ViewLogsCommand}" />
                     </Border.GestureRecognizers>
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
-                        <Border
-                            BackgroundColor="{DynamicResource SubtleGreen}"
-                            HeightRequest="42"
-                            StrokeThickness="0"
-                            WidthRequest="42"
-                            HorizontalOptions="Start">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="14" />
-                            </Border.StrokeShape>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="20"
+                        <Border Style="{StaticResource QuickActionIconBoxStyle}">
+                            <Image
+                                Aspect="AspectFit"
+                                HeightRequest="22"
                                 HorizontalOptions="Center"
-                                Text="&#x2630;"
-                                TextColor="{StaticResource Success}"
-                                VerticalOptions="Center" />
+                                Source="log_history"
+                                VerticalOptions="Center"
+                                WidthRequest="22" />
                         </Border>
                         <VerticalStackLayout Grid.Row="1" Spacing="3">
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="14"
-                                Text="Logs"
+                                Text="{Binding LogsTitle}"
                                 TextColor="{DynamicResource OnSurface}" />
                             <Label
                                 FontSize="12"
                                 LineBreakMode="WordWrap"
-                                Text="Review history"
+                                Text="{Binding LogsSub}"
                                 TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Grid>
@@ -291,110 +352,41 @@
             </Grid>
 
             <VerticalStackLayout Spacing="10">
-                <Label Style="{StaticResource SectionLabelStyle}" Text="INSTRUMENT BAY" />
-                <Border Style="{StaticResource DashboardCardStyle}" Padding="14">
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                        <Grid HeightRequest="128" WidthRequest="132">
-                            <Border
-                                Margin="32,0,0,0"
-                                Padding="6"
-                                BackgroundColor="{DynamicResource SurfaceSecondary}"
-                                HeightRequest="82"
-                                Stroke="{DynamicResource Divider}"
-                                StrokeThickness="0.5"
-                                WidthRequest="82">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="20" />
-                                </Border.StrokeShape>
-                                <Image Aspect="AspectFit" Source="photometer_hi97115.png" />
-                            </Border>
-                            <Border
-                                Margin="0,62,64,0"
-                                Padding="6"
-                                BackgroundColor="{DynamicResource SurfaceSecondary}"
-                                HeightRequest="58"
-                                Stroke="{DynamicResource Divider}"
-                                StrokeThickness="0.5"
-                                WidthRequest="58">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="16" />
-                                </Border.StrokeShape>
-                                <Image Aspect="AspectFit" Source="halo2_device_icon.png" />
-                            </Border>
-                            <Border
-                                Margin="78,66,0,0"
-                                Padding="5"
-                                BackgroundColor="{DynamicResource SurfaceSecondary}"
-                                HeightRequest="54"
-                                Stroke="{DynamicResource Divider}"
-                                StrokeThickness="0.5"
-                                WidthRequest="54">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="16" />
-                                </Border.StrokeShape>
-                                <Image Aspect="AspectFit" Source="hi98594_new.png" />
-                            </Border>
-                        </Grid>
-
-                        <VerticalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                LineBreakMode="WordWrap"
-                                Text="Probe, photometer, and meter ready"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="12"
-                                LineBreakMode="WordWrap"
-                                Text="The home screen now points to one scan flow, then keeps measurement, log review, and reporting separate."
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-                                <Label FontAttributes="Bold" FontSize="11" Text="HALO probes" TextColor="{StaticResource Primary}" />
-                                <Label Grid.Column="1" FontAttributes="Bold" FontSize="11" Text="Photometers" TextColor="{StaticResource Primary}" />
-                                <Label Grid.Row="1" FontAttributes="Bold" FontSize="11" Text="HI meters" TextColor="{StaticResource Primary}" />
-                                <Label Grid.Row="1" Grid.Column="1" FontAttributes="Bold" FontSize="11" Text="Bluetooth" TextColor="{StaticResource Primary}" />
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Grid>
-                </Border>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout Spacing="10">
-                <Label Style="{StaticResource SectionLabelStyle}" Text="WORKFLOW" />
+                <Label Style="{StaticResource SectionLabelStyle}" Text="{Binding WorkflowSection}" />
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
                     <Border Style="{StaticResource DashboardCardStyle}" Padding="12">
                         <VerticalStackLayout Spacing="6">
                             <Label FontAttributes="Bold" FontSize="18" Text="01" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="12" Text="Connect" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Scan once for available instruments." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="{Binding WorkflowConnect}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="{Binding WorkflowConnectSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
                         <VerticalStackLayout Spacing="6">
                             <Label FontAttributes="Bold" FontSize="18" Text="02" TextColor="{StaticResource AnalysisAmber}" />
-                            <Label FontAttributes="Bold" FontSize="12" Text="Measure + tag" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Stream readings and annotate context." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="{Binding WorkflowMeasure}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="{Binding WorkflowMeasureSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
                         <VerticalStackLayout Spacing="6">
                             <Label FontAttributes="Bold" FontSize="18" Text="03" TextColor="{StaticResource Success}" />
-                            <Label FontAttributes="Bold" FontSize="12" Text="Store" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Save logs automatically or manually." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="{Binding WorkflowStore}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="{Binding WorkflowStoreSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
                         <VerticalStackLayout Spacing="6">
                             <Label FontAttributes="Bold" FontSize="18" Text="04" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="12" Text="Review" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Open tables, graphs, PDF, or CSV." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="{Binding WorkflowReview}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="{Binding WorkflowReviewSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="10">
-                <Label Style="{StaticResource SectionLabelStyle}" Text="APP CAPABILITIES" />
+                <Label Style="{StaticResource SectionLabelStyle}" Text="{Binding CapabilitiesSection}" />
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
                     <Border Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">

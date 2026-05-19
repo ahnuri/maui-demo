@@ -53,6 +53,11 @@ public sealed class Halo2MeasureView : ContentView
 	const int TableRowCount = 10;
 	const int MaxHistory = 120;
 	const int SparkPointCount = 25;
+	const float SparklineHeight = 26;
+	const float SparklineStroke = 1.4f;
+	const float GraphLinePh = 1.8f;
+	const float GraphLineTemp = 1.5f;
+	const double GraphHeight = 280;
 
 	const double PhSpanMin = 4;
 	const double PhSpanMax = 12;
@@ -210,7 +215,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		if (_phStatusLabel is not null)
 		{
-			_phStatusLabel.Text = showMvOnPrimary ? "ORP / glass" : phStatus.Label;
+			_phStatusLabel.Text = showMvOnPrimary ? "ORP · glass electrode" : phStatus.Label;
 			_phStatusLabel.TextColor = showMvOnPrimary ? CyanAccent.MultiplyAlpha(0.85f) : phStatus.Color;
 		}
 
@@ -246,7 +251,7 @@ public sealed class Halo2MeasureView : ContentView
 		{
 			if (_isStable)
 			{
-				_stabilityPillText.Text = "STABLE";
+				_stabilityPillText.Text = "Stable";
 				_stabilityPillText.TextColor = Emerald;
 				_stabilityPill.BackgroundColor = EmeraldMuted;
 				_stabilityPill.Stroke = Emerald.MultiplyAlpha(0.35f);
@@ -254,7 +259,7 @@ public sealed class Halo2MeasureView : ContentView
 			}
 			else
 			{
-				_stabilityPillText.Text = "DRIFTING";
+				_stabilityPillText.Text = "Drifting";
 				_stabilityPillText.TextColor = LabWarning;
 				_stabilityPill.BackgroundColor = LabWarningMuted;
 				_stabilityPill.Stroke = LabWarning.MultiplyAlpha(0.35f);
@@ -268,18 +273,18 @@ public sealed class Halo2MeasureView : ContentView
 
 	static (string Label, Color Color) GetPhStatus(double ph) => ph switch
 	{
-		< 5.5 => ("STRONG ACIDIC", ThemeColors.LabPhAcidic),
-		< 6.5 => ("ACIDIC", ThemeColors.LabPhAcidicMid),
-		< 7.5 => ("NEUTRAL", ThemeColors.LabPhNeutral),
-		< 9.0 => ("BASIC", ThemeColors.LabPhBasic),
-		_ => ("STRONG ALKALINE", ThemeColors.LabPhAlkaline)
+		< 5.5 => ("Strong acidic", ThemeColors.LabPhAcidic),
+		< 6.5 => ("Acidic", ThemeColors.LabPhAcidicMid),
+		< 7.5 => ("Neutral", ThemeColors.LabPhNeutral),
+		< 9.0 => ("Basic", ThemeColors.LabPhBasic),
+		_ => ("Strong alkaline", ThemeColors.LabPhAlkaline)
 	};
 
 	static (string Label, Color Color) GetTempStatus(double temp) => temp switch
 	{
-		> 80 => ("CRITICAL", ThemeColors.LabPhAcidic),
-		> 60 => ("HIGH", ThemeColors.LabPhAcidicMid),
-		_ => ("OPTIMAL", ThemeColors.LabPhNeutral)
+		> 80 => ("Critical", ThemeColors.LabPhAcidic),
+		> 60 => ("High", ThemeColors.LabPhAcidicMid),
+		_ => ("Optimal", ThemeColors.LabPhNeutral)
 	};
 
 	void SyncTableRows()
@@ -413,13 +418,25 @@ public sealed class Halo2MeasureView : ContentView
 	{
 		return new Label
 		{
-			FontSize = 12,
+			FontSize = 11,
 			TextColor = LabMuted,
 			HorizontalTextAlignment = TextAlignment.Center,
 			TextDecorations = TextDecorations.Underline,
-			Margin = new Thickness(0, 4, 0, 0)
+			Margin = new Thickness(0, 2, 0, 0)
 		};
 	}
+
+	static Label CreateTrendCaptionLabel() =>
+		new()
+		{
+			Text = "Trend",
+			FontSize = 10,
+			FontAttributes = FontAttributes.Bold,
+			TextColor = LabMuted,
+			CharacterSpacing = 0.6,
+			HorizontalTextAlignment = TextAlignment.Center,
+			Margin = new Thickness(0, 6, 0, 2)
+		};
 
 
 
@@ -514,7 +531,7 @@ public sealed class Halo2MeasureView : ContentView
 		_viewModel.BatteryPercent = _batteryPercent;
 		_viewModel.ProbeConditionPercent = GetProbeConditionPercent();
 		_viewModel.IsTagged = _tagged;
-		_viewModel.StabilityLabel = _isStable ? "STABLE" : "DRIFTING";
+		_viewModel.StabilityLabel = _isStable ? "Stable" : "Drifting";
 	}
 
 	static View CreateBatteryGlyph(int percent)
@@ -631,7 +648,7 @@ public sealed class Halo2MeasureView : ContentView
 		var probeGroup = CreateMetricGroup(
 			"Probe Condition",
 			CreateConditionGlyph(conditionPercent),
-			_tagged ? "Tagged • 50%" : $"Excellent • {conditionPercent}%",
+			_tagged ? "Tagged · 50%" : $"Excellent · {conditionPercent}%",
 			probeSummaryColor);
 		probeGroup.GestureRecognizers.Add(probeTap);
 
@@ -733,7 +750,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		_phPrimaryValue = new Label
 		{
-			FontSize = 52,
+			FontSize = 46,
 			HorizontalTextAlignment = TextAlignment.Center,
 			HorizontalOptions = LayoutOptions.Center,
 			FontAttributes = FontAttributes.None
@@ -747,7 +764,8 @@ public sealed class Halo2MeasureView : ContentView
 		};
 		_phSparkline = new GraphicsView
 		{
-			HeightRequest = 44,
+			HeightRequest = SparklineHeight,
+			Margin = new Thickness(4, 0),
 			Drawable = new HaloSparklineDrawable(GetPrimarySparkData, () =>
 			{
 				var pref = Halo2Preferences.GetPrimaryDisplay().ToLowerInvariant();
@@ -778,13 +796,14 @@ public sealed class Halo2MeasureView : ContentView
 
 		var phColumn = new VerticalStackLayout
 		{
-			Spacing = 2,
+			Spacing = 0,
 			HorizontalOptions = LayoutOptions.Fill,
 			Children =
 			{
 				_primaryChannelLabel,
 				_phPrimaryValue,
 				_phStatusLabel,
+				CreateTrendCaptionLabel(),
 				_phSparkline,
 				_switchChannelLabel
 			}
@@ -792,7 +811,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		_tempValueLabel = new Label
 		{
-			FontSize = 52,
+			FontSize = 46,
 			HorizontalTextAlignment = TextAlignment.Center,
 			HorizontalOptions = LayoutOptions.Center,
 			FontAttributes = FontAttributes.None
@@ -806,7 +825,8 @@ public sealed class Halo2MeasureView : ContentView
 		};
 		_tempSparkline = new GraphicsView
 		{
-			HeightRequest = 44,
+			HeightRequest = SparklineHeight,
+			Margin = new Thickness(4, 0),
 			Drawable = new HaloSparklineDrawable(GetTempSparkData, () => OrangeAccent),
 			HorizontalOptions = LayoutOptions.Fill
 		};
@@ -833,13 +853,14 @@ public sealed class Halo2MeasureView : ContentView
 
 		var tempColumn = new VerticalStackLayout
 		{
-			Spacing = 2,
+			Spacing = 0,
 			HorizontalOptions = LayoutOptions.Fill,
 			Children =
 			{
 				_tempUnitHeaderLabel,
 				_tempValueLabel,
 				_tempStatusLabel,
+				CreateTrendCaptionLabel(),
 				_tempSparkline,
 				_switchTempUnitLabel
 			}
@@ -851,7 +872,7 @@ public sealed class Halo2MeasureView : ContentView
 		{
 			ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(1), new ColumnDefinition(GridLength.Star)),
 			ColumnSpacing = 16,
-			Padding = new Thickness(20, 20, 20, 20),
+			Padding = new Thickness(16, 12, 16, 16),
 			Children = { phColumn, midDivider, tempColumn }
 		};
 		Grid.SetColumn(midDivider, 1);
@@ -874,7 +895,7 @@ public sealed class Halo2MeasureView : ContentView
 		{
 			Stroke = LabBorder,
 			StrokeThickness = 1,
-			StrokeShape = new RoundRectangle { CornerRadius = 24 },
+			StrokeShape = new RoundRectangle { CornerRadius = 20 },
 			Background = inner,
 			Content = panel,
 			Shadow = new Shadow
@@ -917,8 +938,8 @@ public sealed class Halo2MeasureView : ContentView
 			Padding = 4,
 			BackgroundColor = LabCard
 		};
-		grid.Children.Add(ModeChip("Table", HaloMode.Table, HaloMeasureModeIconKind.Table));
-		var graph = ModeChip("Graph", HaloMode.Graph, HaloMeasureModeIconKind.Chart);
+		grid.Children.Add(ModeChip("Data", HaloMode.Table, HaloMeasureModeIconKind.Table));
+		var graph = ModeChip("Trends", HaloMode.Graph, HaloMeasureModeIconKind.Chart);
 		grid.Children.Add(graph);
 		Grid.SetColumn(graph, 1);
 		var calibrate = CalibrationModeChip();
@@ -1250,19 +1271,58 @@ public sealed class Halo2MeasureView : ContentView
 	Border BuildGraph()
 	{
 		_chart.Tagged = _tagged;
+		var legend = new HorizontalStackLayout
+		{
+			Spacing = 16,
+			HorizontalOptions = LayoutOptions.Center,
+			Margin = new Thickness(0, 0, 0, 6),
+			Children =
+			{
+				CreateLegendSwatch("pH", CyanAccent),
+				CreateLegendSwatch($"Temp ({TempUnitSymbol})", OrangeAccent)
+			}
+		};
+
 		_graphView = new GraphicsView
 		{
 			Drawable = _chart,
-			HeightRequest = 420
+			HeightRequest = GraphHeight
 		};
+
+		var panel = new VerticalStackLayout
+		{
+			Spacing = 4,
+			Padding = new Thickness(10, 10, 10, 8),
+			Children = { legend, _graphView }
+		};
+
 		return new Border
 		{
 			Stroke = LabBorder,
 			StrokeThickness = 1,
 			StrokeShape = new RoundRectangle { CornerRadius = 18 },
 			BackgroundColor = LabCard,
-			Content = _graphView,
-			Padding = 8
+			Content = panel
+		};
+	}
+
+	static View CreateLegendSwatch(string label, Color color)
+	{
+		return new HorizontalStackLayout
+		{
+			Spacing = 6,
+			VerticalOptions = LayoutOptions.Center,
+			Children =
+			{
+				new BoxView { WidthRequest = 14, HeightRequest = 2, Color = color, VerticalOptions = LayoutOptions.Center },
+				new Label
+				{
+					Text = label,
+					FontSize = 11,
+					TextColor = LabMuted,
+					VerticalOptions = LayoutOptions.Center
+				}
+			}
 		};
 	}
 
@@ -1308,7 +1368,7 @@ public sealed class Halo2MeasureView : ContentView
 
 			var color = _getColor();
 			canvas.StrokeColor = color;
-			canvas.StrokeSize = 2.5f;
+			canvas.StrokeSize = SparklineStroke;
 			canvas.StrokeLineCap = LineCap.Round;
 			canvas.StrokeLineJoin = LineJoin.Round;
 			canvas.DrawPath(path);
@@ -1332,7 +1392,7 @@ public sealed class Halo2MeasureView : ContentView
 			var ph = slice.Select(r => r.Ph).ToArray();
 			var temp = slice.Select(r => r.Temp).ToArray();
 
-			var plot = new RectF(54, 18, dirtyRect.Width - 116, dirtyRect.Height - 70);
+			var plot = new RectF(48, 14, dirtyRect.Width - 100, dirtyRect.Height - 52);
 			canvas.FillColor = ThemeColors.LabGraphPlotFill;
 			canvas.FillRoundedRectangle(plot, 6);
 
@@ -1355,14 +1415,14 @@ public sealed class Halo2MeasureView : ContentView
 			}
 
 			if (ph.Length > 1)
-				DrawSeries(canvas, plot, ph, PhSpanMin, PhSpanMax, ThemeColors.LabAccentCyan, 2.6f);
+				DrawSeries(canvas, plot, ph, PhSpanMin, PhSpanMax, ThemeColors.LabAccentCyan, GraphLinePh);
 			if (temp.Length > 1)
-				DrawSeries(canvas, plot, temp, TempSpanMin, TempSpanMax, ThemeColors.LabAccentOrange, 2.2f);
+				DrawSeries(canvas, plot, temp, TempSpanMin, TempSpanMax, ThemeColors.LabAccentOrange, GraphLineTemp);
 
 			if (Tagged)
 			{
 				canvas.StrokeColor = ThemeColors.LabEmerald;
-				canvas.StrokeSize = 4;
+				canvas.StrokeSize = 2;
 				var x = plot.Left + plot.Width * 0.72f;
 				canvas.DrawLine(x, plot.Top, x, plot.Bottom);
 			}
@@ -1397,6 +1457,8 @@ public sealed class Halo2MeasureView : ContentView
 
 			canvas.StrokeColor = color;
 			canvas.StrokeSize = width;
+			canvas.StrokeLineCap = LineCap.Round;
+			canvas.StrokeLineJoin = LineJoin.Round;
 			canvas.DrawPath(path);
 		}
 	}

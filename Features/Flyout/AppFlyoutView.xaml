@@ -103,25 +103,23 @@
                             <Grid
                                 ColumnDefinitions="Auto,*,Auto"
                                 ColumnSpacing="12">
-                                <Grid HeightRequest="56" WidthRequest="56">
-                                    <Border
-                                        BackgroundColor="{DynamicResource SurfaceSecondary}"
-                                        HeightRequest="56"
-                                        Stroke="{DynamicResource Divider}"
-                                        StrokeThickness="1"
-                                        WidthRequest="56">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="28" />
-                                        </Border.StrokeShape>
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="19"
-                                            HorizontalOptions="Center"
-                                            Text="{Binding Initials}"
-                                            TextColor="{StaticResource Primary}"
-                                            VerticalOptions="Center" />
-                                    </Border>
-                                </Grid>
+                                <Border
+                                    BackgroundColor="{DynamicResource FlyoutIconBadge}"
+                                    HeightRequest="56"
+                                    Stroke="{DynamicResource Divider}"
+                                    StrokeThickness="0.5"
+                                    WidthRequest="56">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="28" />
+                                    </Border.StrokeShape>
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="19"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding Initials}"
+                                        TextColor="{StaticResource Primary}"
+                                        VerticalOptions="Center" />
+                                </Border>
 
                                 <VerticalStackLayout
                                     Grid.Column="1"
@@ -210,21 +208,22 @@
                                 ColumnDefinitions="Auto,*,Auto"
                                 ColumnSpacing="12">
                                 <Border
-                                    BackgroundColor="{DynamicResource SurfaceSecondary}"
+                                    BackgroundColor="{DynamicResource FlyoutIconBadge}"
                                     HeightRequest="52"
                                     Stroke="{DynamicResource Divider}"
-                                    StrokeThickness="1"
+                                    StrokeThickness="0.5"
                                     VerticalOptions="Center"
                                     WidthRequest="52">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="26" />
                                     </Border.StrokeShape>
-                                    <Label
-                                        FontSize="22"
+                                    <Image
+                                        Aspect="AspectFit"
+                                        HeightRequest="26"
                                         HorizontalOptions="Center"
-                                        Text="&#x263A;"
-                                        TextColor="{StaticResource Primary}"
-                                        VerticalOptions="Center" />
+                                        Source="tab_profile"
+                                        VerticalOptions="Center"
+                                        WidthRequest="26" />
                                 </Border>
                                 <VerticalStackLayout
                                     Grid.Column="1"
@@ -317,10 +316,10 @@
                     ColumnDefinitions="Auto,*"
                     ColumnSpacing="12">
                     <Border
-                        BackgroundColor="{DynamicResource SurfaceSecondary}"
+                        BackgroundColor="{DynamicResource FlyoutIconBadge}"
                         HeightRequest="40"
                         Stroke="{DynamicResource Divider}"
-                        StrokeThickness="1"
+                        StrokeThickness="0.5"
                         VerticalOptions="Center"
                         WidthRequest="40">
                         <Border.StrokeShape>
