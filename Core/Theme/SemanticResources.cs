@@ -16,6 +16,7 @@ public static class SemanticResources
 		r["OnSurfaceMuted"] = ThemeColors.OnSurfaceMuted;
 		r["Divider"] = ThemeColors.Divider;
 		r["SubtleTeal"] = ThemeColors.SubtleTeal;
+		r["FlyoutIconBadge"] = ThemeColors.FlyoutIconBadge;
 		r["SubtleGreen"] = ThemeColors.SubtleGreen;
 		r["ChipUnselected"] = ThemeColors.ChipUnselected;
 		r["ChipUnselectedText"] = ThemeColors.ChipUnselectedText;
@@ -30,5 +31,32 @@ public static class SemanticResources
 		r["PrimarySubtleFill"] = ThemeColors.PrimarySubtleFill;
 		r["PrimarySubtleBanner"] = ThemeColors.PrimarySubtleBanner;
 		r["PrimarySubtleStroke"] = ThemeColors.PrimarySubtleStroke;
+		r["FlyoutLogoBadge"] = ThemeColors.FlyoutLogoBadge;
+		r["FlyoutBackground"] = ThemeColors.FlyoutBackground;
+		r["FlyoutProfileCard"] = ThemeColors.FlyoutProfileCard;
+		r["FlyoutActiveRow"] = ThemeColors.FlyoutActiveRow;
+		r["FlyoutMenuGroup"] = ThemeColors.FlyoutMenuGroup;
+
+		// Halo 2 / lab measure surfaces
+		r["LabCanvas"] = ThemeColors.LabCanvas;
+		r["LabCard"] = ThemeColors.LabCard;
+		r["LabCardElevated"] = ThemeColors.LabCardElevated;
+		r["LabBorder"] = ThemeColors.LabBorder;
+		r["LabMuted"] = ThemeColors.LabMuted;
+		r["LabPrimaryText"] = ThemeColors.LabPrimaryText;
+		r["LabSecondaryText"] = ThemeColors.LabSecondaryText;
+
+		// Home hero banner
+		r["LabHeroGradientStart"] = ThemeColors.LabHeroGradientStart;
+		r["LabHeroGradientMid"] = ThemeColors.LabHeroGradientMid;
+		r["LabHeroGradientEnd"] = ThemeColors.LabHeroGradientEnd;
+		r["LabHeroText"] = ThemeColors.LabHeroText;
+		r["LabHeroMuted"] = ThemeColors.LabHeroMuted;
+		r["LabHeroTileBackground"] = ThemeColors.LabHeroTileBackground;
+		r["LabHeroTileStroke"] = ThemeColors.LabHeroTileStroke;
+		r["LabHeroBadgeFill"] = ThemeColors.LabHeroBadgeFill;
+		r["LabHeroBadgeStroke"] = ThemeColors.LabHeroBadgeStroke;
+		r["LabHeroDeviceFrame"] = ThemeColors.LabHeroDeviceFrame;
+		r["LabHeroDeviceStroke"] = ThemeColors.LabHeroDeviceStroke;
 	}
 }

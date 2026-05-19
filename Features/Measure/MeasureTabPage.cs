@@ -45,8 +45,7 @@ public sealed class MeasureTabPage : ContentPage
 		_halo2 = halo2;
 		Shell.SetNavBarIsVisible(this, true);
 		Shell.SetNavBarHasShadow(this, false);
-		Shell.SetBackgroundColor(this, ThemeColors.PageBackground);
-		SetDynamicResource(BackgroundColorProperty, "PageBackground");
+		ApplyNavigationChrome();
 
 		_emptyStateLabel = new Label
 		{
@@ -102,6 +101,7 @@ public sealed class MeasureTabPage : ContentPage
 		if (_viewModel.UsesHaloNavigationTitle)
 			ClearCustomNavigationTitle();
 
+		ApplyNavigationChrome();
 		RefreshMeasureToolbar();
 	}
 
@@ -113,7 +113,16 @@ public sealed class MeasureTabPage : ContentPage
 		ClearCustomNavigationTitle();
 		_emptyStateLabel.Text = _viewModel.EmptyStateMessage;
 		Title = _viewModel.NavigationTitle;
+		ApplyNavigationChrome();
 		RefreshMeasureToolbar();
+	}
+
+	void ApplyNavigationChrome()
+	{
+		if (_viewModel.ActiveDevice == MeasureDeviceKind.Halo2)
+			ShellChrome.ApplyLab(this);
+		else
+			ShellChrome.ApplyStandard(this);
 	}
 
 	void RefreshMeasureToolbar()
@@ -360,6 +369,7 @@ public sealed class MeasureTabPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
+		ApplyNavigationChrome();
 		if (_halo2.IsVisible)
 			_halo2.SyncSettingsFromPreferences();
 	}
@@ -373,6 +383,7 @@ public sealed class MeasureTabPage : ContentPage
 			Title = _viewModel.NavigationTitle;
 		else if (_viewModel.ActiveDevice is null)
 			_viewModel.RefreshForTheme();
+		ApplyNavigationChrome();
 		RefreshMeasureToolbar();
 	}
 }

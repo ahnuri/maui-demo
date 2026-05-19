@@ -1,9 +1,12 @@
-﻿using HannaUIDemo.Core.Localization;
+﻿using HannaUIDemo.Core.Auth;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
+using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Halo2;
 using HannaUIDemo.Features.Localization;
 using HannaUIDemo.Features.Settings;
+using HannaUIDemo.Features.Flyout;
 using Microsoft.Extensions.Logging;
 
 namespace HannaUIDemo;
@@ -22,13 +25,22 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddSingleton<LocalizationService>();
+		builder.Services.AddSingleton<ThemeService>();
+		builder.Services.AddSingleton<UserSessionService>();
 		builder.Services.AddHannaViewModels();
 
 		builder.Services.AddTransient<DevicePage>();
 		builder.Services.AddTransient<SettingsPage>();
+		builder.Services.AddTransient<SignInPage>();
+		builder.Services.AddTransient<RegisterPage>();
+		builder.Services.AddTransient<HannaCloudHubPage>();
+		builder.Services.AddTransient<HannaCloudSettingsPage>();
+		builder.Services.AddTransient<ProfileInformationPage>();
+		builder.Services.AddTransient<ResetPasswordPage>();
 		builder.Services.AddTransient<Halo2CalibrationPage>();
 		builder.Services.AddTransient<Halo2SettingsPage>();
 		builder.Services.AddTransient<LanguageSelectionPage>();
+		builder.Services.AddTransient<AppFlyoutView>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

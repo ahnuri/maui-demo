@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Settings.ProfileInformationPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
+    xmlns:views="clr-namespace:HannaUIDemo.Features.Settings.Views"
+    x:DataType="settings:ProfileInformationViewModel"
+    Title="{Binding PageTitle}"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="False">
+
+    <ContentPage.Resources>
+        <Style x:Key="FieldLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
+        </Style>
+        <Style x:Key="FieldEntryStyle" TargetType="Entry">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
+            <Setter Property="PlaceholderColor" Value="{DynamicResource OnSurfaceVariant}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" Padding="16,8,16,16">
+            <VerticalStackLayout Spacing="20">
+                <views:HannaBrandHeader LogoHeight="36" Subtitle="{Binding Subtitle}" />
+
+                <!-- Account -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource FieldLabelStyle}" Text="{Binding AccountSectionTitle}" />
+                    <Border BackgroundColor="{DynamicResource Surface}" Padding="14,10" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding EmailLabel}" Style="{StaticResource FieldLabelStyle}" />
+                            <Entry Style="{StaticResource FieldEntryStyle}" IsEnabled="False" Text="{Binding Email}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Personal -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource FieldLabelStyle}" Text="{Binding PersonalSectionTitle}" />
+                    <Border BackgroundColor="{DynamicResource Surface}" Padding="14,12" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="14">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding FirstNameLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding FirstNameLabel}" Text="{Binding FirstName}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding LastNameLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding LastNameLabel}" Text="{Binding LastName}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding OrganizationLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding OrganizationLabel}" Text="{Binding Organization}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding MobileLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Keyboard="Telephone" Placeholder="{Binding MobileLabel}" Text="{Binding Mobile}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Address -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource FieldLabelStyle}" Text="{Binding AddressSectionTitle}" />
+                    <Border BackgroundColor="{DynamicResource Surface}" Padding="14,12" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="14">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Address1Label}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding Address1Label}" Text="{Binding Address1}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Address2Label}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding Address2Label}" Text="{Binding Address2}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding CityLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding CityLabel}" Text="{Binding City}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding StateLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding StateLabel}" Text="{Binding State}" />
+                            </VerticalStackLayout>
+                            <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding PostcodeLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                <Entry Style="{StaticResource FieldEntryStyle}" Placeholder="{Binding PostcodeLabel}" Text="{Binding Postcode}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border
+            Grid.Row="1"
+            Padding="16,12,16,24"
+            BackgroundColor="{DynamicResource Surface}"
+            Stroke="{DynamicResource Divider}"
+            StrokeThickness="0.5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontSize="13"
+                    HorizontalTextAlignment="Center"
+                    IsVisible="{Binding ShowStatus}"
+                    Text="{Binding StatusMessage}"
+                    TextColor="{StaticResource Success}" />
+                <Button
+                    BackgroundColor="{StaticResource Primary}"
+                    Command="{Binding SaveCommand}"
+                    CornerRadius="12"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="52"
+                    Text="{Binding SaveButtonText}"
+                    TextColor="White" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

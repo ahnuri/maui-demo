@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Settings.HannaCloudSettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
+    xmlns:views="clr-namespace:HannaUIDemo.Features.Settings.Views"
+    x:DataType="settings:HannaCloudSettingsViewModel"
+    Title="{Binding PageTitle}"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="False">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="DeviceRowTemplate" x:DataType="settings:CloudSyncDeviceItem">
+            <Border
+                Margin="0,0,0,12"
+                BackgroundColor="{DynamicResource Surface}"
+                Stroke="{DynamicResource Divider}"
+                StrokeThickness="0.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Offset="0,2" Opacity="0.08" Radius="10" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="14,14">
+                        <Border
+                            BackgroundColor="{DynamicResource SubtleTeal}"
+                            HeightRequest="40"
+                            StrokeThickness="0"
+                            VerticalOptions="Center"
+                            WidthRequest="40">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Image
+                                Aspect="AspectFit"
+                                HeightRequest="24"
+                                HorizontalOptions="Center"
+                                IsVisible="{Binding ShowDeviceIcon}"
+                                Source="{Binding DeviceIcon}"
+                                VerticalOptions="Center"
+                                WidthRequest="24" />
+                        </Border>
+                        <Label
+                            Grid.Column="1"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding Name}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                        <Switch
+                            Grid.Column="2"
+                            IsToggled="{Binding IsEnabled}"
+                            VerticalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout IsVisible="{Binding ShowChildOptions}" Spacing="0">
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Grid ColumnDefinitions="*,Auto" Padding="16,12,14,12">
+                            <Label FontSize="14" Text="{Binding LogFilesLabel}" TextColor="{DynamicResource OnSurface}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding LogFilesEnabled}" VerticalOptions="Center" />
+                        </Grid>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
+                        <Grid ColumnDefinitions="*,Auto" Padding="16,12,14,14">
+                            <Label FontSize="14" Text="{Binding TaggedDataLabel}" TextColor="{DynamicResource OnSurface}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding TaggedDataEnabled}" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <ScrollView Padding="16,8,16,28">
+        <VerticalStackLayout Spacing="18">
+            <views:HannaBrandHeader
+                LogoHeight="40"
+                Margin="0,4,0,4"
+                Title="HANNA CLOUD" />
+
+            <Border
+                BackgroundColor="{DynamicResource Surface}"
+                Padding="16"
+                Stroke="{DynamicResource Divider}"
+                StrokeThickness="0.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Offset="0,4" Opacity="0.1" Radius="12" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Border
+                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
+                            HeightRequest="36"
+                            StrokeThickness="0"
+                            VerticalOptions="Start"
+                            WidthRequest="36">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="&#x2601;"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <Label
+                            Grid.Column="1"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding AutoUploadTitle}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                        <Switch Grid.Column="2" IsToggled="{Binding AutoUpload}" VerticalOptions="Center" />
+                    </Grid>
+                    <Label
+                        FontSize="13"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding AutoUploadDescription}"
+                        TextColor="{DynamicResource OnSurfaceVariant}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label
+                CharacterSpacing="0.5"
+                FontAttributes="Bold"
+                FontSize="13"
+                Text="{Binding AvailableDevicesTitle}"
+                TextColor="{DynamicResource OnSurfaceVariant}" />
+            <VerticalStackLayout BindableLayout.ItemTemplate="{StaticResource DeviceRowTemplate}" BindableLayout.ItemsSource="{Binding Devices}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

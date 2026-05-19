@@ -1,230 +1,493 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Theme;
 
 namespace HannaUIDemo.Features.Halo2;
 
-/// <summary>Halo 2 buffer calibration flow (presentation built in code; state in <see cref="Halo2CalibrationViewModel"/>).</summary>
+/// <summary>Modern Halo 2 five-point pH calibration flow.</summary>
 public sealed class Halo2CalibrationPage : ContentPage
 {
-	static readonly string[] Buffers = ["4.01", "6.01", "7.01", "9.01", "12.01"];
+	const string DeviceName = "Halo Demo-1";
+	const string CurrentBuffer = "12.45";
+
+	static Color LabCanvas => ThemeColors.LabCanvas;
+	static Color LabCard => ThemeColors.LabCard;
+	static Color LabCardElevated => ThemeColors.LabCardElevated;
+	static Color LabBorder => ThemeColors.LabBorder;
+	static Color LabMuted => ThemeColors.LabMuted;
+	static Color LabPrimaryText => ThemeColors.LabPrimaryText;
+	static Color LabSecondaryText => ThemeColors.LabSecondaryText;
+	static Color LabEmerald => ThemeColors.LabEmerald;
+	static Color LabChipDisabled => ThemeColors.LabChipDisabled;
+
+	static readonly CalibrationPoint[] Points =
+	[
+		new(Halo2CalibrationDemoData.Points[0], true),
+		new(Halo2CalibrationDemoData.Points[1], true),
+		new(Halo2CalibrationDemoData.Points[2], true),
+		new(Halo2CalibrationDemoData.Points[3], true),
+		new(Halo2CalibrationDemoData.Points[4], false)
+	];
+
+	readonly List<CalibrationSlot> _slots = [];
+	readonly Label _stepEyebrow;
+	readonly Label _stepTitle;
+	readonly Label _stepBody;
+	readonly Label _readingStatus;
+	readonly Button _confirmButton;
+	Button _saveButton = null!;
+
+	bool _confirmed;
 
 	public Halo2CalibrationPage(Halo2CalibrationViewModel viewModel)
 	{
 		BindingContext = viewModel;
 		Title = "Calibrate";
-		SetDynamicResource(BackgroundColorProperty, "PageBackground");
+		ApplyChrome();
 		Halo2Routes.ConfigureSubPageChrome(this);
+		Shell.SetNavBarIsVisible(this, false);
 
-		Content = new ScrollView
+		_stepEyebrow = LabelText("BUFFER RECOGNIZED", 12, LabMuted, bold: true);
+		_stepTitle = LabelText("Calibrating with pH 12.45 buffer", 24, LabPrimaryText, bold: true, lineBreak: LineBreakMode.WordWrap);
+		_stepBody = LabelText("Wait for a stable reading, then confirm the buffer to add this point to the current calibration.", 15, LabSecondaryText, lineBreak: LineBreakMode.WordWrap);
+		_readingStatus = LabelText("Stable", 13, LabEmerald, bold: true);
+
+		_confirmButton = PrimaryButton("Confirm Buffer", AppConstants.Primary);
+		_confirmButton.Clicked += (_, _) => SetConfirmed(true);
+
+		Content = BuildLayout();
+		SetConfirmed(false);
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		ApplyChrome();
+	}
+
+	public void ApplyTheme() => ApplyChrome();
+
+	void ApplyChrome()
+	{
+		BackgroundColor = LabCanvas;
+		ShellChrome.ApplyLab(this);
+	}
+
+	View BuildLayout()
+	{
+		var root = new Grid
+		{
+			RowDefinitions =
+			[
+				new RowDefinition(GridLength.Auto),
+				new RowDefinition(GridLength.Star)
+			],
+			BackgroundColor = LabCanvas
+		};
+
+		var topBar = BuildTopBar();
+		root.Children.Add(topBar);
+		root.SetRow(topBar, 0);
+
+		var body = new ScrollView
 		{
 			Content = new VerticalStackLayout
 			{
-				Padding = new Thickness(16, 12, 16, 28),
+				Padding = new Thickness(16, 14, 16, 28),
 				Spacing = 16,
 				Children =
 				{
-					BuildReadingPanel(),
-					BuildInstructionPanel(),
-					BuildBufferSelector(),
-					BuildCurrentCalibration()
+					BuildReadingCard(),
+					BuildStepCard(),
+					BuildCalibrationCard()
 				}
 			}
 		};
+		root.Children.Add(body);
+		root.SetRow(body, 1);
+
+		return root;
 	}
 
-	static Border BuildReadingPanel()
+	Grid BuildTopBar()
 	{
-		var grid = new Grid
+		var bar = new Grid
 		{
-			ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto)),
-			Padding = 18,
-			ColumnSpacing = 16
+			HeightRequest = 58,
+			Padding = new Thickness(16, 0),
+			BackgroundColor = LabCard,
+			ColumnDefinitions =
+			[
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star)
+			]
 		};
 
-		grid.Children.Add(new VerticalStackLayout
+		var cancel = LabelText("Cancel", 17, AppConstants.Primary);
+		cancel.GestureRecognizers.Add(Tap(async () => await Shell.Current.GoToAsync("..")));
+		bar.Children.Add(cancel);
+
+		var title = LabelText("Calibrate", 20, LabPrimaryText, bold: true, horizontal: TextAlignment.Center);
+		bar.Children.Add(title);
+		bar.SetColumn(title, 1);
+
+		_saveButton = PrimaryTextButton("Save");
+		_saveButton.Clicked += async (_, _) => await Shell.Current.GoToAsync("..");
+		bar.Children.Add(_saveButton);
+		bar.SetColumn(_saveButton, 2);
+
+		return bar;
+	}
+
+	Border BuildReadingCard()
+	{
+		var deviceRow = new Grid
 		{
-			Spacing = 4,
-			Children =
-			{
-				new Label { Text = "Halo Demo-1", FontSize = 19, FontAttributes = FontAttributes.Bold, TextColor = ThemeColors.OnSurface },
-				new Label { Text = "Stable reading", FontSize = 13, TextColor = AppConstants.Success }
-			}
+			ColumnDefinitions =
+			[
+				new ColumnDefinition(GridLength.Auto),
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Auto)
+			],
+			ColumnSpacing = 12
+		};
+
+		deviceRow.Children.Add(new Border
+		{
+			WidthRequest = 48,
+			HeightRequest = 48,
+			Padding = 6,
+			BackgroundColor = ThemeColors.PrimarySubtleFill,
+			Stroke = ThemeColors.PrimarySubtleStroke,
+			StrokeThickness = 1,
+			StrokeShape = new RoundRectangle { CornerRadius = 14 },
+			Content = new Image { Source = "halo2_device_icon.png", Aspect = Aspect.AspectFit }
 		});
 
-		var reading = new HorizontalStackLayout
+		var deviceText = new VerticalStackLayout
 		{
-			Spacing = 6,
+			Spacing = 2,
 			VerticalOptions = LayoutOptions.Center,
 			Children =
 			{
-				new Label { Text = "7.01", FontSize = 34, TextColor = ThemeColors.OnSurface },
-				new Label { Text = "pH", FontSize = 18, TextColor = ThemeColors.OnSurface, VerticalOptions = LayoutOptions.Center },
-				new Label { Text = "25.2 °C ATC", FontSize = 16, TextColor = ThemeColors.OnSurfaceVariant, VerticalOptions = LayoutOptions.Center }
+				LabelText(DeviceName, 18, LabPrimaryText, bold: true, lineBreak: LineBreakMode.TailTruncation),
+				LabelText("50% battery · Condition not reported", 13, LabMuted, lineBreak: LineBreakMode.TailTruncation)
 			}
 		};
-		grid.Children.Add(reading);
-		Grid.SetColumn(reading, 1);
+		deviceRow.Children.Add(deviceText);
+		deviceRow.SetColumn(deviceText, 1);
 
-		return Card(grid);
+		var status = StatusPill("CONNECTED", AppConstants.Success);
+		deviceRow.Children.Add(status);
+		deviceRow.SetColumn(status, 2);
+
+		var readingGrid = new Grid
+		{
+			Margin = new Thickness(0, 18, 0, 0),
+			ColumnDefinitions =
+			[
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star)
+			],
+			ColumnSpacing = 12
+		};
+
+		readingGrid.Children.Add(ReadingTile("pH", CurrentBuffer, _readingStatus));
+		var tempTile = ReadingTile("Temperature", "25.1 °C", LabelText("ATC", 13, LabMuted, bold: true));
+		readingGrid.Children.Add(tempTile);
+		readingGrid.SetColumn(tempTile, 1);
+
+		return Card(new VerticalStackLayout
+		{
+			Spacing = 0,
+			Children = { deviceRow, readingGrid }
+		});
 	}
 
-	static Border BuildInstructionPanel()
+	Border BuildStepCard()
 	{
-		var grid = new Grid
+		var content = new VerticalStackLayout { Spacing = 18 };
+
+		var stepHeader = new Grid
 		{
-			ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto)),
-			ColumnSpacing = 16,
-			Padding = 18
+			ColumnDefinitions =
+			[
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Auto)
+			],
+			ColumnSpacing = 14
 		};
-		grid.Children.Add(new VerticalStackLayout
+
+		stepHeader.Children.Add(new VerticalStackLayout
+		{
+			Spacing = 8,
+			Children = { _stepEyebrow, _stepTitle, _stepBody }
+		});
+
+		var beaker = Halo2CalibrationUi.BufferBeaker(CurrentBuffer, 82, 64, calibrated: true);
+		stepHeader.Children.Add(beaker);
+		stepHeader.SetColumn(beaker, 1);
+
+		content.Children.Add(stepHeader);
+		content.Children.Add(BuildProgressRail());
+
+		var actions = new Grid
+		{
+			ColumnDefinitions =
+			[
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star)
+			],
+			ColumnSpacing = 12
+		};
+
+		var clear = SecondaryButton("Clear Calibration");
+		clear.Clicked += (_, _) => SetConfirmed(false);
+		actions.Children.Add(clear);
+
+		actions.Children.Add(_confirmButton);
+		actions.SetColumn(_confirmButton, 1);
+		content.Children.Add(actions);
+
+		return Card(content);
+	}
+
+	View BuildProgressRail()
+	{
+		var row = new HorizontalStackLayout
+		{
+			Spacing = 6,
+			HorizontalOptions = LayoutOptions.Fill
+		};
+
+		foreach (var point in Points)
+		{
+			var complete = point.IsSaved;
+			row.Children.Add(new Border
+			{
+				HeightRequest = 8,
+				WidthRequest = 44,
+				BackgroundColor = complete ? AppConstants.Success : point.Buffer == CurrentBuffer ? AppConstants.Primary : LabBorder,
+				StrokeThickness = 0,
+				StrokeShape = new RoundRectangle { CornerRadius = 4 }
+			});
+		}
+
+		return row;
+	}
+
+	Border BuildCalibrationCard()
+	{
+		var rail = new HorizontalStackLayout { Spacing = 10 };
+		foreach (var point in Points)
+		{
+			var slot = BuildSlot(point);
+			_slots.Add(slot);
+			rail.Children.Add(slot.Root);
+		}
+
+		var content = new VerticalStackLayout
+		{
+			Spacing = 14,
+			Children =
+			{
+				new Grid
+				{
+					ColumnDefinitions =
+					[
+						new ColumnDefinition(GridLength.Star),
+						new ColumnDefinition(GridLength.Auto)
+					],
+					Children =
+					{
+						LabelText("Current Calibration", 20, LabPrimaryText, bold: true),
+						StatusPill("5 POINTS", AppConstants.Primary)
+					}
+				},
+				new ScrollView
+				{
+					Orientation = ScrollOrientation.Horizontal,
+					HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+					Content = rail
+				}
+			}
+		};
+		if (content.Children[0] is Grid header && header.Children.Count > 1)
+			header.SetColumn(header.Children[1], 1);
+
+		return Card(content);
+	}
+
+	CalibrationSlot BuildSlot(CalibrationPoint point)
+	{
+		var valueLabel = LabelText(string.Empty, 12, LabMuted, horizontal: TextAlignment.Center, lineBreak: LineBreakMode.WordWrap);
+		var root = new Border
+		{
+			WidthRequest = 112,
+			MinimumHeightRequest = 150,
+			Padding = new Thickness(10),
+			BackgroundColor = LabCardElevated,
+			Stroke = LabBorder,
+			StrokeThickness = 1,
+			StrokeShape = new RoundRectangle { CornerRadius = 14 },
+			Content = new VerticalStackLayout
+			{
+				Spacing = 8,
+				HorizontalOptions = LayoutOptions.Center,
+				Children =
+				{
+					Halo2CalibrationUi.BufferBeaker(point.Buffer, 54, 42, point.IsSaved),
+					valueLabel
+				}
+			}
+		};
+
+		var slot = new CalibrationSlot(root, valueLabel, point);
+		ApplySlot(slot, point.IsSaved);
+		return slot;
+	}
+
+	void SetConfirmed(bool confirmed)
+	{
+		_confirmed = confirmed;
+
+		_stepEyebrow.Text = confirmed ? "CALIBRATION COMPLETE" : "BUFFER RECOGNIZED";
+		_stepEyebrow.TextColor = confirmed ? LabEmerald : LabMuted;
+		_stepTitle.Text = confirmed ? "Calibration complete" : "Calibrating with pH 12.45 buffer";
+		_stepBody.Text = confirmed
+			? "The maximum number of calibration points has been reached. Save calibration to update the probe and return to measurement."
+			: "Wait for a stable reading, then confirm the buffer to add this point to the current calibration.";
+
+		_confirmButton.IsEnabled = !confirmed;
+		_confirmButton.BackgroundColor = confirmed ? LabChipDisabled : AppConstants.Primary;
+		_confirmButton.TextColor = confirmed ? LabMuted : Colors.White;
+		_saveButton.IsEnabled = confirmed;
+		_saveButton.TextColor = confirmed ? AppConstants.Primary : LabMuted;
+
+		foreach (var slot in _slots)
+			ApplySlot(slot, slot.Point.IsSaved || confirmed && slot.Point.Buffer == CurrentBuffer);
+	}
+
+	static void ApplySlot(CalibrationSlot slot, bool saved)
+	{
+		slot.Root.BackgroundColor = saved ? LabEmerald.MultiplyAlpha(0.08f) : LabCardElevated;
+		slot.Root.Stroke = saved ? LabEmerald.MultiplyAlpha(0.42f) : LabBorder;
+		slot.ValueLabel.TextColor = saved ? LabPrimaryText : LabMuted;
+		slot.ValueLabel.Text = saved
+			? $"{slot.Point.Millivolts}\n{slot.Point.Temperature}\n{Halo2CalibrationDemoData.PointDateDisplay}\n{Halo2CalibrationDemoData.PointTimeDisplay}"
+			: "Empty";
+
+		if (slot.Root.Content is VerticalStackLayout stack && stack.Children.Count > 0)
+			stack.Children[0] = Halo2CalibrationUi.BufferBeaker(slot.Point.Buffer, 54, 42, saved);
+	}
+
+	static Border ReadingTile(string label, string value, View meta) => new()
+	{
+		Padding = new Thickness(14, 12),
+		BackgroundColor = LabCardElevated,
+		Stroke = LabBorder,
+		StrokeThickness = 1,
+		StrokeShape = new RoundRectangle { CornerRadius = 14 },
+		Content = new VerticalStackLayout
 		{
 			Spacing = 8,
 			Children =
 			{
-				new Label { Text = "Save Calibration", FontSize = 22, FontAttributes = FontAttributes.Bold, TextColor = ThemeColors.OnSurface },
-				new Label
-				{
-					Text = "Confirm the stable 7.01 buffer, then save calibration or continue with the next buffer point.",
-					FontSize = 15,
-					LineBreakMode = LineBreakMode.WordWrap,
-					TextColor = ThemeColors.OnSurfaceMuted
-				}
-			}
-		});
-
-		var beaker = BufferBeaker("7.01", true);
-		grid.Children.Add(beaker);
-		Grid.SetColumn(beaker, 1);
-		return Card(grid);
-	}
-
-	static Border BuildBufferSelector()
-	{
-		var stack = new VerticalStackLayout { Padding = 18, Spacing = 14 };
-		stack.Children.Add(new Label { Text = "Five Point Calibration", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = ThemeColors.OnSurface });
-
-		var points = new Grid { ColumnSpacing = 8 };
-		for (var i = 0; i < Buffers.Length; i++)
-		{
-			points.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-			var active = Buffers[i] == "7.01";
-			var point = new Border
-			{
-				Padding = new Thickness(6, 10),
-				BackgroundColor = active ? AppConstants.Primary.MultiplyAlpha(0.14f) : ThemeColors.SurfaceSecondary,
-				Stroke = active ? AppConstants.Primary : ThemeColors.Divider,
-				StrokeThickness = active ? 1.5 : 1,
-				StrokeShape = new RoundRectangle { CornerRadius = 14 },
-				Content = new VerticalStackLayout
-				{
-					Spacing = 4,
-					HorizontalOptions = LayoutOptions.Center,
-					Children =
-					{
-						new Label { Text = "\u25F0", FontSize = 22, TextColor = active ? AppConstants.Primary : ThemeColors.OnSurfaceVariant, HorizontalTextAlignment = TextAlignment.Center },
-						new Label { Text = Buffers[i], FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = active ? AppConstants.Primary : ThemeColors.OnSurface, HorizontalTextAlignment = TextAlignment.Center },
-						new Label { Text = active ? "Ready" : "Pending", FontSize = 10, TextColor = ThemeColors.OnSurfaceVariant, HorizontalTextAlignment = TextAlignment.Center }
-					}
-				}
-			};
-			points.Children.Add(point);
-			Grid.SetColumn(point, i);
-		}
-		stack.Children.Add(points);
-
-		var actions = new Grid
-		{
-			ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star)),
-			ColumnSpacing = 12
-		};
-		actions.Children.Add(OutlineButton("Clear Calibration", AppConstants.Primary));
-		var confirm = FilledButton("Confirm Buffer", AppConstants.Success);
-		actions.Children.Add(confirm);
-		Grid.SetColumn(confirm, 1);
-		stack.Children.Add(actions);
-
-		return Card(stack);
-	}
-
-	static Border BuildCurrentCalibration()
-	{
-		var stack = new VerticalStackLayout { Padding = 18, Spacing = 14 };
-		stack.Children.Add(new Label { Text = "Current Calibration", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = ThemeColors.OnSurface });
-
-		var grid = new Grid { ColumnSpacing = 8 };
-		for (var i = 0; i < Buffers.Length; i++)
-		{
-			grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-			var saved = Buffers[i] == "7.01";
-			var value = saved ? "-0.6 mV\n25.2 °C\n14/05/26\n4:27 PM" : "Empty";
-			var tile = new Border
-			{
-				Padding = new Thickness(6, 10),
-				BackgroundColor = saved ? AppConstants.Success.MultiplyAlpha(0.1f) : ThemeColors.SurfaceSecondary,
-				Stroke = saved ? AppConstants.Success.MultiplyAlpha(0.6f) : ThemeColors.Divider,
-				StrokeThickness = 1,
-				StrokeShape = new RoundRectangle { CornerRadius = 14 },
-				Content = new VerticalStackLayout
-				{
-					Spacing = 4,
-					Children =
-					{
-						new Label { Text = Buffers[i], FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = saved ? AppConstants.Success : ThemeColors.OnSurface, HorizontalTextAlignment = TextAlignment.Center },
-						new Label { Text = value, FontSize = 10, TextColor = ThemeColors.OnSurfaceVariant, HorizontalTextAlignment = TextAlignment.Center, LineBreakMode = LineBreakMode.WordWrap }
-					}
-				}
-			};
-			grid.Children.Add(tile);
-			Grid.SetColumn(tile, i);
-		}
-		stack.Children.Add(grid);
-		return Card(stack);
-	}
-
-	static Border BufferBeaker(string value, bool active) => new()
-	{
-		WidthRequest = 96,
-		HeightRequest = 86,
-		BackgroundColor = active ? AppConstants.Primary.MultiplyAlpha(0.18f) : ThemeColors.SurfaceSecondary,
-		Stroke = active ? AppConstants.Primary : ThemeColors.Divider,
-		StrokeThickness = 1.5,
-		StrokeShape = new RoundRectangle { CornerRadius = 18 },
-		Content = new VerticalStackLayout
-		{
-			Spacing = 2,
-			HorizontalOptions = LayoutOptions.Center,
-			VerticalOptions = LayoutOptions.Center,
-			Children =
-			{
-				new Label { Text = "\u25F0", FontSize = 26, TextColor = AppConstants.Primary, HorizontalTextAlignment = TextAlignment.Center },
-				new Label { Text = value, FontSize = 18, FontAttributes = FontAttributes.Bold, TextColor = AppConstants.Primary, HorizontalTextAlignment = TextAlignment.Center }
+				LabelText(label, 12, LabMuted, bold: true),
+				LabelText(value, 31, LabPrimaryText, lineBreak: LineBreakMode.TailTruncation),
+				meta
 			}
 		}
 	};
 
-	static Border OutlineButton(string text, Color color) => new()
+	static Border StatusPill(string text, Color color) => new()
 	{
-		HeightRequest = 48,
-		Stroke = color.MultiplyAlpha(0.45f),
+		Padding = new Thickness(9, 4),
+		BackgroundColor = color.MultiplyAlpha(0.12f),
+		Stroke = color.MultiplyAlpha(0.25f),
 		StrokeThickness = 1,
-		StrokeShape = new RoundRectangle { CornerRadius = 14 },
-		Content = new Label { Text = text, TextColor = color, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center }
-	};
-
-	static Border FilledButton(string text, Color color) => new()
-	{
-		HeightRequest = 48,
-		BackgroundColor = color,
-		StrokeThickness = 0,
-		StrokeShape = new RoundRectangle { CornerRadius = 14 },
-		Content = new Label { Text = text, TextColor = Colors.White, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center }
+		StrokeShape = new RoundRectangle { CornerRadius = 10 },
+		VerticalOptions = LayoutOptions.Center,
+		Content = LabelText(text, 10, color, bold: true, horizontal: TextAlignment.Center)
 	};
 
 	static Border Card(View content) => new()
 	{
-		BackgroundColor = ThemeColors.Surface,
-		StrokeThickness = 0,
+		Padding = new Thickness(16),
+		BackgroundColor = LabCard,
+		Stroke = LabBorder,
+		StrokeThickness = 1,
 		StrokeShape = new RoundRectangle { CornerRadius = 18 },
-		Content = content,
-		Shadow = new Shadow { Brush = new SolidColorBrush(ThemeColors.SoftShadow), Offset = new Point(0, 2), Radius = 10, Opacity = 1 }
+		Shadow = new Shadow { Brush = new SolidColorBrush(ThemeColors.SoftShadow), Offset = new Point(0, 2), Radius = 10, Opacity = 1 },
+		Content = content
 	};
+
+	static Button PrimaryButton(string text, Color color) => new()
+	{
+		Text = text,
+		HeightRequest = 48,
+		CornerRadius = 14,
+		FontAttributes = FontAttributes.Bold,
+		FontSize = 15,
+		BackgroundColor = color,
+		TextColor = Colors.White
+	};
+
+	static Button SecondaryButton(string text) => new()
+	{
+		Text = text,
+		HeightRequest = 48,
+		CornerRadius = 14,
+		FontAttributes = FontAttributes.Bold,
+		FontSize = 15,
+		BackgroundColor = LabCardElevated,
+		TextColor = AppConstants.Primary,
+		BorderColor = LabBorder,
+		BorderWidth = 1
+	};
+
+	static Button PrimaryTextButton(string text) => new()
+	{
+		Text = text,
+		BackgroundColor = Colors.Transparent,
+		TextColor = AppConstants.Primary,
+		FontSize = 17,
+		HorizontalOptions = LayoutOptions.End,
+		VerticalOptions = LayoutOptions.Center,
+		Padding = new Thickness(0)
+	};
+
+	static Label LabelText(
+		string text,
+		double size,
+		Color color,
+		bool bold = false,
+		TextAlignment horizontal = TextAlignment.Start,
+		LineBreakMode lineBreak = LineBreakMode.NoWrap) => new()
+	{
+		Text = text,
+		FontSize = size,
+		TextColor = color,
+		FontAttributes = bold ? FontAttributes.Bold : FontAttributes.None,
+		HorizontalTextAlignment = horizontal,
+		VerticalTextAlignment = TextAlignment.Center,
+		LineBreakMode = lineBreak,
+		MaxLines = lineBreak == LineBreakMode.NoWrap ? 1 : int.MaxValue
+	};
+
+	static TapGestureRecognizer Tap(Func<Task> action)
+	{
+		var tap = new TapGestureRecognizer();
+		tap.Tapped += async (_, _) => await action();
+		return tap;
+	}
+
+	readonly record struct CalibrationPoint(Halo2CalibrationPoint Data, bool IsSaved)
+	{
+		public string Buffer => Data.Ph;
+		public string Millivolts => Data.Millivolts;
+		public string Temperature => Data.Temperature;
+	}
+
+	sealed record CalibrationSlot(Border Root, Label ValueLabel, CalibrationPoint Point);
 }

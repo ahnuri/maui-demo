@@ -6,6 +6,7 @@ using HannaUIDemo.Features.Localization;
 using HannaUIDemo.Features.Logs;
 using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
+using HannaUIDemo.Features.Flyout;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Core.Mvvm;
@@ -15,6 +16,7 @@ public static class MvvmServiceCollectionExtensions
 {
 	public static IServiceCollection AddHannaViewModels(this IServiceCollection services)
 	{
+		services.AddSingleton<AppFlyoutViewModel>();
 		services.AddSingleton<HomeViewModel>();
 		services.AddSingleton<MeasureTabViewModel>();
 		services.AddSingleton<Halo2MeasureViewModel>();
@@ -24,6 +26,12 @@ public static class MvvmServiceCollectionExtensions
 		services.AddTransient<LogsViewModel>();
 		services.AddTransient<DeviceInfoViewModel>();
 		services.AddTransient<SettingsViewModel>();
+		services.AddTransient<SignInViewModel>();
+		services.AddTransient<RegisterViewModel>();
+		services.AddTransient<HannaCloudHubViewModel>();
+		services.AddTransient<HannaCloudSettingsViewModel>();
+		services.AddTransient<ProfileInformationViewModel>();
+		services.AddTransient<ResetPasswordViewModel>();
 		services.AddTransient<LanguageSelectionViewModel>();
 		services.AddTransient<MultimeterLogRecallViewModel>();
 		services.AddTransient<PhotometerMeasureViewModel>();

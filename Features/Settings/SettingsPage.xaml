@@ -1,118 +1,274 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
-             x:Class="HannaUIDemo.Features.Settings.SettingsPage"
-             x:DataType="settings:SettingsViewModel"
-             Title="Settings"
-             BackgroundColor="{DynamicResource PageBackground}">
-    <ScrollView Padding="16">
-        <VerticalStackLayout Spacing="8">
-            <Label
-                Margin="0,0,0,4"
-                FontAttributes="Bold"
-                FontSize="14"
-                Text="Device Settings"
-                TextColor="{DynamicResource OnSurfaceVariant}" />
-            <Border
-                BackgroundColor="{DynamicResource Surface}"
-                Padding="0"
-                StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <Border.Shadow>
-                    <Shadow Offset="0,4" Opacity="0.12" Radius="12" />
-                </Border.Shadow>
-                <VerticalStackLayout Spacing="0">
-                    <Grid Padding="16,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Label FontSize="22" Text="&#x2697;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Chemical Form" VerticalOptions="Center" />
-                        <Label Grid.Column="2" Text=">" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenChemicalFormCommand}" />
-                        </Grid.GestureRecognizers>
-                    </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="16,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Label FontSize="22" Text="&#x2697;" VerticalOptions="Start" />
-                        <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label FontAttributes="Bold" Text="Sync Readings" />
-                            <Label FontSize="12" LineBreakMode="WordWrap" Text="Download readings from Photometer to Hanna Lab App" TextColor="{DynamicResource OnSurfaceVariant}" />
+<ContentPage
+    x:Class="HannaUIDemo.Features.Settings.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
+    xmlns:views="clr-namespace:HannaUIDemo.Features.Settings.Views"
+    x:DataType="settings:SettingsViewModel"
+    Title="{Binding PageTitle}"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="False">
+
+    <ContentPage.Resources>
+        <Style x:Key="SectionHeaderStyle" TargetType="Label">
+            <Setter Property="CharacterSpacing" Value="0.8" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="4,0,0,2" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
+        </Style>
+        <Style x:Key="RowTitleStyle" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="LineBreakMode" Value="TailTruncation" />
+            <Setter Property="MaxLines" Value="1" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="RowSubtitleStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="LineBreakMode" Value="WordWrap" />
+            <Setter Property="MaxLines" Value="2" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
+        </Style>
+        <Style x:Key="IconTileStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{DynamicResource PrimarySubtleFill}" />
+            <Setter Property="HeightRequest" Value="40" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="WidthRequest" Value="40" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="12" />
+            </Setter>
+        </Style>
+        <Style x:Key="GroupedCardStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="16" />
+            </Setter>
+        </Style>
+        <Style x:Key="ChevronStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="Text" Value="&#x203A;" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView Padding="16,12,16,32">
+        <VerticalStackLayout Spacing="20">
+
+            <views:HannaBrandHeader LogoHeight="36" Subtitle="{Binding PageSubtitle}" />
+
+            <!-- App -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionHeaderStyle}" Text="{Binding AppearanceSectionTitle}" />
+
+                <Border Style="{StaticResource GroupedCardStyle}">
+                    <Border.Shadow>
+                        <Shadow Offset="0,2" Opacity="0.06" Radius="10" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="0">
+
+                        <!-- Appearance -->
+                        <VerticalStackLayout Padding="16,15,16,14" Spacing="13">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Style="{StaticResource IconTileStyle}">
+                                    <Label
+                                        FontSize="19"
+                                        HorizontalOptions="Center"
+                                        Text="&#x25D0;"
+                                        TextColor="{StaticResource Primary}"
+                                        VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Style="{StaticResource RowTitleStyle}" Text="{Binding AppearanceTitle}" />
+                                    <Label Style="{StaticResource RowSubtitleStyle}" Text="{Binding AppearanceSubtitle}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Border
+                                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                                Padding="4"
+                                StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="3">
+                                    <Button
+                                        BackgroundColor="{Binding SystemThemeBackground}"
+                                        Command="{Binding SelectSystemThemeCommand}"
+                                        CornerRadius="9"
+                                        FontAttributes="Bold"
+                                        FontSize="13"
+                                        HeightRequest="38"
+                                        Padding="0"
+                                        Text="{Binding ThemeSystemLabel}"
+                                        TextColor="{Binding SystemThemeTextColor}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        BackgroundColor="{Binding LightThemeBackground}"
+                                        Command="{Binding SelectLightThemeCommand}"
+                                        CornerRadius="9"
+                                        FontAttributes="Bold"
+                                        FontSize="13"
+                                        HeightRequest="38"
+                                        Padding="0"
+                                        Text="{Binding ThemeLightLabel}"
+                                        TextColor="{Binding LightThemeTextColor}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        BackgroundColor="{Binding DarkThemeBackground}"
+                                        Command="{Binding SelectDarkThemeCommand}"
+                                        CornerRadius="9"
+                                        FontAttributes="Bold"
+                                        FontSize="13"
+                                        HeightRequest="38"
+                                        Padding="0"
+                                        Text="{Binding ThemeDarkLabel}"
+                                        TextColor="{Binding DarkThemeTextColor}" />
+                                </Grid>
+                            </Border>
                         </VerticalStackLayout>
-                        <Label Grid.Column="2" FontSize="22" Text="&#x21BB;" VerticalOptions="Center" />
+
+                        <BoxView Margin="68,0,0,0" HeightRequest="1" Color="{DynamicResource Divider}" />
+
+                        <!-- Language -->
+                        <Grid
+                            Padding="16,14"
+                            ColumnDefinitions="Auto,*,Auto"
+                            ColumnSpacing="12">
+                            <Border Style="{StaticResource IconTileStyle}">
+                                <Label
+                                    FontSize="18"
+                                    HorizontalOptions="Center"
+                                    Text="&#x1F310;"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Style="{StaticResource RowTitleStyle}" Text="{Binding LanguageRowTitle}" />
+                                <Label Style="{StaticResource RowSubtitleStyle}" Text="{Binding LanguageDisplay}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Style="{StaticResource ChevronStyle}" />
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenLanguageCommand}" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Hanna Cloud -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionHeaderStyle}" Text="{Binding CloudSectionTitle}" />
+
+                <!-- Signed in -->
+                <Border IsVisible="{Binding IsLoggedIn}" Style="{StaticResource GroupedCardStyle}">
+                    <Border.Shadow>
+                        <Shadow Offset="0,2" Opacity="0.06" Radius="10" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="0">
+
+                        <Grid Padding="16,15" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border Style="{StaticResource IconTileStyle}">
+                                <Label
+                                    FontSize="19"
+                                    HorizontalOptions="Center"
+                                    Text="&#x2601;"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                <Label Style="{StaticResource RowTitleStyle}" Text="{Binding CloudAccountTitle}" />
+                                <Label
+                                    FontSize="14"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="1"
+                                    Text="{Binding UserEmail}"
+                                    TextColor="{DynamicResource OnSurfaceVariant}" />
+                            </VerticalStackLayout>
+                            <Border
+                                Grid.Column="2"
+                                Padding="9,4"
+                                BackgroundColor="{DynamicResource SubtleGreen}"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="11"
+                                    Text="{Binding SignedInStatus}"
+                                    TextColor="{StaticResource Success}" />
+                            </Border>
+                        </Grid>
+
+                        <BoxView Margin="68,0,0,0" HeightRequest="1" Color="{DynamicResource Divider}" />
+
+                        <Grid
+                            Padding="16,14"
+                            ColumnDefinitions="*,Auto"
+                            ColumnSpacing="8">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding CloudManageButton}"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                            <Label
+                                Grid.Column="1"
+                                Style="{StaticResource ChevronStyle}"
+                                TextColor="{StaticResource Primary}" />
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenCloudHubCommand}" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sign in prompt -->
+                <Border
+                    IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
+                    Style="{StaticResource GroupedCardStyle}">
+                    <Border.Shadow>
+                        <Shadow Offset="0,2" Opacity="0.06" Radius="10" />
+                    </Border.Shadow>
+                    <Grid
+                        Padding="16,15"
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12">
+                        <Border Style="{StaticResource IconTileStyle}">
+                            <Label
+                                FontSize="19"
+                                HorizontalOptions="Center"
+                                Text="&#x2601;"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                            <Label Style="{StaticResource RowTitleStyle}" Text="{Binding CloudSignInButton}" />
+                            <Label
+                                Style="{StaticResource RowSubtitleStyle}"
+                                Text="{Binding CloudSignedInSummary}" />
+                        </VerticalStackLayout>
+                        <Label
+                            Grid.Column="2"
+                            Style="{StaticResource ChevronStyle}"
+                            TextColor="{StaticResource Primary}" />
                         <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SyncReadingsCommand}" />
+                            <TapGestureRecognizer Command="{Binding OpenSignInCommand}" />
                         </Grid.GestureRecognizers>
                     </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="16,12,16,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Label FontSize="18" Text="&#x2600;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Backlight" VerticalOptions="Center" />
-                        <Border Grid.Column="2" Padding="8,2" BackgroundColor="{DynamicResource SurfaceSecondary}" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
-                            <Label Text="{Binding BacklightPercent}" FontSize="12" />
-                        </Border>
-                    </Grid>
-                    <Slider Margin="16,0" Maximum="100" Minimum="0" Value="{Binding Backlight}" />
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="16,12,16,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Label FontSize="18" Text="&#x25D0;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Contrast" VerticalOptions="Center" />
-                        <Border Grid.Column="2" Padding="8,2" BackgroundColor="{DynamicResource SurfaceSecondary}" StrokeThickness="0">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
-                            <Label Text="{Binding ContrastPercent}" FontSize="12" />
-                        </Border>
-                    </Grid>
-                    <Slider Margin="16,0,16,8" Maximum="100" Minimum="0" Value="{Binding Contrast}" />
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="16,12" ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="Separator" VerticalOptions="Center" />
-                        <HorizontalStackLayout Grid.Column="1" Spacing="0">
-                            <Button
-                                BackgroundColor="{Binding DotSeparatorBackground}"
-                                Command="{Binding SelectDotSeparatorCommand}"
-                                CornerRadius="0"
-                                FontSize="12"
-                                Padding="12,6"
-                                Text="Dot"
-                                TextColor="{Binding DotSeparatorTextColor}" />
-                            <Button
-                                BackgroundColor="{Binding CommaSeparatorBackground}"
-                                Command="{Binding SelectCommaSeparatorCommand}"
-                                CornerRadius="0"
-                                FontSize="12"
-                                Padding="12,6"
-                                Text="Comma"
-                                TextColor="{Binding CommaSeparatorTextColor}" />
-                        </HorizontalStackLayout>
-                    </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="16,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Label FontSize="22" Text="&#x263A;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Language" VerticalOptions="Center" />
-                        <HorizontalStackLayout Grid.Column="2" Spacing="4">
-                            <Label Text="{Binding LanguageDisplay}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
-                            <Label Text=">" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
-                        </HorizontalStackLayout>
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenLanguageCommand}" />
-                        </Grid.GestureRecognizers>
-                    </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="8,4" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                        <Label Padding="8,0" FontSize="22" Text="&#x266A;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Beep" VerticalOptions="Center" />
-                        <Switch Grid.Column="2" IsToggled="{Binding Beep}" VerticalOptions="Center" />
-                    </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" Margin="16,0" />
-                    <Grid Padding="8,4,8,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                        <Label Padding="8,0" FontSize="22" Text="&#x266B;" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Tutorial" VerticalOptions="Center" />
-                        <Switch Grid.Column="2" IsToggled="{Binding Tutorial}" VerticalOptions="Center" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                </Border>
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

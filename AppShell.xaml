@@ -5,84 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:help="clr-namespace:HannaUIDemo.Features.Help"
     xmlns:home="clr-namespace:HannaUIDemo.Features.Home"
-    xmlns:info="clr-namespace:HannaUIDemo.Features.Info"
     xmlns:logs="clr-namespace:HannaUIDemo.Features.Logs"
     xmlns:measure="clr-namespace:HannaUIDemo.Features.Measure"
     Title=""
     FlyoutBehavior="Flyout"
-    FlyoutBackgroundColor="{DynamicResource SurfaceSecondary}">
-
-    <!-- iOS-style flyout rows: blue icon + bold title (matches native Hanna drawer) -->
-    <Shell.ItemTemplate>
-        <DataTemplate>
-            <Grid Padding="18,14,18,14"
-                  ColumnDefinitions="Auto,*"
-                  ColumnSpacing="14"
-                  BackgroundColor="Transparent">
-                <Border WidthRequest="32"
-                        HeightRequest="32"
-                        Padding="0"
-                        BackgroundColor="{DynamicResource SubtleTeal}"
-                        StrokeThickness="0"
-                        VerticalOptions="Center">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
-                    </Border.StrokeShape>
-                    <Image Aspect="AspectFit"
-                           HeightRequest="22"
-                           HorizontalOptions="Center"
-                           Source="{Binding Icon}"
-                           VerticalOptions="Center"
-                           WidthRequest="22" />
-                </Border>
-                <Label Grid.Column="1"
-                       FontAttributes="Bold"
-                       FontSize="17"
-                       Text="{Binding Title}"
-                       TextColor="{DynamicResource OnSurface}"
-                       VerticalOptions="Center" />
-            </Grid>
-        </DataTemplate>
-    </Shell.ItemTemplate>
+    FlyoutBackgroundColor="{DynamicResource FlyoutBackground}">
 
     <Shell.FlyoutIcon>
-        <FontImageSource Glyph="&#x2630;"
-                         Size="22"
-                         Color="{StaticResource Primary}" />
+        <FontImageSource
+            Glyph="&#x2630;"
+            Size="22"
+            Color="{StaticResource Primary}" />
     </Shell.FlyoutIcon>
-
-    <Shell.FlyoutHeader>
-        <Grid
-            Padding="20,52,20,16"
-            BackgroundColor="{DynamicResource SurfaceSecondary}"
-            RowDefinitions="Auto,Auto">
-            <Image
-                Aspect="AspectFit"
-                HeightRequest="32"
-                HorizontalOptions="Start"
-                SemanticProperties.Description="Hanna Instruments logo"
-                Source="hanna_instruments_logo.png" />
-            <VerticalStackLayout Grid.Row="1" Margin="0,12,0,0" Spacing="4">
-                <Label
-                    x:Name="FlyoutBrandLabel"
-                    FontAttributes="Bold"
-                    FontSize="20"
-                    Text="Hanna Lab"
-                    TextColor="{DynamicResource OnSurface}" />
-                <Label
-                    x:Name="FlyoutTaglineLabel"
-                    FontSize="13"
-                    Text="Wireless Measurement Platform"
-                    TextColor="{DynamicResource OnSurfaceVariant}" />
-            </VerticalStackLayout>
-        </Grid>
-    </Shell.FlyoutHeader>
 
     <ShellContent
         x:Name="HomeShellContent"
         Title="Hanna Lab"
         Route="home"
-        Icon="tab_halo">
+        Icon="tab_halo"
+        FlyoutItemIsVisible="False">
         <home:HomeTabPage />
     </ShellContent>
 
@@ -90,7 +31,8 @@
         x:Name="MeasureShellContent"
         Title="Measure"
         Route="measure"
-        Icon="tab_photometer">
+        Icon="tab_photometer"
+        FlyoutItemIsVisible="False">
         <measure:MeasureTabPage />
     </ShellContent>
 
@@ -98,92 +40,26 @@
         x:Name="LogsShellContent"
         Title="Log History"
         Route="logs"
-        Icon="tab_logs">
+        Icon="tab_logs"
+        FlyoutItemIsVisible="False">
         <logs:LogsTabPage />
     </ShellContent>
 
-    <ShellContent
+    <!-- <ShellContent
         x:Name="InfoShellContent"
         Title="Information"
         Route="info"
-        Icon="tab_info">
+        Icon="tab_info"
+        FlyoutItemIsVisible="False">
         <info:InfoTabPage />
-    </ShellContent>
-
-    <MenuItem x:Name="HannaCloudMenuItem"
-              Clicked="OnHannaCloudMenuClicked"
-              Text="Hanna Cloud">
-        <MenuItem.IconImageSource>
-            <FontImageSource Glyph="&#x2601;"
-                             Size="20"
-                             Color="{StaticResource Primary}" />
-        </MenuItem.IconImageSource>
-    </MenuItem>
+    </ShellContent> -->
 
     <ShellContent
         x:Name="HelpShellContent"
         Title="Help"
         Route="help"
-        Icon="tab_help">
+        Icon="tab_help"
+        FlyoutItemIsVisible="False">
         <help:HelpTabPage />
     </ShellContent>
-
-    <Shell.FlyoutFooter>
-        <VerticalStackLayout x:Name="FlyoutFooterRoot"
-                             Padding="20,20,20,32"
-                             Spacing="0"
-                             BackgroundColor="{DynamicResource SurfaceSecondary}">
-            <Border Padding="12,10"
-                    BackgroundColor="Black"
-                    HorizontalOptions="Center"
-                    StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <Image Aspect="AspectFit"
-                       HeightRequest="46"
-                       MaximumWidthRequest="260"
-                       SemanticProperties.Description="Hanna Instruments company logo"
-                       Source="hanna_instruments_logo.png" />
-            </Border>
-            <Label x:Name="FlyoutVersionLabel"
-                   Margin="0,18,0,0"
-                   FontSize="11"
-                   HorizontalTextAlignment="Center"
-                   TextColor="{DynamicResource OnSurfaceVariant}" />
-            <Label x:Name="FlyoutCopyrightLabel"
-                   Margin="0,4,0,0"
-                   FontSize="10"
-                   HorizontalTextAlignment="Center"
-                   LineBreakMode="WordWrap"
-                   TextColor="{DynamicResource OnSurfaceVariant}" />
-            <Label x:Name="FlyoutPrivacyPolicyLabel"
-                   Margin="0,12,0,0"
-                   FontSize="13"
-                   HorizontalTextAlignment="Center"
-                   Text=""
-                   TextColor="{StaticResource Primary}"
-                   TextDecorations="Underline">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnFlyoutPrivacyPolicyTapped" />
-                </Label.GestureRecognizers>
-            </Label>
-            <HorizontalStackLayout Margin="0,16,0,0"
-                                   HorizontalOptions="Center"
-                                   Spacing="6">
-                <HorizontalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnFlyoutLanguageTapped" />
-                </HorizontalStackLayout.GestureRecognizers>
-                <Label x:Name="FlyoutLanguageLabel"
-                       FontSize="14"
-                       Text=""
-                       TextColor="{StaticResource Primary}"
-                       VerticalOptions="Center" />
-                <Label FontSize="20"
-                       Text="&#x203A;"
-                       TextColor="{StaticResource Primary}"
-                       VerticalOptions="Center" />
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
-    </Shell.FlyoutFooter>
 </Shell>

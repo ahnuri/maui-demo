@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Photometer (back, top-left) -->
+  <rect x="4" y="6" width="20" height="14" rx="3" fill="#FFFFFF" stroke="#0EA5C6" stroke-width="1.2"/>
+  <rect x="7" y="9" width="10" height="6" rx="1.5" fill="#B5D5E6"/>
+  <line x1="7" y1="17" x2="21" y2="17" stroke="#0EA5C6" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Halo probe (front-left) -->
+  <circle cx="14" cy="34" r="7" fill="#FFFFFF" stroke="#0EA5C6" stroke-width="1.2"/>
+  <circle cx="14" cy="34" r="3" fill="#0EA5C6"/>
+
+  <!-- Multimeter (front-right) -->
+  <rect x="26" y="22" width="16" height="22" rx="3.5" fill="#FFFFFF" stroke="#0EA5C6" stroke-width="1.2"/>
+  <rect x="29" y="25" width="10" height="7" rx="1.5" fill="#C5D86D"/>
+  <line x1="30" y1="27" x2="38" y2="27" stroke="#4B5800" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="30" y1="29.5" x2="36" y2="29.5" stroke="#4B5800" stroke-width="0.8" stroke-linecap="round"/>
+  <circle cx="34" cy="38" r="2.2" fill="#2F80ED"/>
+</svg>

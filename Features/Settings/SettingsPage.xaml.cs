@@ -1,12 +1,19 @@
 namespace HannaUIDemo.Features.Settings;
 
-/// <summary>Settings page bound to <see cref="SettingsViewModel"/>.</summary>
 public partial class SettingsPage : ContentPage
 {
 	public SettingsPage(SettingsViewModel viewModel)
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
+		if (BindingContext is SettingsViewModel vm)
+			vm.RefreshSession();
 	}
 
 	public void ApplyTheme()

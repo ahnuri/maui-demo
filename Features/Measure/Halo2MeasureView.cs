@@ -4,6 +4,7 @@ using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Halo2;
 using HannaUIDemo.Core.Helpers;
+using HannaUIDemo.Theme;
 
 namespace HannaUIDemo.Features.Measure;
 
@@ -22,6 +23,7 @@ public sealed class Halo2MeasureView : ContentView
 
 	IDispatcherTimer? _liveTimer;
 	HaloMode _mode = HaloMode.Table;
+	bool _showCalibration;
 	bool _tagged;
 	bool _showMvPrimary;
 	bool _useFahrenheit;
@@ -57,14 +59,24 @@ public sealed class Halo2MeasureView : ContentView
 	const double TempSpanMin = 0;
 	const double TempSpanMax = 120;
 
-	static readonly Color LabCanvas = Color.FromArgb("#0A0F1C");
-	static readonly Color LabCard = Color.FromArgb("#18181B");
-	static readonly Color LabBorder = Color.FromArgb("#FFFFFF").MultiplyAlpha(0.10f);
-	static readonly Color LabMuted = Color.FromArgb("#A1A1AA");
-	static readonly Color CyanAccent = Color.FromArgb("#22D3EE");
-	static readonly Color OrangeAccent = Color.FromArgb("#FB923C");
-	static readonly Color Emerald = Color.FromArgb("#34D399");
-	static readonly Color EmeraldMuted = Color.FromArgb("#34D399").MultiplyAlpha(0.12f);
+	static Color LabCanvas => ThemeColors.LabCanvas;
+	static Color LabCard => ThemeColors.LabCard;
+	static Color LabBorder => ThemeColors.LabBorder;
+	static Color LabMuted => ThemeColors.LabMuted;
+	static Color LabPrimaryText => ThemeColors.LabPrimaryText;
+	static Color LabTableHeaderBackground => ThemeColors.LabTableHeaderBackground;
+	static Color LabTableHeaderText => ThemeColors.LabTableHeaderText;
+	static Color LabModeChipActive => ThemeColors.LabModeChipActive;
+	static Color LabGradientEnd => ThemeColors.LabGradientEnd;
+	static Color LabWarning => ThemeColors.LabWarning;
+	static Color LabWarningMuted => ThemeColors.LabWarningMuted;
+	static Color LabDanger => ThemeColors.LabDanger;
+	static Color LabDangerSoft => ThemeColors.LabDangerSoft;
+	static Color LabDangerMuted => ThemeColors.LabDangerMuted;
+	static Color CyanAccent => ThemeColors.LabAccentCyan;
+	static Color OrangeAccent => ThemeColors.LabAccentOrange;
+	static Color Emerald => ThemeColors.LabEmerald;
+	static Color EmeraldMuted => ThemeColors.LabEmeraldMuted;
 
 	public Halo2MeasureView()
 	{
@@ -74,7 +86,7 @@ public sealed class Halo2MeasureView : ContentView
 		SyncSettingsFromPreferences();
 		_showMvPrimary = Halo2Preferences.GetPrimaryDisplay().Equals("mv", StringComparison.OrdinalIgnoreCase);
 		_useFahrenheit = _viewModel.UseFahrenheit;
-		SetDynamicResource(BackgroundColorProperty, "PageBackground");
+		SetDynamicResource(BackgroundColorProperty, "LabCanvas");
 		Content = new ScrollView { Content = _root };
 		Loaded += OnLoaded;
 		Unloaded += OnUnloaded;
@@ -243,10 +255,10 @@ public sealed class Halo2MeasureView : ContentView
 			else
 			{
 				_stabilityPillText.Text = "DRIFTING";
-				_stabilityPillText.TextColor = Color.FromArgb("#FBBF24");
-				_stabilityPill.BackgroundColor = Color.FromArgb("#FBBF24").MultiplyAlpha(0.12f);
-				_stabilityPill.Stroke = Color.FromArgb("#FBBF24").MultiplyAlpha(0.35f);
-				_stabilityDot.Color = Color.FromArgb("#FBBF24");
+				_stabilityPillText.TextColor = LabWarning;
+				_stabilityPill.BackgroundColor = LabWarningMuted;
+				_stabilityPill.Stroke = LabWarning.MultiplyAlpha(0.35f);
+				_stabilityDot.Color = LabWarning;
 			}
 		}
 
@@ -256,18 +268,18 @@ public sealed class Halo2MeasureView : ContentView
 
 	static (string Label, Color Color) GetPhStatus(double ph) => ph switch
 	{
-		< 5.5 => ("STRONG ACIDIC", Color.FromArgb("#EF4444")),
-		< 6.5 => ("ACIDIC", Color.FromArgb("#F97316")),
-		< 7.5 => ("NEUTRAL", Color.FromArgb("#22C55E")),
-		< 9.0 => ("BASIC", Color.FromArgb("#A855F7")),
-		_ => ("STRONG ALKALINE", Color.FromArgb("#C026D3"))
+		< 5.5 => ("STRONG ACIDIC", ThemeColors.LabPhAcidic),
+		< 6.5 => ("ACIDIC", ThemeColors.LabPhAcidicMid),
+		< 7.5 => ("NEUTRAL", ThemeColors.LabPhNeutral),
+		< 9.0 => ("BASIC", ThemeColors.LabPhBasic),
+		_ => ("STRONG ALKALINE", ThemeColors.LabPhAlkaline)
 	};
 
 	static (string Label, Color Color) GetTempStatus(double temp) => temp switch
 	{
-		> 80 => ("CRITICAL", Color.FromArgb("#EF4444")),
-		> 60 => ("HIGH", Color.FromArgb("#F97316")),
-		_ => ("OPTIMAL", Color.FromArgb("#22C55E"))
+		> 80 => ("CRITICAL", ThemeColors.LabPhAcidic),
+		> 60 => ("HIGH", ThemeColors.LabPhAcidicMid),
+		_ => ("OPTIMAL", ThemeColors.LabPhNeutral)
 	};
 
 	void SyncTableRows()
@@ -302,7 +314,7 @@ public sealed class Halo2MeasureView : ContentView
 			return Emerald.MultiplyAlpha(0.22f);
 
 		return index % 2 == 0
-			? Color.FromArgb("#27272A").MultiplyAlpha(0.5f)
+			? ThemeColors.LabRowStripe
 			: LabCard;
 	}
 
@@ -369,7 +381,7 @@ public sealed class Halo2MeasureView : ContentView
 			{
 				BuildLiveReadingsCard(),
 				BuildModeBar(),
-				_mode == HaloMode.Graph ? BuildGraph() : BuildTable()
+				_showCalibration ? BuildCalibrationSummary() : _mode == HaloMode.Graph ? BuildGraph() : BuildTable()
 			}
 		};
 		return stack;
@@ -453,14 +465,14 @@ public sealed class Halo2MeasureView : ContentView
 			Text = "Disconnect",
 			FontSize = 13,
 			FontAttributes = FontAttributes.Bold,
-			TextColor = Color.FromArgb("#FCA5A5"),
+			TextColor = LabDangerSoft,
 			VerticalOptions = LayoutOptions.Center
 		};
 		var button = new Border
 		{
 			Padding = new Thickness(12, 6),
-			BackgroundColor = Color.FromArgb("#EF4444").MultiplyAlpha(0.12f),
-			Stroke = Color.FromArgb("#EF4444").MultiplyAlpha(0.35f),
+			BackgroundColor = LabDangerMuted,
+			Stroke = LabDanger.MultiplyAlpha(0.35f),
 			StrokeThickness = 1,
 			StrokeShape = new RoundRectangle { CornerRadius = 12 },
 			VerticalOptions = LayoutOptions.Center,
@@ -510,8 +522,8 @@ public sealed class Halo2MeasureView : ContentView
 		percent = Math.Clamp(percent, 0, 100);
 		var fill = percent switch
 		{
-			<= 15 => Color.FromArgb("#EF4444"),
-			<= 35 => Color.FromArgb("#FBBF24"),
+			<= 15 => LabDanger,
+			<= 35 => LabWarning,
 			_ => Emerald
 		};
 
@@ -548,7 +560,7 @@ public sealed class Halo2MeasureView : ContentView
 
 	static View CreateConditionGlyph(int percent)
 	{
-		var color = percent >= 80 ? Emerald : percent >= 50 ? Color.FromArgb("#FBBF24") : Color.FromArgb("#EF4444");
+		var color = percent >= 80 ? Emerald : percent >= 50 ? LabWarning : LabDanger;
 		return new Border
 		{
 			WidthRequest = 18,
@@ -584,7 +596,7 @@ public sealed class Halo2MeasureView : ContentView
 			Text = Halo2DeviceName,
 			FontSize = 17,
 			FontAttributes = FontAttributes.Bold,
-			TextColor = Colors.White,
+			TextColor = LabPrimaryText,
 			VerticalOptions = LayoutOptions.Center,
 			LineBreakMode = LineBreakMode.TailTruncation
 		};
@@ -604,8 +616,8 @@ public sealed class Halo2MeasureView : ContentView
 		Grid.SetColumn(disconnect, 2);
 
 		var conditionPercent = GetProbeConditionPercent();
-		var batteryColor = _batteryPercent <= 35 ? Color.FromArgb("#FBBF24") : Colors.White;
-		var probeSummaryColor = conditionPercent >= 80 ? Colors.White : conditionPercent >= 50 ? Color.FromArgb("#FBBF24") : Color.FromArgb("#FCA5A5");
+		var batteryColor = _batteryPercent <= 35 ? LabWarning : LabPrimaryText;
+		var probeSummaryColor = conditionPercent >= 80 ? LabPrimaryText : conditionPercent >= 50 ? LabWarning : LabDangerSoft;
 
 		var probeTap = new TapGestureRecognizer();
 		probeTap.Tapped += (_, _) => { _tagged = !_tagged; Rebuild(); };
@@ -702,7 +714,7 @@ public sealed class Halo2MeasureView : ContentView
 		_stabilityPill.HorizontalOptions = LayoutOptions.Start;
 		_stabilityPill.VerticalOptions = LayoutOptions.Center;
 
-		var settings = ActionButton("\u2699", "Settings", () => _ = OpenHaloSettingsAsync(), Colors.White);
+		var settings = IconActionButton(HaloMeasureModeIconKind.Settings, "Settings", () => _ = OpenHaloSettingsAsync());
 
 		var topStatusRow = new Grid
 		{
@@ -851,8 +863,8 @@ public sealed class Halo2MeasureView : ContentView
 			EndPoint = new Point(1, 1),
 			GradientStops =
 			{
-				new GradientStop(Color.FromArgb("#27272A"), 0),
-				new GradientStop(Color.FromArgb("#09090B"), 1)
+				new GradientStop(ThemeColors.LabGradientStop, 0),
+				new GradientStop(LabGradientEnd, 1)
 			}
 		};
 
@@ -875,22 +887,22 @@ public sealed class Halo2MeasureView : ContentView
 		};
 	}
 
-	Border ActionButton(string glyph, string text, Action action, Color color)
+	Border IconActionButton(HaloMeasureModeIconKind iconKind, string accessibilityText, Action action)
 	{
 		var button = new Border
 		{
 			WidthRequest = 36,
 			HeightRequest = 36,
-			BackgroundColor = Colors.White.MultiplyAlpha(0.05f),
+			BackgroundColor = ThemeColors.LabIconButtonFill,
 			Stroke = LabBorder,
 			StrokeThickness = 1,
 			StrokeShape = new RoundRectangle { CornerRadius = 16 },
-			Content = new Label { Text = glyph, FontSize = 18, TextColor = Colors.White, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center }
+			Content = Halo2MeasureModeIcons.Create(iconKind, () => LabPrimaryText, 22)
 		};
 		var tap = new TapGestureRecognizer();
 		tap.Tapped += (_, _) => action();
 		button.GestureRecognizers.Add(tap);
-		SemanticProperties.SetDescription(button, text);
+		SemanticProperties.SetDescription(button, accessibilityText);
 		return button;
 	}
 
@@ -905,15 +917,11 @@ public sealed class Halo2MeasureView : ContentView
 			Padding = 4,
 			BackgroundColor = LabCard
 		};
-		grid.Children.Add(ModeChip("Table", HaloMode.Table, "\u2637"));
-		var graph = ModeChip("Graph", HaloMode.Graph, "\u223F");
+		grid.Children.Add(ModeChip("Table", HaloMode.Table, HaloMeasureModeIconKind.Table));
+		var graph = ModeChip("Graph", HaloMode.Graph, HaloMeasureModeIconKind.Chart);
 		grid.Children.Add(graph);
 		Grid.SetColumn(graph, 1);
-		var calibrate = ModeAction("Calibrate", "\u25F0", async () =>
-		{
-			if (Shell.Current is not null)
-				await Shell.Current.GoToAsync(Halo2Routes.Calibration);
-		});
+		var calibrate = CalibrationModeChip();
 		grid.Children.Add(calibrate);
 		Grid.SetColumn(calibrate, 2);
 		return new Border
@@ -926,13 +934,13 @@ public sealed class Halo2MeasureView : ContentView
 		};
 	}
 
-	Border ModeChip(string text, HaloMode mode, string glyph)
+	Border ModeChip(string text, HaloMode mode, HaloMeasureModeIconKind iconKind)
 	{
-		var active = _mode == mode;
+		var active = !_showCalibration && _mode == mode;
 		var chip = new Border
 		{
 			Padding = new Thickness(12, 10),
-			BackgroundColor = active ? LabCanvas : Colors.Transparent,
+			BackgroundColor = active ? LabModeChipActive : Colors.Transparent,
 			StrokeThickness = 0,
 			StrokeShape = new RoundRectangle { CornerRadius = 12 },
 			Content = new HorizontalStackLayout
@@ -941,8 +949,14 @@ public sealed class Halo2MeasureView : ContentView
 				HorizontalOptions = LayoutOptions.Center,
 				Children =
 				{
-					new Label { Text = glyph, TextColor = active ? CyanAccent : LabMuted },
-					new Label { Text = text, FontAttributes = active ? FontAttributes.Bold : FontAttributes.None, TextColor = active ? Colors.White : LabMuted }
+					Halo2MeasureModeIcons.Create(iconKind, () => active ? CyanAccent : LabMuted),
+					new Label
+					{
+						Text = text,
+						FontAttributes = active ? FontAttributes.Bold : FontAttributes.None,
+						TextColor = active ? LabPrimaryText : LabMuted,
+						VerticalOptions = LayoutOptions.Center
+					}
 				}
 			}
 		};
@@ -950,18 +964,20 @@ public sealed class Halo2MeasureView : ContentView
 		tap.Tapped += (_, _) =>
 		{
 			_mode = mode;
+			_showCalibration = false;
 			Rebuild();
 		};
 		chip.GestureRecognizers.Add(tap);
 		return chip;
 	}
 
-	static Border ModeAction(string text, string glyph, Func<Task> action)
+	Border CalibrationModeChip()
 	{
+		var active = _showCalibration;
 		var chip = new Border
 		{
 			Padding = new Thickness(12, 10),
-			BackgroundColor = Colors.Transparent,
+			BackgroundColor = active ? LabModeChipActive : Colors.Transparent,
 			StrokeThickness = 0,
 			StrokeShape = new RoundRectangle { CornerRadius = 12 },
 			Content = new HorizontalStackLayout
@@ -970,16 +986,216 @@ public sealed class Halo2MeasureView : ContentView
 				HorizontalOptions = LayoutOptions.Center,
 				Children =
 				{
-					new Label { Text = glyph, TextColor = CyanAccent },
-					new Label { Text = text, TextColor = Colors.White }
+					Halo2MeasureModeIcons.Create(HaloMeasureModeIconKind.Calibration, () => active ? CyanAccent : LabMuted),
+					new Label
+					{
+						Text = "Calibrate",
+						FontAttributes = active ? FontAttributes.Bold : FontAttributes.None,
+						TextColor = LabPrimaryText,
+						VerticalOptions = LayoutOptions.Center
+					}
 				}
 			}
 		};
 		var tap = new TapGestureRecognizer();
-		tap.Tapped += async (_, _) => await action();
+		tap.Tapped += (_, _) =>
+		{
+			_showCalibration = !_showCalibration;
+			Rebuild();
+		};
 		chip.GestureRecognizers.Add(tap);
 		return chip;
 	}
+
+	Border BuildCalibrationSummary()
+	{
+		var header = new Grid
+		{
+			ColumnDefinitions = new ColumnDefinitionCollection(
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Star)),
+			ColumnSpacing = 8,
+			Padding = new Thickness(14, 14),
+			BackgroundColor = LabCardElevated
+		};
+		AddCalibrationSummaryMetric(header, "Last Calibration:", Halo2CalibrationDemoData.LastCalibrationDisplay, 0);
+		AddCalibrationSummaryMetric(header, "Offset:", Halo2CalibrationDemoData.OffsetDisplay, 1);
+		AddCalibrationSummaryMetric(header, "Average Slope:", Halo2CalibrationDemoData.AverageSlopeDisplay, 2);
+
+		var pointsGrid = new Grid
+		{
+			RowDefinitions =
+			[
+				new RowDefinition(GridLength.Auto),
+				new RowDefinition(GridLength.Auto)
+			],
+			RowSpacing = 4,
+			Padding = new Thickness(10, 16, 10, 18),
+			HorizontalOptions = LayoutOptions.Center
+		};
+
+		var columnDefs = new ColumnDefinitionCollection();
+		var points = Halo2CalibrationDemoData.Points;
+		var slopes = Halo2CalibrationDemoData.SegmentSlopes;
+		for (var i = 0; i < points.Count; i++)
+		{
+			columnDefs.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
+			if (i < slopes.Count)
+				columnDefs.Add(new ColumnDefinition(GridLength.Auto));
+		}
+
+		pointsGrid.ColumnDefinitions = columnDefs;
+
+		var col = 0;
+		for (var i = 0; i < points.Count; i++)
+		{
+			if (i > 0)
+			{
+				var slope = CalibrationSlopeLabel(slopes[i - 1]);
+				pointsGrid.Children.Add(slope);
+				Grid.SetColumn(slope, col);
+				Grid.SetRow(slope, 0);
+				col++;
+			}
+
+			var point = CalibrationPointColumn(points[i]);
+			pointsGrid.Children.Add(point);
+			Grid.SetColumn(point, col);
+			Grid.SetRow(point, 1);
+			col++;
+		}
+
+		var body = new ScrollView
+		{
+			Orientation = ScrollOrientation.Horizontal,
+			HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+			Content = pointsGrid
+		};
+
+		var stack = new VerticalStackLayout
+		{
+			Spacing = 0,
+			Children =
+			{
+				header,
+				new BoxView { HeightRequest = 1, Color = LabBorder },
+				body
+			}
+		};
+
+		return new Border
+		{
+			StrokeThickness = 1,
+			Stroke = LabBorder,
+			StrokeShape = new RoundRectangle { CornerRadius = 18 },
+			BackgroundColor = LabCard,
+			Content = stack
+		};
+	}
+
+	static void AddCalibrationSummaryMetric(Grid header, string caption, string value, int column)
+	{
+		var stack = new VerticalStackLayout
+		{
+			Spacing = 4,
+			HorizontalOptions = LayoutOptions.Center,
+			Children =
+			{
+				new Label
+				{
+					Text = caption,
+					FontSize = 12,
+					TextColor = LabMuted,
+					HorizontalTextAlignment = TextAlignment.Center
+				},
+				new Label
+				{
+					Text = value,
+					FontSize = 13,
+					FontAttributes = FontAttributes.Bold,
+					TextColor = LabPrimaryText,
+					HorizontalTextAlignment = TextAlignment.Center,
+					LineBreakMode = LineBreakMode.WordWrap
+				}
+			}
+		};
+		header.Children.Add(stack);
+		Grid.SetColumn(stack, column);
+	}
+
+	static View CalibrationSlopeLabel(string slopePercent)
+	{
+		return new VerticalStackLayout
+		{
+			WidthRequest = 40,
+			Spacing = 0,
+			VerticalOptions = LayoutOptions.End,
+			HorizontalOptions = LayoutOptions.Center,
+			Children =
+			{
+				new Label
+				{
+					Text = "Slope:",
+					FontSize = 11,
+					TextColor = LabMuted,
+					HorizontalTextAlignment = TextAlignment.Center
+				},
+				new Label
+				{
+					Text = slopePercent,
+					FontSize = 12,
+					FontAttributes = FontAttributes.Bold,
+					TextColor = LabPrimaryText,
+					HorizontalTextAlignment = TextAlignment.Center
+				}
+			}
+		};
+	}
+
+	static View CalibrationPointColumn(Halo2CalibrationPoint point)
+	{
+		return new VerticalStackLayout
+		{
+			Spacing = 6,
+			MinimumWidthRequest = 68,
+			HorizontalOptions = LayoutOptions.Center,
+			Children =
+			{
+				Halo2CalibrationUi.BufferBeaker(point.Ph, 54, 42, calibrated: true),
+				new Label
+				{
+					Text = point.Millivolts,
+					FontSize = 12,
+					TextColor = LabPrimaryText,
+					HorizontalTextAlignment = TextAlignment.Center
+				},
+				new Label
+				{
+					Text = point.Temperature,
+					FontSize = 12,
+					TextColor = LabPrimaryText,
+					HorizontalTextAlignment = TextAlignment.Center
+				},
+				new Label
+				{
+					Text = Halo2CalibrationDemoData.PointDateDisplay,
+					FontSize = 11,
+					TextColor = LabMuted,
+					HorizontalTextAlignment = TextAlignment.Center
+				},
+				new Label
+				{
+					Text = Halo2CalibrationDemoData.PointTimeDisplay,
+					FontSize = 11,
+					TextColor = LabMuted,
+					HorizontalTextAlignment = TextAlignment.Center
+				}
+			}
+		};
+	}
+
+	static Color LabCardElevated => ThemeColors.LabCardElevated;
 
 	Border BuildTable()
 	{
@@ -988,12 +1204,12 @@ public sealed class Halo2MeasureView : ContentView
 		{
 			ColumnDefinitions = TableColumns(),
 			Padding = new Thickness(10, 12),
-			BackgroundColor = Color.FromArgb("#0F172A")
+			BackgroundColor = LabTableHeaderBackground
 		};
-		AddCell(header, "pH", 0, true, Colors.White);
-		AddCell(header, "mV", 1, true, Colors.White);
-		AddCell(header, $"Temp ({TempUnitSymbol})", 2, true, Colors.White);
-		AddCell(header, "Timestamp", 3, true, Colors.White);
+		AddCell(header, "pH", 0, true, LabTableHeaderText);
+		AddCell(header, "mV", 1, true, LabTableHeaderText);
+		AddCell(header, $"Temp ({TempUnitSymbol})", 2, true, LabTableHeaderText);
+		AddCell(header, "Timestamp", 3, true, LabTableHeaderText);
 		stack.Children.Add(header);
 
 		_tableDataRows = new VerticalStackLayout { Spacing = 0 };
@@ -1022,7 +1238,7 @@ public sealed class Halo2MeasureView : ContentView
 			Text = text,
 			FontSize = bold ? 13 : 14,
 			FontAttributes = bold ? FontAttributes.Bold : FontAttributes.None,
-			TextColor = textColor ?? Colors.White,
+			TextColor = textColor ?? LabPrimaryText,
 			HorizontalTextAlignment = TextAlignment.Center,
 			LineBreakMode = LineBreakMode.TailTruncation,
 			MaxLines = 1
@@ -1117,10 +1333,10 @@ public sealed class Halo2MeasureView : ContentView
 			var temp = slice.Select(r => r.Temp).ToArray();
 
 			var plot = new RectF(54, 18, dirtyRect.Width - 116, dirtyRect.Height - 70);
-			canvas.FillColor = Color.FromArgb("#09090B");
+			canvas.FillColor = ThemeColors.LabGraphPlotFill;
 			canvas.FillRoundedRectangle(plot, 6);
 
-			canvas.StrokeColor = LabBorder;
+			canvas.StrokeColor = ThemeColors.LabBorder;
 			canvas.StrokeSize = 1f;
 			const float phAxisMin = 4f;
 			const float phAxisMax = 12f;
@@ -1139,19 +1355,19 @@ public sealed class Halo2MeasureView : ContentView
 			}
 
 			if (ph.Length > 1)
-				DrawSeries(canvas, plot, ph, PhSpanMin, PhSpanMax, CyanAccent, 2.6f);
+				DrawSeries(canvas, plot, ph, PhSpanMin, PhSpanMax, ThemeColors.LabAccentCyan, 2.6f);
 			if (temp.Length > 1)
-				DrawSeries(canvas, plot, temp, TempSpanMin, TempSpanMax, OrangeAccent, 2.2f);
+				DrawSeries(canvas, plot, temp, TempSpanMin, TempSpanMax, ThemeColors.LabAccentOrange, 2.2f);
 
 			if (Tagged)
 			{
-				canvas.StrokeColor = Emerald;
+				canvas.StrokeColor = ThemeColors.LabEmerald;
 				canvas.StrokeSize = 4;
 				var x = plot.Left + plot.Width * 0.72f;
 				canvas.DrawLine(x, plot.Top, x, plot.Bottom);
 			}
 
-			canvas.FontColor = LabMuted;
+			canvas.FontColor = ThemeColors.LabMuted;
 			canvas.FontSize = 12;
 			DrawRotatedAxisTitle(canvas, "pH", 12, plot.Center.Y);
 			DrawRotatedAxisTitle(canvas, "Temp", dirtyRect.Width - 12, plot.Center.Y);

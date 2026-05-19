@@ -1,14 +1,17 @@
+using HannaUIDemo.Theme;
+
 namespace HannaUIDemo.Features.Halo2;
 
 public sealed class Halo2SettingsPage : ContentPage
 {
-	static readonly Color LabCanvas = Color.FromArgb("#0A0F1C");
-	static readonly Color LabCard = Color.FromArgb("#18181B");
-	static readonly Color LabCardElevated = Color.FromArgb("#27272A");
-	static readonly Color LabBorder = Color.FromArgb("#FFFFFF").MultiplyAlpha(0.10f);
-	static readonly Color LabMuted = Color.FromArgb("#A1A1AA");
-	static readonly Color CyanAccent = Color.FromArgb("#22D3EE");
-	static readonly Color Emerald = Color.FromArgb("#34D399");
+	static Color LabCanvas => ThemeColors.LabCanvas;
+	static Color LabCard => ThemeColors.LabCard;
+	static Color LabCardElevated => ThemeColors.LabCardElevated;
+	static Color LabBorder => ThemeColors.LabBorder;
+	static Color LabMuted => ThemeColors.LabMuted;
+	static Color LabPrimaryText => ThemeColors.LabPrimaryText;
+	static Color CyanAccent => ThemeColors.LabAccentCyan;
+	static Color Emerald => ThemeColors.LabEmerald;
 
 	readonly Halo2SettingsViewModel _viewModel;
 	readonly List<Border> _measureModeChips = [];
@@ -20,11 +23,8 @@ public sealed class Halo2SettingsPage : ContentPage
 		_viewModel = viewModel;
 		BindingContext = viewModel;
 		Title = "Device Settings";
-		BackgroundColor = LabCanvas;
+		ApplyChrome();
 		Halo2Routes.ConfigureSubPageChrome(this);
-		Shell.SetBackgroundColor(this, LabCanvas);
-		Shell.SetForegroundColor(this, Colors.White);
-		Shell.SetTitleColor(this, Colors.White);
 
 		Content = new ScrollView
 		{
@@ -62,8 +62,17 @@ public sealed class Halo2SettingsPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
+		ApplyChrome();
 		_viewModel.RefreshFromPreferences();
 		_deviceSubtitle.Text = _viewModel.DeviceSubtitle;
+	}
+
+	public void ApplyTheme() => ApplyChrome();
+
+	void ApplyChrome()
+	{
+		BackgroundColor = LabCanvas;
+		ShellChrome.ApplyLab(this);
 	}
 
 	Border DeviceSummary()
@@ -115,7 +124,7 @@ public sealed class Halo2SettingsPage : ContentPage
 					Text = Halo2SettingsViewModel.DeviceName,
 					FontSize = 20,
 					FontAttributes = FontAttributes.Bold,
-					TextColor = Colors.White,
+					TextColor = LabPrimaryText,
 					LineBreakMode = LineBreakMode.WordWrap
 				},
 				calibratedPill,
@@ -164,7 +173,7 @@ public sealed class Halo2SettingsPage : ContentPage
 	static Border ActionRow(string title, string action, Color actionColor, Func<Task>? onTap = null)
 	{
 		var grid = BaseRowGrid();
-		grid.Children.Add(new Label { Text = title, FontSize = 16, TextColor = Colors.White, VerticalOptions = LayoutOptions.Center });
+		grid.Children.Add(new Label { Text = title, FontSize = 16, TextColor = LabPrimaryText, VerticalOptions = LayoutOptions.Center });
 		var actionLabel = new Label
 		{
 			Text = action,
@@ -190,7 +199,7 @@ public sealed class Halo2SettingsPage : ContentPage
 	static Border LogActionsRow()
 	{
 		var grid = BaseRowGrid();
-		grid.Children.Add(new Label { Text = "Log", FontSize = 16, TextColor = Colors.White, VerticalOptions = LayoutOptions.Center });
+		grid.Children.Add(new Label { Text = "Log", FontSize = 16, TextColor = LabPrimaryText, VerticalOptions = LayoutOptions.Center });
 
 		var actions = new HorizontalStackLayout
 		{
@@ -221,7 +230,7 @@ public sealed class Halo2SettingsPage : ContentPage
 			Text = text,
 			FontSize = 13,
 			FontAttributes = FontAttributes.Bold,
-			TextColor = primary ? CyanAccent : Colors.White
+			TextColor = primary ? CyanAccent : LabPrimaryText
 		}
 	};
 
@@ -232,7 +241,7 @@ public sealed class Halo2SettingsPage : ContentPage
 		{
 			Text = title,
 			FontSize = 16,
-			TextColor = disabled ? LabMuted.MultiplyAlpha(0.55f) : Colors.White,
+			TextColor = disabled ? LabMuted.MultiplyAlpha(0.55f) : LabPrimaryText,
 			VerticalOptions = LayoutOptions.Center
 		});
 		trailing.VerticalOptions = LayoutOptions.Center;
@@ -274,23 +283,30 @@ public sealed class Halo2SettingsPage : ContentPage
 		}
 	};
 
-	static Border Card(View content, bool accentGlow = false) => new()
+	static Border Card(View content, bool accentGlow = false)
 	{
-		BackgroundColor = LabCard,
-		Stroke = accentGlow ? CyanAccent.MultiplyAlpha(0.2f) : LabBorder,
-		StrokeThickness = 1,
-		StrokeShape = new RoundRectangle { CornerRadius = 20 },
-		Content = content,
-		Shadow = accentGlow
-			? new Shadow
+		var card = new Border
+		{
+			BackgroundColor = LabCard,
+			Stroke = accentGlow ? CyanAccent.MultiplyAlpha(0.2f) : LabBorder,
+			StrokeThickness = 1,
+			StrokeShape = new RoundRectangle { CornerRadius = 20 },
+			Content = content
+		};
+
+		if (accentGlow)
+		{
+			card.Shadow = new Shadow
 			{
 				Brush = new SolidColorBrush(CyanAccent.MultiplyAlpha(0.12f)),
 				Offset = new Point(0, 4),
 				Radius = 14,
 				Opacity = 1
-			}
-			: null
-	};
+			};
+		}
+
+		return card;
+	}
 
 	static Border BuildChipShell(Grid grid) => new()
 	{

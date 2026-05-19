@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Settings.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
+    xmlns:views="clr-namespace:HannaUIDemo.Features.Settings.Views"
+    x:DataType="settings:RegisterViewModel"
+    Title="{Binding PageTitle}"
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="False">
+
+    <ScrollView Padding="20,8,20,32">
+        <VerticalStackLayout Spacing="18">
+            <views:HannaBrandHeader LogoHeight="40" Subtitle="{Binding Subtitle}" Title="HANNA CLOUD" />
+
+            <Label
+                FontSize="13"
+                IsVisible="{Binding HasError}"
+                LineBreakMode="WordWrap"
+                Text="{Binding ErrorMessage}"
+                TextColor="#DC2626" />
+
+            <VerticalStackLayout Spacing="8">
+                <Label FontAttributes="Bold" FontSize="13" Text="{Binding RequiredSectionTitle}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                <Border BackgroundColor="{DynamicResource Surface}" Padding="14,12" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Entry Keyboard="Email" Placeholder="{Binding EmailPlaceholder}" Text="{Binding Email}" TextColor="{DynamicResource OnSurface}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Entry IsPassword="{Binding ShowPassword, Converter={StaticResource InvertedBoolConverter}}" Placeholder="{Binding PasswordPlaceholder}" Text="{Binding Password}" TextColor="{DynamicResource OnSurface}" />
+                        <Label FontSize="12" LineBreakMode="WordWrap" Text="{Binding PasswordRules}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Entry IsPassword="{Binding ShowConfirmPassword, Converter={StaticResource InvertedBoolConverter}}" Placeholder="{Binding ConfirmPasswordPlaceholder}" Text="{Binding ConfirmPassword}" TextColor="{DynamicResource OnSurface}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Border
+                    BackgroundColor="{DynamicResource Surface}"
+                    Padding="14,12"
+                    Stroke="{DynamicResource Divider}"
+                    StrokeThickness="0.5">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleOptionalFieldsCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label FontAttributes="Bold" FontSize="14" Text="{Binding OptionalSectionTitle}" TextColor="{DynamicResource OnSurface}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" FontSize="22" Text="&#x203A;" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <Border
+                    BackgroundColor="{DynamicResource Surface}"
+                    IsVisible="{Binding ShowOptionalFields}"
+                    Padding="14,12"
+                    Stroke="{DynamicResource Divider}"
+                    StrokeThickness="0.5">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Entry Placeholder="{Binding FirstNameLabel}" Text="{Binding FirstName}" TextColor="{DynamicResource OnSurface}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Entry Placeholder="{Binding LastNameLabel}" Text="{Binding LastName}" TextColor="{DynamicResource OnSurface}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Entry Placeholder="{Binding OrganizationLabel}" Text="{Binding Organization}" TextColor="{DynamicResource OnSurface}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                        <Entry Keyboard="Telephone" Placeholder="{Binding MobileLabel}" Text="{Binding Mobile}" TextColor="{DynamicResource OnSurface}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <Button
+                BackgroundColor="{StaticResource Primary}"
+                Command="{Binding RegisterCommand}"
+                CornerRadius="12"
+                FontAttributes="Bold"
+                FontSize="16"
+                HeightRequest="52"
+                Text="{Binding RegisterButtonText}"
+                TextColor="White" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label FontSize="14" Text="{Binding SignInPrompt}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                <Label FontAttributes="Bold" FontSize="14" Text="{Binding SignInLink}" TextColor="{StaticResource Primary}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSignInCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

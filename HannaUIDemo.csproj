@@ -77,6 +77,16 @@
 		<MauiImage Update="Resources\Images\photometer_hi97115.png" Resize="True" BaseSize="120,120" />
 		<MauiImage Update="Resources\Images\hi98594_new.png" Resize="True" BaseSize="120,120" />
 		<MauiImage Update="Resources\Images\halo2_device_icon.png" Resize="True" BaseSize="120,120" />
+		<MauiImage Update="Resources\Images\halo2_beaker_blue.png" Resize="True" BaseSize="54,42" />
+		<MauiImage Update="Resources\Images\halo2_beaker_grey.png" Resize="True" BaseSize="54,42" />
+		<MauiImage Update="Resources\Images\halo2_calibration.png" Resize="True" BaseSize="26,26" />
+		<MauiImage Update="Resources\Images\halo2_settings.png" Resize="True" BaseSize="22,22" />
+		<MauiImage Update="Resources\Images\home_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\device_list_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\measure_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\log_history.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\help_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\app_settings_icon.svg" BaseSize="28,28" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

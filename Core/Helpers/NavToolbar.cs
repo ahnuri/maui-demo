@@ -50,7 +50,7 @@ public static class NavToolbar
 
 	static ToolbarItem CreateSettingsItem(ContentPage page, App app, LocalizationService loc) => new()
 	{
-		Text = loc.T("Toolbar_Settings"),
+		Text = loc.T("Toolbar_Profile"),
 		Order = ToolbarItemOrder.Primary,
 		Priority = 1,
 		IconImageSource = "tab_profile",
@@ -60,10 +60,7 @@ public static class NavToolbar
 		// 	Size = 20,
 		// 	Color = AppConstants.Primary
 		// },
-		Command = new Command(async () =>
-		{
-			await page.Navigation.PushAsync(app.Services.GetRequiredService<SettingsPage>());
-		})
+		Command = new Command(() => _ = ProfileNavigation.OpenProfileAsync(page))
 	};
 
 	static ToolbarItem CreateDisconnectItem(LocalizationService loc, Func<Task> onDisconnectAsync) => new()

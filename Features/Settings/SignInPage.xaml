@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Settings.SignInPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:settings="clr-namespace:HannaUIDemo.Features.Settings"
+    xmlns:views="clr-namespace:HannaUIDemo.Features.Settings.Views"
+    x:DataType="settings:SignInViewModel"
+    Title=""
+    BackgroundColor="{DynamicResource StoreGroupedBackground}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="False">
+
+    <ScrollView Padding="20,8,20,32">
+        <VerticalStackLayout Spacing="20">
+            <views:HannaBrandHeader LogoHeight="40" Margin="0,8,0,8" Title="HANNA CLOUD" />
+
+            <Border Padding="14,12" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                <Entry Keyboard="Email" Placeholder="{Binding EmailPlaceholder}" Text="{Binding Email}" TextColor="{DynamicResource OnSurface}" />
+            </Border>
+
+            <Border Padding="14,12" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
+                <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                <Entry IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}" Placeholder="{Binding PasswordPlaceholder}" Text="{Binding Password}" TextColor="{DynamicResource OnSurface}" />
+            </Border>
+
+            <Label FontSize="13" LineBreakMode="WordWrap" Text="{Binding IntroText}" TextColor="{DynamicResource OnSurfaceVariant}" />
+
+            <Label FontSize="14" HorizontalOptions="End" Text="{Binding ForgotPasswordText}" TextColor="{StaticResource Primary}" TextDecorations="Underline">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Button
+                BackgroundColor="{StaticResource Primary}"
+                Command="{Binding SignInCommand}"
+                CornerRadius="12"
+                FontAttributes="Bold"
+                FontSize="16"
+                HeightRequest="52"
+                Text="{Binding SignInButtonText}"
+                TextColor="White" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label FontSize="14" Text="{Binding CreateAccountPrompt}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                <Label FontAttributes="Bold" FontSize="14" Text="{Binding CreateAccountLink}" TextColor="{StaticResource Primary}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CreateAccountCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

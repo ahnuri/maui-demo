@@ -5,6 +5,7 @@ public static class AppConstants
 {
 	public static readonly Color Primary = Color.FromArgb("#0EA5C6");
 	public static readonly Color Success = Color.FromArgb("#22C55E");
+	public static readonly Color Error = Color.FromArgb("#EF4444");
 	public static readonly Color GradientDarkStart = Color.FromArgb("#0B1220");
 	public static readonly Color GradientDarkEnd = Color.FromArgb("#020617");
 

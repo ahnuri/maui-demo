@@ -5,487 +5,450 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:home="clr-namespace:HannaUIDemo.Features.Home"
     x:DataType="home:HomeViewModel"
-    BackgroundColor="{DynamicResource StoreGroupedBackground}">
+    BackgroundColor="{DynamicResource PageBackground}">
 
     <ContentView.Resources>
-        <Style x:Key="HeroCardStyle" TargetType="Border">
-            <Setter Property="Padding" Value="20,22" />
+        <Color x:Key="AnalysisAmber">#F59E0B</Color>
+        <Color x:Key="SignalGreen">#22C55E</Color>
+
+        <Style x:Key="DashboardCardStyle" TargetType="Border">
+            <Setter Property="Padding" Value="16" />
             <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
             <Setter Property="Stroke" Value="{DynamicResource Divider}" />
             <Setter Property="StrokeThickness" Value="0.5" />
             <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="22" />
+                <RoundRectangle CornerRadius="18" />
             </Setter>
         </Style>
-        <Style x:Key="FeatureCardStyle" TargetType="Border">
-            <Setter Property="Padding" Value="14,16" />
-            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
-            <Setter Property="StrokeThickness" Value="0.5" />
+
+        <Style x:Key="LabTileStyle" TargetType="Border">
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource LabHeroTileBackground}" />
+            <Setter Property="Stroke" Value="{DynamicResource LabHeroTileStroke}" />
+            <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="StrokeShape">
                 <RoundRectangle CornerRadius="16" />
             </Setter>
         </Style>
-        <Style x:Key="OutlineCtaStyle" TargetType="Border">
-            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-            <Setter Property="Stroke" Value="{StaticResource Primary}" />
-            <Setter Property="StrokeThickness" Value="1.5" />
-            <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="26" />
-            </Setter>
+
+        <Style x:Key="SectionLabelStyle" TargetType="Label">
+            <Setter Property="CharacterSpacing" Value="1" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
         </Style>
-        <Style x:Key="StatCardStyle" TargetType="Border">
-            <Setter Property="Padding" Value="16,14" />
-            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-            <Setter Property="Stroke" Value="{DynamicResource Divider}" />
-            <Setter Property="StrokeThickness" Value="0.5" />
-            <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="16" />
-            </Setter>
-        </Style>
+
     </ContentView.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="16,4,16,28" Spacing="20">
+        <VerticalStackLayout Padding="16,8,16,28" Spacing="16">
 
-            <!-- Hero -->
-            <Border Style="{StaticResource HeroCardStyle}">
+            <Border StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="28" />
+                </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{DynamicResource LabHeroGradientStart}" Offset="0.0" />
+                        <GradientStop Color="{DynamicResource LabHeroGradientMid}" Offset="0.62" />
+                        <GradientStop Color="{DynamicResource LabHeroGradientEnd}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
                 <Border.Shadow>
-                    <Shadow Opacity="0.07" Radius="16" Offset="0,4" />
+                    <Shadow Opacity="0.20" Radius="22" Offset="0,8" />
                 </Border.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="28"
-                        LineBreakMode="WordWrap"
-                        Text="Connect Your Instruments"
-                        TextColor="{DynamicResource OnSurface}" />
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        Text="Anywhere. Anytime."
-                        TextColor="{StaticResource Primary}" />
-                    <Label
-                        FontSize="14"
-                        LineBreakMode="WordWrap"
-                        Text="Monitor water quality with precision. Pair HALO® probes, photometers, and multiparameter meters over Bluetooth® for live readings, graphs, and log sync."
-                        TextColor="{DynamicResource OnSurfaceVariant}" />
-                </VerticalStackLayout>
-            </Border>
 
-            <!-- Instruments -->
-            <Border
-                Padding="10,14"
-                BackgroundColor="{DynamicResource Surface}"
-                Stroke="{DynamicResource Divider}"
-                StrokeThickness="0.5">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="18" />
-                </Border.StrokeShape>
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6" HeightRequest="108">
-                    <Image Aspect="AspectFit" Source="halo2_device_icon.png" />
-                    <Image Grid.Column="1" Aspect="AspectFit" Source="photometer_hi97115.png" />
-                    <Image Grid.Column="2" Aspect="AspectFit" Source="hi98594_new.png" />
-                </Grid>
-            </Border>
-
-            <!-- Connection status (tap to scan) -->
-            <Border
-                Padding="14,13"
-                BackgroundColor="{DynamicResource SubtleTeal}"
-                Stroke="{StaticResource Primary}"
-                StrokeThickness="0.5">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ScanDevicesCommand}" />
-                </Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                    <Label
-                        FontSize="24"
-                        Text="&#x224B;"
-                        TextColor="{StaticResource Primary}"
-                        VerticalOptions="Center" />
-                    <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            Text="{Binding ConnectedSummary}"
-                            TextColor="{DynamicResource OnSurface}" />
-                        <Label
-                            FontSize="12"
-                            LineBreakMode="WordWrap"
-                            Text="Tap to scan and pair instruments via Bluetooth."
-                            TextColor="{DynamicResource OnSurfaceVariant}" />
-                    </VerticalStackLayout>
-                    <Label
-                        Grid.Column="2"
-                        FontSize="22"
-                        Text="&#x203A;"
-                        TextColor="{StaticResource Primary}"
-                        VerticalOptions="Center" />
-                </Grid>
-            </Border>
-
-            <!-- Get started -->
-            <VerticalStackLayout Spacing="10">
-                <Label
-                    CharacterSpacing="1"
-                    FontAttributes="Bold"
-                    FontSize="11"
-                    Text="GET STARTED"
-                    TextColor="{DynamicResource OnSurfaceVariant}" />
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
-                    <Border
-                        Padding="12,14"
-                        BackgroundColor="{DynamicResource Surface}"
-                        Stroke="{DynamicResource Divider}"
-                        StrokeThickness="0.5">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ScanDevicesCommand}" />
-                        </Border.GestureRecognizers>
-                        <VerticalStackLayout HorizontalOptions="Center" Spacing="6">
+                <Grid Padding="20,22" RowDefinitions="Auto,Auto,Auto" RowSpacing="18">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
+                        <VerticalStackLayout Spacing="8">
                             <Border
-                                BackgroundColor="{DynamicResource SubtleTeal}"
-                                HeightRequest="36"
-                                StrokeThickness="0"
-                                WidthRequest="36">
+                                Padding="10,5"
+                                BackgroundColor="{DynamicResource LabHeroBadgeFill}"
+                                HorizontalOptions="Start"
+                                Stroke="{DynamicResource LabHeroBadgeStroke}"
+                                StrokeThickness="1">
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="18" />
+                                    <RoundRectangle CornerRadius="14" />
                                 </Border.StrokeShape>
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="14"
-                                    HorizontalOptions="Center"
-                                    Text="1"
-                                    TextColor="{StaticResource Primary}"
-                                    VerticalOptions="Center" />
+                                <HorizontalStackLayout Spacing="7">
+                                    <Border
+                                        BackgroundColor="{StaticResource SignalGreen}"
+                                        HeightRequest="8"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center"
+                                        WidthRequest="8">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="4" />
+                                        </Border.StrokeShape>
+                                    </Border>
+	                                    <Label
+	                                        FontAttributes="Bold"
+	                                        FontSize="11"
+	                                        Text="MULTI-DEVICE LAB"
+	                                        TextColor="{DynamicResource LabHeroText}"
+	                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
                             </Border>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                HorizontalTextAlignment="Center"
-                                Text="Scan"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="10"
-                                HorizontalTextAlignment="Center"
-                                LineBreakMode="WordWrap"
-                                Text="Find devices"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border
-                        Grid.Column="1"
-                        Padding="12,14"
-                        BackgroundColor="{DynamicResource Surface}"
-                        Stroke="{DynamicResource Divider}"
-                        StrokeThickness="0.5">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding DemoModeCommand}" />
-                        </Border.GestureRecognizers>
-                        <VerticalStackLayout HorizontalOptions="Center" Spacing="6">
-                            <Border
-                                BackgroundColor="{DynamicResource SubtleTeal}"
-                                HeightRequest="36"
-                                StrokeThickness="0"
-                                WidthRequest="36">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="18" />
-                                </Border.StrokeShape>
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="14"
-                                    HorizontalOptions="Center"
-                                    Text="2"
-                                    TextColor="{StaticResource Primary}"
-                                    VerticalOptions="Center" />
-                            </Border>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                HorizontalTextAlignment="Center"
-                                Text="Measure"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="10"
-                                HorizontalTextAlignment="Center"
-                                LineBreakMode="WordWrap"
-                                Text="Live readings"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border
-                        Grid.Column="2"
-                        Padding="12,14"
-                        BackgroundColor="{DynamicResource Surface}"
-                        Stroke="{DynamicResource Divider}"
-                        StrokeThickness="0.5">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ViewLogsCommand}" />
-                        </Border.GestureRecognizers>
-                        <VerticalStackLayout HorizontalOptions="Center" Spacing="6">
-                            <Border
-                                BackgroundColor="{DynamicResource SubtleTeal}"
-                                HeightRequest="36"
-                                StrokeThickness="0"
-                                WidthRequest="36">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="18" />
-                                </Border.StrokeShape>
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="14"
-                                    HorizontalOptions="Center"
-                                    Text="3"
-                                    TextColor="{StaticResource Primary}"
-                                    VerticalOptions="Center" />
-                            </Border>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                HorizontalTextAlignment="Center"
-                                Text="Logs"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="10"
-                                HorizontalTextAlignment="Center"
-                                LineBreakMode="WordWrap"
-                                Text="History &amp; export"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-            </VerticalStackLayout>
 
-            <!-- Capabilities -->
-            <VerticalStackLayout Spacing="10">
-                <Label
-                    CharacterSpacing="1"
-                    FontAttributes="Bold"
-                    FontSize="11"
-                    Text="CAPABILITIES"
-                    TextColor="{DynamicResource OnSurfaceVariant}" />
-                <Grid
-                    ColumnDefinitions="*,*"
-                    ColumnSpacing="12"
-                    RowDefinitions="Auto,Auto"
-                    RowSpacing="12">
-                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource FeatureCardStyle}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label FontSize="20" Text="&#x2699;" TextColor="{StaticResource Primary}" />
                             <Label
                                 FontAttributes="Bold"
-                                FontSize="13"
-                                Text="Multi-Device"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="11"
+                                FontSize="30"
                                 LineBreakMode="WordWrap"
-                                Text="HALO-2, HI97115, HI98x94"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
+	                                Text="Connected laboratory workspace"
+	                                TextColor="{DynamicResource LabHeroText}" />
+	                            <Label
+	                                FontSize="13"
+	                                LineBreakMode="WordWrap"
+	                                Text="Stream readings, annotate results, store logs, export reports, and sync Hanna instrument data from one clean control surface."
+	                                TextColor="{DynamicResource LabHeroMuted}" />
                         </VerticalStackLayout>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource FeatureCardStyle}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label FontSize="20" Text="&#x25C9;" TextColor="{StaticResource Primary}" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="13"
-                                Text="Real-Time"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="11"
-                                LineBreakMode="WordWrap"
-                                Text="Graphs &amp; workflows"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource FeatureCardStyle}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label FontSize="20" Text="&#x2601;" TextColor="{StaticResource Primary}" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="13"
-                                Text="Cloud Sync"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="11"
-                                LineBreakMode="WordWrap"
-                                Text="Hanna Cloud export"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource FeatureCardStyle}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label FontSize="20" Text="&#x224B;" TextColor="{StaticResource Primary}" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="13"
-                                Text="Bluetooth"
-                                TextColor="{DynamicResource OnSurface}" />
-                            <Label
-                                FontSize="11"
-                                LineBreakMode="WordWrap"
-                                Text="Pair &amp; reconnect"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-            </VerticalStackLayout>
 
-            <!-- Stats -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <Border Style="{StaticResource StatCardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ViewLogsCommand}" />
-                    </Border.GestureRecognizers>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <VerticalStackLayout Spacing="4">
-                            <Label
-                                FontSize="12"
-                                Text="Today's logs"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="26"
-                                Text="{Binding TodayLogsCount}"
-                                TextColor="{DynamicResource OnSurface}" />
-                        </VerticalStackLayout>
-                        <Label
+                        <Grid
                             Grid.Column="1"
-                            FontSize="20"
-                            Text="&#x203A;"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
+                            HeightRequest="104"
+                            VerticalOptions="Start"
+                            WidthRequest="108">
+                            <Border
+                                Margin="24,0,0,8"
+                                Padding="5"
+                                BackgroundColor="{DynamicResource LabHeroDeviceFrame}"
+                                HeightRequest="74"
+                                Stroke="{DynamicResource LabHeroDeviceStroke}"
+                                StrokeThickness="1"
+                                VerticalOptions="Start"
+                                WidthRequest="74">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20" />
+                                </Border.StrokeShape>
+                                <Image
+                                    Aspect="AspectFit"
+                                    Source="photometer_hi97115.png" />
+                            </Border>
+                            <Border
+                                Margin="0,44,42,0"
+                                Padding="5"
+                                BackgroundColor="{DynamicResource LabHeroDeviceFrame}"
+                                HeightRequest="54"
+                                Stroke="{DynamicResource LabHeroDeviceStroke}"
+                                StrokeThickness="1"
+                                VerticalOptions="Start"
+                                WidthRequest="54">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Image
+                                    Aspect="AspectFit"
+                                    Source="halo2_device_icon.png" />
+                            </Border>
+                            <Border
+                                Margin="60,52,0,0"
+                                Padding="4"
+                                BackgroundColor="{DynamicResource LabHeroDeviceFrame}"
+                                HeightRequest="46"
+                                Stroke="{DynamicResource LabHeroDeviceStroke}"
+                                StrokeThickness="1"
+                                VerticalOptions="Start"
+                                WidthRequest="46">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="15" />
+                                </Border.StrokeShape>
+                                <Image
+                                    Aspect="AspectFit"
+                                    Source="hi98594_new.png" />
+                            </Border>
+                        </Grid>
                     </Grid>
-                </Border>
-                <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OpenDevicesCommand}" />
-                    </Border.GestureRecognizers>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <VerticalStackLayout Spacing="4">
-                            <Label
-                                FontSize="12"
-                                Text="Connected"
-                                TextColor="{DynamicResource OnSurfaceVariant}" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="26"
-                                Text="{Binding ConnectedDevicesCount}"
-                                TextColor="{DynamicResource OnSurface}" />
-                        </VerticalStackLayout>
-                        <Label
-                            Grid.Column="1"
-                            FontSize="20"
-                            Text="&#x203A;"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
-                    </Grid>
-                </Border>
-            </Grid>
 
-            <!-- CTAs -->
-            <Button
-                BackgroundColor="{StaticResource Primary}"
-                Command="{Binding ScanDevicesCommand}"
-                CornerRadius="26"
-                FontAttributes="Bold"
-                FontSize="16"
-                HeightRequest="52"
-                Text="&#x224B;  Scan Devices"
-                TextColor="White" />
+                    <Grid
+                        Grid.Row="1"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="10">
+                        <Border Style="{StaticResource LabTileStyle}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontSize="11"
+                                    Text="Connected"
+                                    TextColor="{DynamicResource LabHeroMuted}" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="28"
+                                    Text="{Binding ConnectedDevicesCount}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                                <Label
+                                    FontSize="11"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding ConnectedSummary}"
+                                    TextColor="{DynamicResource LabHeroMuted}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" Style="{StaticResource LabTileStyle}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontSize="11"
+	                                    Text="Records today"
+                                    TextColor="{DynamicResource LabHeroMuted}" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="28"
+                                    Text="{Binding TodayLogsCount}"
+                                    TextColor="{DynamicResource LabHeroText}" />
+                                <Label
+                                    FontSize="11"
+	                                    Text="Auto or manual logs"
+                                    TextColor="{DynamicResource LabHeroMuted}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Button
+                        Grid.Row="2"
+                        BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding ScanDevicesCommand}"
+                        CornerRadius="24"
+                        FontAttributes="Bold"
+                        FontSize="15"
+                        HeightRequest="50"
+                        Text="Scan Instruments"
+                        TextColor="White" />
+                </Grid>
+            </Border>
 
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <Border Style="{StaticResource OutlineCtaStyle}">
+                <Border Style="{StaticResource DashboardCardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding DemoModeCommand}" />
                     </Border.GestureRecognizers>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Padding="0,14"
-                        Spacing="8">
-                        <Label
-                            FontSize="17"
-                            Text="&#x25A6;"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            Text="Demo Mode"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
-                    </HorizontalStackLayout>
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+                        <Border
+                            BackgroundColor="{DynamicResource SubtleTeal}"
+                            HeightRequest="42"
+                            StrokeThickness="0"
+                            WidthRequest="42"
+                            HorizontalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="&#x2697;"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Row="1" Spacing="3">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Text="Measure"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="WordWrap"
+                                Text="Start live analysis"
+                                TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
-                <Border Grid.Column="1" Style="{StaticResource OutlineCtaStyle}">
+
+                <Border Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ViewLogsCommand}" />
                     </Border.GestureRecognizers>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Padding="0,14"
-                        Spacing="8">
-                        <Label
-                            FontSize="17"
-                            Text="&#x2630;"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            Text="View Logs"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
-                    </HorizontalStackLayout>
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+                        <Border
+                            BackgroundColor="{DynamicResource SubtleGreen}"
+                            HeightRequest="42"
+                            StrokeThickness="0"
+                            WidthRequest="42"
+                            HorizontalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="&#x2630;"
+                                TextColor="{StaticResource Success}"
+                                VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Row="1" Spacing="3">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Text="Logs"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="WordWrap"
+                                Text="Review history"
+                                TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
             </Grid>
 
-            <!-- Menu hint -->
-            <Border
-                Padding="14,12"
-                BackgroundColor="{DynamicResource SurfaceSecondary}"
-                StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="14" />
-                </Border.StrokeShape>
-                <HorizontalStackLayout Spacing="10">
-                    <Label
-                        FontSize="18"
-                        Text="&#x2630;"
-                        TextColor="{StaticResource Primary}"
-                        VerticalOptions="Center" />
-                    <Label
-                        FontSize="13"
-                        LineBreakMode="WordWrap"
-                        Text="Open the menu for Measure, Log History, Information, Hanna Cloud, and Help."
-                        TextColor="{DynamicResource OnSurfaceVariant}"
-                        VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </Border>
+            <VerticalStackLayout Spacing="10">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="INSTRUMENT BAY" />
+                <Border Style="{StaticResource DashboardCardStyle}" Padding="14">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Grid HeightRequest="128" WidthRequest="132">
+                            <Border
+                                Margin="32,0,0,0"
+                                Padding="6"
+                                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                                HeightRequest="82"
+                                Stroke="{DynamicResource Divider}"
+                                StrokeThickness="0.5"
+                                WidthRequest="82">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20" />
+                                </Border.StrokeShape>
+                                <Image Aspect="AspectFit" Source="photometer_hi97115.png" />
+                            </Border>
+                            <Border
+                                Margin="0,62,64,0"
+                                Padding="6"
+                                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                                HeightRequest="58"
+                                Stroke="{DynamicResource Divider}"
+                                StrokeThickness="0.5"
+                                WidthRequest="58">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Image Aspect="AspectFit" Source="halo2_device_icon.png" />
+                            </Border>
+                            <Border
+                                Margin="78,66,0,0"
+                                Padding="5"
+                                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                                HeightRequest="54"
+                                Stroke="{DynamicResource Divider}"
+                                StrokeThickness="0.5"
+                                WidthRequest="54">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Image Aspect="AspectFit" Source="hi98594_new.png" />
+                            </Border>
+                        </Grid>
 
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="13"
-                    Text="Hanna."
-                    TextColor="{StaticResource Primary}" />
-                <Label
-                    FontSize="13"
-                    Text=" Instruments for Life.®"
-                    TextColor="{DynamicResource OnSurfaceVariant}" />
-            </HorizontalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                LineBreakMode="WordWrap"
+                                Text="Probe, photometer, and meter ready"
+                                TextColor="{DynamicResource OnSurface}" />
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="WordWrap"
+                                Text="The home screen now points to one scan flow, then keeps measurement, log review, and reporting separate."
+                                TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                                <Label FontAttributes="Bold" FontSize="11" Text="HALO probes" TextColor="{StaticResource Primary}" />
+                                <Label Grid.Column="1" FontAttributes="Bold" FontSize="11" Text="Photometers" TextColor="{StaticResource Primary}" />
+                                <Label Grid.Row="1" FontAttributes="Bold" FontSize="11" Text="HI meters" TextColor="{StaticResource Primary}" />
+                                <Label Grid.Row="1" Grid.Column="1" FontAttributes="Bold" FontSize="11" Text="Bluetooth" TextColor="{StaticResource Primary}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="WORKFLOW" />
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Border Style="{StaticResource DashboardCardStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label FontAttributes="Bold" FontSize="18" Text="01" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="Connect" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Scan once for available instruments." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label FontAttributes="Bold" FontSize="18" Text="02" TextColor="{StaticResource AnalysisAmber}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="Measure + tag" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Stream readings and annotate context." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label FontAttributes="Bold" FontSize="18" Text="03" TextColor="{StaticResource Success}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="Store" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Save logs automatically or manually." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource DashboardCardStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label FontAttributes="Bold" FontSize="18" Text="04" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="12" Text="Review" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="10" LineBreakMode="WordWrap" Text="Open tables, graphs, PDF, or CSV." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="APP CAPABILITIES" />
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Border Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x25C9;" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Live stream" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Continuous readings and monitoring." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x270E;" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Tag readings" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Annotate samples, tanks, and notes." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x2713;" TextColor="{StaticResource Success}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Auto/manual logs" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Store records by workflow need." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x21E9;" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="PDF / CSV export" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Create reports or raw datasets." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="2" Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x2601;" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Cloud sync" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Keep instrument data available." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
+                        <VerticalStackLayout Spacing="5">
+                            <Label FontSize="20" Text="&#x2699;" TextColor="{StaticResource Primary}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Method control" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Select and standardize methods." TextColor="{DynamicResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource DashboardCardStyle}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label FontSize="22" Text="&#x25A6;" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label FontAttributes="Bold" FontSize="13" Text="Table and graph views" TextColor="{DynamicResource OnSurface}" />
+                                <Label FontSize="11" LineBreakMode="WordWrap" Text="Switch between tabular records and visual trends during review." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>
