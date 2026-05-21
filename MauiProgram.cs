@@ -5,6 +5,7 @@ using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Halo2;
 using HannaUIDemo.Features.Localization;
+using HannaUIDemo.Features.Logs;
 using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
 using HannaUIDemo.Features.Flyout;
@@ -42,6 +43,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<Halo2SettingsPage>();
 		builder.Services.AddTransient<PhotometerDeviceSettingsPage>();
 		builder.Services.AddTransient<LanguageSelectionPage>();
+		builder.Services.AddTransient<Halo2LogDetailPage>();
 		builder.Services.AddTransient<AppFlyoutView>();
 
 #if DEBUG

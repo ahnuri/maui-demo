@@ -36,6 +36,17 @@ public static class NavToolbar
 			page.ToolbarItems.Add(CreateDisconnectItem(loc, onDisconnectAsync));
 	}
 
+	/// <summary>Pushed detail pages with a fixed title (not Shell tab labels).</summary>
+	public static void ConfigureDetail(ContentPage page, string title)
+	{
+		if (Application.Current is not App app)
+			return;
+
+		page.Title = title;
+		page.ToolbarItems.Clear();
+		page.ToolbarItems.Add(CreateSettingsItem(page, app, app.Services.GetRequiredService<LocalizationService>()));
+	}
+
 	static ToolbarItem CreateBluetoothScanItem(ContentPage page, App app, LocalizationService loc) => new()
 	{
 		Text = loc.T("Toolbar_ScanDevices"),

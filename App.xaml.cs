@@ -2,6 +2,7 @@
 using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Halo2;
+using HannaUIDemo.Features.Logs;
 using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,6 +61,9 @@ public partial class App : Application
 					break;
 				case Halo2CalibrationPage halo2Calibration:
 					halo2Calibration.ApplyTheme();
+					break;
+				case Halo2LogDetailPage halo2LogDetail:
+					halo2LogDetail.ApplyTheme();
 					break;
 			}
 		}
