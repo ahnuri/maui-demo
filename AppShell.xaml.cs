@@ -69,7 +69,7 @@ public partial class AppShell : Shell
 		if (HomeShellContent.Content is HomeTabPage home)
 			NavToolbar.ConfigureLanding(home);
 		if (MeasureShellContent.Content is MeasureTabPage measure)
-			NavToolbar.Configure(measure, "Shell_Measure");
+			measure.RefreshShellNavigation();
 		if (LogsShellContent.Content is LogsTabPage logs)
 			NavToolbar.Configure(logs, "Shell_LogHistory");
 		// if (InfoShellContent.Content is InfoTabPage info)

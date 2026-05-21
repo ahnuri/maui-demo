@@ -66,6 +66,9 @@ public sealed class ThemeService
 					case Features.Halo2.Halo2SettingsPage halo2Settings:
 						halo2Settings.ApplyTheme();
 						break;
+					case Features.Measure.PhotometerDeviceSettingsPage photometerDeviceSettings:
+						photometerDeviceSettings.ApplyTheme();
+						break;
 				}
 			}
 		}

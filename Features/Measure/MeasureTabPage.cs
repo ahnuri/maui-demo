@@ -24,6 +24,7 @@ public sealed class MeasureTabPage : ContentPage
 	readonly Border _pickerSheet;
 
 	readonly MeasureTabViewModel _viewModel;
+	BackButtonBehavior? _photometerBackBehavior;
 
 	public MeasurePhotometerView Photometer => _photometer;
 	public MultimeterLogRecallView Multimeter => _multimeter;
@@ -39,12 +40,13 @@ public sealed class MeasureTabPage : ContentPage
 		_viewModel = AppServices.Get<MeasureTabViewModel>();
 		BindingContext = _viewModel;
 
-		NavToolbar.Configure(this, "Shell_Measure");
 		_photometer = photometer;
 		_multimeter = multimeter;
 		_halo2 = halo2;
+		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
 		Shell.SetNavBarIsVisible(this, true);
 		Shell.SetNavBarHasShadow(this, false);
+		Shell.SetBackButtonBehavior(this, null);
 		ApplyNavigationChrome();
 
 		_emptyStateLabel = new Label
@@ -73,6 +75,8 @@ public sealed class MeasureTabPage : ContentPage
 		root.Children.Add(_deviceHost);
 		root.Children.Add(_overlay);
 		Content = root;
+
+		RefreshShellNavigation();
 	}
 
 	/// <summary>Selects and shows a measure device (called from Devices page or shell).</summary>
@@ -85,7 +89,6 @@ public sealed class MeasureTabPage : ContentPage
 		switch (kind)
 		{
 			case MeasureDeviceKind.Photometer:
-				ClearCustomNavigationTitle();
 				_photometer.IsVisible = true;
 				break;
 			case MeasureDeviceKind.Multimeter:
@@ -97,12 +100,11 @@ public sealed class MeasureTabPage : ContentPage
 				break;
 		}
 
-		Title = _viewModel.NavigationTitle;
 		if (_viewModel.UsesHaloNavigationTitle)
 			ClearCustomNavigationTitle();
 
 		ApplyNavigationChrome();
-		RefreshMeasureToolbar();
+		RefreshShellNavigation();
 	}
 
 	/// <summary>Clears the active device and returns to the empty measure state.</summary>
@@ -112,9 +114,8 @@ public sealed class MeasureTabPage : ContentPage
 		HideMeasureContent();
 		ClearCustomNavigationTitle();
 		_emptyStateLabel.Text = _viewModel.EmptyStateMessage;
-		Title = _viewModel.NavigationTitle;
 		ApplyNavigationChrome();
-		RefreshMeasureToolbar();
+		RefreshShellNavigation();
 	}
 
 	void ApplyNavigationChrome()
@@ -125,16 +126,132 @@ public sealed class MeasureTabPage : ContentPage
 			ShellChrome.ApplyStandard(this);
 	}
 
-	void RefreshMeasureToolbar()
+	/// <summary>Shell title + toolbar (respects photometer measurement flow — no profile while in flow).</summary>
+	public void RefreshShellNavigation()
 	{
+		if (_photometer.IsVisible && _viewModel.ActiveDevice == MeasureDeviceKind.Photometer)
+		{
+			_photometer.SyncNavigationChrome();
+			return;
+		}
+
+		EnsureFlyoutEnabled();
+
+		if (_viewModel.HasActiveDevice)
+		{
+			ClearCustomNavigationTitle();
+			Title = _viewModel.NavigationTitle;
+			RefreshMeasureToolbar();
+			return;
+		}
+
+		if (Application.Current is App app)
+		{
+			var loc = app.Services.GetRequiredService<LocalizationService>();
+			ClearCustomNavigationTitle();
+			Title = loc.T("Shell_Measure");
+		}
+
+		RefreshMeasureToolbar();
+	}
+
+	void RefreshMeasureToolbar(PhotometerMeasureViewModel? photometer = null)
+	{
+		ToolbarItems.Clear();
+
+		photometer ??= _photometer.PhotometerViewModel;
+
+		if (_photometer.IsVisible
+		    && _viewModel.ActiveDevice == MeasureDeviceKind.Photometer
+		    && photometer.IsInMeasurementFlow)
+			return;
+
 		if (Application.Current is not App app)
 			return;
 
-		ToolbarItems.Clear();
 		ToolbarItems.Add(NavToolbar.CreateProfileItem(this, app));
 	}
 
 	void ClearCustomNavigationTitle() => Shell.SetTitleView(this, null);
+
+	void EnsureFlyoutEnabled()
+	{
+		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
+		Shell.SetBackButtonBehavior(this, null);
+		_photometerBackBehavior = null;
+	}
+
+	void ApplyPhotometerShellChrome(PhotometerMeasureViewModel photometer)
+	{
+		if (photometer.IsInMeasurementFlow)
+		{
+			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
+			_photometerBackBehavior ??= new BackButtonBehavior();
+			_photometerBackBehavior.IsVisible = true;
+			_photometerBackBehavior.IsEnabled = true;
+			_photometerBackBehavior.TextOverride = string.Empty;
+			_photometerBackBehavior.Command = new Command(photometer.NavigateBack);
+			Shell.SetBackButtonBehavior(this, _photometerBackBehavior);
+		}
+		else
+		{
+			EnsureFlyoutEnabled();
+		}
+	}
+
+	/// <summary>Overview: standard title + profile + flyout. Flow: meter/tank nav, back button, no profile.</summary>
+	public void SyncPhotometerNavigation(PhotometerMeasureViewModel photometer)
+	{
+		if (!_photometer.IsVisible || _viewModel.ActiveDevice != MeasureDeviceKind.Photometer)
+			return;
+
+		ApplyPhotometerShellChrome(photometer);
+
+		if (photometer.IsNewAnalysis)
+		{
+			ClearCustomNavigationTitle();
+			Title = _viewModel.NavigationTitle;
+		}
+		else
+		{
+			Title = string.Empty;
+			ApplyPhotometerFlowTitleView(photometer);
+		}
+
+		RefreshMeasureToolbar(photometer);
+	}
+
+	void ApplyPhotometerFlowTitleView(PhotometerMeasureViewModel photometer)
+	{
+		var meterName = new Label
+		{
+			Text = _viewModel.NavigationTitle,
+			FontSize = 17,
+			FontAttributes = FontAttributes.Bold,
+			HorizontalTextAlignment = TextAlignment.Center,
+			LineBreakMode = LineBreakMode.TailTruncation
+		};
+		meterName.SetDynamicResource(Label.TextColorProperty, "OnSurface");
+
+		var tankName = new Label
+		{
+			Text = photometer.SelectedTankDisplay,
+			FontSize = 13,
+			HorizontalTextAlignment = TextAlignment.Center,
+			LineBreakMode = LineBreakMode.TailTruncation
+		};
+		tankName.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
+
+		var titleStack = new VerticalStackLayout
+		{
+			Spacing = 1,
+			VerticalOptions = LayoutOptions.Center,
+			HorizontalOptions = LayoutOptions.Center,
+			Children = { meterName, tankName }
+		};
+
+		Shell.SetTitleView(this, titleStack);
+	}
 
 	public async Task DisconnectAndOpenDevicesAsync()
 	{
@@ -225,8 +342,8 @@ public sealed class MeasureTabPage : ContentPage
 
 		var photoRow = BuildDeviceRow(
 			"HI",
-			"HI97115-Marine Master",
-			"Waterproof Wireless Multiparameter Photometer",
+			"HI97105 Photometer",
+			"Measure and download with Marine Master Multiparameter Photometer",
 			isTeal: true,
 			OnPickPhotometer);
 
@@ -236,7 +353,7 @@ public sealed class MeasureTabPage : ContentPage
 		var multiRow = BuildDeviceRow(
 			"94",
 			"HI98x94 - Multiparameter",
-			"Bluetooth portable pH/EC/OPDO meter with probe",
+			"Download logs with HI98x94 - Multiparameter",
 			isTeal: false,
 			OnPickMultimeter);
 
@@ -257,7 +374,7 @@ public sealed class MeasureTabPage : ContentPage
 
 		var titleLabel = new Label
 		{
-			Text = "Select Device to Measure",
+			Text = "Select Device to Measure/Download",
 			FontSize = 18,
 			FontAttributes = FontAttributes.Bold,
 			HorizontalOptions = LayoutOptions.Center
@@ -370,6 +487,7 @@ public sealed class MeasureTabPage : ContentPage
 	{
 		base.OnAppearing();
 		ApplyNavigationChrome();
+		RefreshShellNavigation();
 		if (_halo2.IsVisible)
 			_halo2.SyncSettingsFromPreferences();
 	}
@@ -379,11 +497,9 @@ public sealed class MeasureTabPage : ContentPage
 		_photometer.ApplyTheme();
 		_multimeter.ApplyTheme();
 		_halo2.ApplyTheme();
-		if (_viewModel.ActiveDevice == MeasureDeviceKind.Halo2)
-			Title = _viewModel.NavigationTitle;
-		else if (_viewModel.ActiveDevice is null)
+		if (_viewModel.ActiveDevice is null)
 			_viewModel.RefreshForTheme();
 		ApplyNavigationChrome();
-		RefreshMeasureToolbar();
+		RefreshShellNavigation();
 	}
 }

@@ -19,8 +19,8 @@ public partial class MeasureTabViewModel : LocalizedViewModelBase
 
 	public string NavigationTitle => ActiveDevice switch
 	{
-		MeasureDeviceKind.Photometer => "HI97115",
-		MeasureDeviceKind.Multimeter => "HI98x94",
+		MeasureDeviceKind.Photometer => "HI97115 - Meter",
+		MeasureDeviceKind.Multimeter => "HI98x94 - Multiparameter",
 		MeasureDeviceKind.Halo2 => Loc.T("Shell_Home"),
 		_ => Loc.T("Shell_Measure")
 	};

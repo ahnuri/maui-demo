@@ -82,9 +82,9 @@ public partial class DeviceViewModel : PageViewModelBase
 
 	IEnumerable<DeviceListItem> GetConnectedCatalog() =>
 	[
-		BuildItem("hi97115", "HI97115-Marine Master", "HI97115-001", "1.4.2", 92, "2 min ago",
+		BuildItem("hi97115", "Marine Master Multiparameter Photometer", "HI97105-001", "1.4.2", 92, "2 min ago",
 			MeasureDeviceKind.Photometer),
-		BuildItem("hi98494", "HI98x94 - Multiparameter", "HI98494-AK1", "2.1.0", 78, "8 min ago",
+		BuildItem("hi98494", "HI98x94 - Multiparameter", "HI98494-MM", "2.1.0", 78, "8 min ago",
 			MeasureDeviceKind.Multimeter),
 		BuildItem("halo2", "Halo 2", "HI12322", "3.0.1", 44, "Just now",
 			MeasureDeviceKind.Halo2),

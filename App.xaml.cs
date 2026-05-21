@@ -2,6 +2,7 @@
 using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Halo2;
+using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -53,6 +54,9 @@ public partial class App : Application
 					break;
 				case Halo2SettingsPage halo2Settings:
 					halo2Settings.ApplyTheme();
+					break;
+				case PhotometerDeviceSettingsPage photometerDevice:
+					photometerDevice.ApplyTheme();
 					break;
 				case Halo2CalibrationPage halo2Calibration:
 					halo2Calibration.ApplyTheme();

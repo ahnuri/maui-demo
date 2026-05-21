@@ -399,7 +399,7 @@
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x270E;" TextColor="{StaticResource Primary}" />
                             <Label FontAttributes="Bold" FontSize="13" Text="Tag readings" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Annotate samples, tanks, and notes." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Annotate each reading, and notes." TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="1" Style="{StaticResource DashboardCardStyle}">
@@ -413,21 +413,21 @@
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x21E9;" TextColor="{StaticResource Primary}" />
                             <Label FontAttributes="Bold" FontSize="13" Text="PDF / CSV export" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Create reports or raw datasets." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Create reports and share." TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="2" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x2601;" TextColor="{StaticResource Primary}" />
                             <Label FontAttributes="Bold" FontSize="13" Text="Cloud sync" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Keep instrument data available." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Sync logged data in cloud storage." TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x2699;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Method control" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Select and standardize methods." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="Method and unit control" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Select and standardize methods with units." TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource DashboardCardStyle}">

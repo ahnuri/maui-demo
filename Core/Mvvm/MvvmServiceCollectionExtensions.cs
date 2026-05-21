@@ -34,9 +34,10 @@ public static class MvvmServiceCollectionExtensions
 		services.AddTransient<ResetPasswordViewModel>();
 		services.AddTransient<LanguageSelectionViewModel>();
 		services.AddTransient<MultimeterLogRecallViewModel>();
-		services.AddTransient<PhotometerMeasureViewModel>();
+		services.AddSingleton<PhotometerMeasureViewModel>();
 		services.AddTransient<Halo2SettingsViewModel>();
 		services.AddTransient<Halo2CalibrationViewModel>();
+		services.AddTransient<PhotometerDeviceSettingsViewModel>();
 
 		return services;
 	}
