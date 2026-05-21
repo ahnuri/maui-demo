@@ -18,6 +18,8 @@ public partial class HomeTabPage : ContentPage
 	{
 		base.OnAppearing();
 		ShellChrome.ApplyGrouped(this);
+		if (Shell.Current is AppShell shell)
+			shell.PreWarmMeasureTab();
 	}
 
 	internal void ApplyTheme()

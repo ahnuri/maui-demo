@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Device;
+using HannaUIDemo;
 
 namespace HannaUIDemo.Features.Home;
 
@@ -57,8 +58,8 @@ public partial class HomeViewModel : LocalizedViewModelBase
 	[RelayCommand]
 	async Task DemoModeAsync()
 	{
-		if (Shell.Current is not null)
-			await Shell.Current.GoToAsync("//measure");
+		if (Shell.Current is AppShell shell)
+			await shell.PresentMeasureDevicePickerAsync();
 	}
 
 	[RelayCommand]

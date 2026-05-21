@@ -12,37 +12,28 @@ namespace HannaUIDemo.Features.Measure;
 /// <summary>Measure tab: photometer, multimeter, or Halo 2 view (opened from Devices page).</summary>
 public sealed class MeasureTabPage : ContentPage
 {
-	const double SheetSlideDistance = 100;
-
-	readonly MeasurePhotometerView _photometer;
-	readonly MultimeterLogRecallView _multimeter;
-	readonly Halo2MeasureView _halo2;
+	MeasurePhotometerView? _photometer;
+	MultimeterLogRecallView? _multimeter;
+	Halo2MeasureView? _halo2;
 	readonly Label _emptyStateLabel;
 	readonly Grid _deviceHost;
-	readonly Grid _overlay;
-	readonly BoxView _pickerScrim;
-	readonly Border _pickerSheet;
+	readonly Grid _busyOverlay;
+	readonly ActivityIndicator _busyIndicator;
+	readonly Label _busyLabel;
 
 	readonly MeasureTabViewModel _viewModel;
+	int _busyDepth;
 	BackButtonBehavior? _photometerBackBehavior;
 
-	public MeasurePhotometerView Photometer => _photometer;
-	public MultimeterLogRecallView Multimeter => _multimeter;
-	public Halo2MeasureView Halo2 => _halo2;
+	public MeasurePhotometerView Photometer => EnsurePhotometer();
+	public MultimeterLogRecallView Multimeter => EnsureMultimeter();
+	public Halo2MeasureView Halo2 => EnsureHalo2();
 
-	/// <summary>Shell / XAML default constructor.</summary>
-	public MeasureTabPage() : this(new MeasurePhotometerView(), new MultimeterLogRecallView(), new Halo2MeasureView())
-	{
-	}
-
-	public MeasureTabPage(MeasurePhotometerView photometer, MultimeterLogRecallView multimeter, Halo2MeasureView halo2)
+	public MeasureTabPage()
 	{
 		_viewModel = AppServices.Get<MeasureTabViewModel>();
 		BindingContext = _viewModel;
 
-		_photometer = photometer;
-		_multimeter = multimeter;
-		_halo2 = halo2;
 		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
 		Shell.SetNavBarIsVisible(this, true);
 		Shell.SetNavBarHasShadow(this, false);
@@ -63,20 +54,50 @@ public sealed class MeasureTabPage : ContentPage
 
 		_deviceHost = new Grid();
 		_deviceHost.Children.Add(_emptyStateLabel);
-		_deviceHost.Children.Add(_photometer);
-		_deviceHost.Children.Add(_multimeter);
-		_deviceHost.Children.Add(_halo2);
 		HideMeasureContent();
 		_emptyStateLabel.IsVisible = true;
 
-		(_overlay, _pickerScrim, _pickerSheet) = BuildPickerOverlay();
+		(_busyOverlay, _busyIndicator, _busyLabel) = BuildBusyOverlay();
 
 		var root = new Grid();
 		root.Children.Add(_deviceHost);
-		root.Children.Add(_overlay);
+		root.Children.Add(_busyOverlay);
 		Content = root;
 
 		RefreshShellNavigation();
+	}
+
+	MeasurePhotometerView EnsurePhotometer()
+	{
+		if (_photometer is not null)
+			return _photometer;
+
+		_photometer = new MeasurePhotometerView();
+		_photometer.IsVisible = false;
+		_deviceHost.Children.Add(_photometer);
+		return _photometer;
+	}
+
+	MultimeterLogRecallView EnsureMultimeter()
+	{
+		if (_multimeter is not null)
+			return _multimeter;
+
+		_multimeter = new MultimeterLogRecallView();
+		_multimeter.IsVisible = false;
+		_deviceHost.Children.Add(_multimeter);
+		return _multimeter;
+	}
+
+	Halo2MeasureView EnsureHalo2()
+	{
+		if (_halo2 is not null)
+			return _halo2;
+
+		_halo2 = new Halo2MeasureView();
+		_halo2.IsVisible = false;
+		_deviceHost.Children.Add(_halo2);
+		return _halo2;
 	}
 
 	/// <summary>Selects and shows a measure device (called from Devices page or shell).</summary>
@@ -89,14 +110,14 @@ public sealed class MeasureTabPage : ContentPage
 		switch (kind)
 		{
 			case MeasureDeviceKind.Photometer:
-				_photometer.IsVisible = true;
+				EnsurePhotometer().IsVisible = true;
 				break;
 			case MeasureDeviceKind.Multimeter:
 				ClearCustomNavigationTitle();
-				_multimeter.IsVisible = true;
+				EnsureMultimeter().IsVisible = true;
 				break;
 			case MeasureDeviceKind.Halo2:
-				_halo2.IsVisible = true;
+				EnsureHalo2().IsVisible = true;
 				break;
 		}
 
@@ -129,7 +150,7 @@ public sealed class MeasureTabPage : ContentPage
 	/// <summary>Shell title + toolbar (respects photometer measurement flow — no profile while in flow).</summary>
 	public void RefreshShellNavigation()
 	{
-		if (_photometer.IsVisible && _viewModel.ActiveDevice == MeasureDeviceKind.Photometer)
+		if (_photometer is { IsVisible: true } && _viewModel.ActiveDevice == MeasureDeviceKind.Photometer)
 		{
 			_photometer.SyncNavigationChrome();
 			return;
@@ -158,6 +179,9 @@ public sealed class MeasureTabPage : ContentPage
 	void RefreshMeasureToolbar(PhotometerMeasureViewModel? photometer = null)
 	{
 		ToolbarItems.Clear();
+
+		if (_photometer is null)
+			return;
 
 		photometer ??= _photometer.PhotometerViewModel;
 
@@ -202,7 +226,7 @@ public sealed class MeasureTabPage : ContentPage
 	/// <summary>Overview: standard title + profile + flyout. Flow: meter/tank nav, back button, no profile.</summary>
 	public void SyncPhotometerNavigation(PhotometerMeasureViewModel photometer)
 	{
-		if (!_photometer.IsVisible || _viewModel.ActiveDevice != MeasureDeviceKind.Photometer)
+		if (_photometer is not { IsVisible: true } || _viewModel.ActiveDevice != MeasureDeviceKind.Photometer)
 			return;
 
 		ApplyPhotometerShellChrome(photometer);
@@ -259,228 +283,75 @@ public sealed class MeasureTabPage : ContentPage
 		await Navigation.PushAsync(AppServices.Get<DevicePage>());
 	}
 
-	/// <summary>Optional bottom-sheet picker (e.g. legacy flows).</summary>
-	public void ShowDevicePicker() => _ = PresentPickerAsync();
-
-	async Task PresentPickerAsync()
+	public void ShowBusy(string? message = null)
 	{
-		if (_overlay.IsVisible && _pickerScrim.Opacity >= 0.99)
+		_busyDepth++;
+		_busyLabel.Text = message ?? "Loading…";
+		_busyLabel.IsVisible = !string.IsNullOrWhiteSpace(message);
+		_busyOverlay.IsVisible = true;
+		_busyOverlay.InputTransparent = false;
+		_busyIndicator.IsRunning = true;
+	}
+
+	public void HideBusy()
+	{
+		if (_busyDepth > 0)
+			_busyDepth--;
+
+		if (_busyDepth != 0)
 			return;
 
-		_overlay.IsVisible = true;
-		_overlay.InputTransparent = false;
-		_pickerSheet.TranslationY = SheetSlideDistance;
-		_pickerScrim.Opacity = 0;
-		await Task.WhenAll(
-			_pickerScrim.FadeToAsync(1, 220, Easing.CubicOut),
-			_pickerSheet.TranslateToAsync(0, 0, 280, Easing.CubicOut));
+		_busyIndicator.IsRunning = false;
+		_busyOverlay.IsVisible = false;
+		_busyOverlay.InputTransparent = true;
 	}
 
 	void HideMeasureContent()
 	{
-		_photometer.IsVisible = false;
-		_multimeter.IsVisible = false;
-		_halo2.IsVisible = false;
+		if (_photometer is not null)
+			_photometer.IsVisible = false;
+		if (_multimeter is not null)
+			_multimeter.IsVisible = false;
+		if (_halo2 is not null)
+			_halo2.IsVisible = false;
 		_emptyStateLabel.IsVisible = _viewModel.ShowEmptyState;
 	}
 
-	async Task DismissPickerAsync()
+	(Grid overlay, ActivityIndicator indicator, Label label) BuildBusyOverlay()
 	{
-		if (!_overlay.IsVisible)
-			return;
-
-		await Task.WhenAll(
-			_pickerScrim.FadeToAsync(0, 200, Easing.CubicIn),
-			_pickerSheet.TranslateToAsync(0, SheetSlideDistance, 220, Easing.CubicIn));
-		_overlay.IsVisible = false;
-		_overlay.InputTransparent = true;
-	}
-
-	async void OnDismissMeasurePicker(object? sender, TappedEventArgs e) => await DismissPickerAsync();
-
-	async void OnPickPhotometer(object? sender, TappedEventArgs e)
-	{
-		await DismissPickerAsync();
-		SelectDevice(MeasureDeviceKind.Photometer);
-	}
-
-	async void OnPickMultimeter(object? sender, TappedEventArgs e)
-	{
-		await DismissPickerAsync();
-		SelectDevice(MeasureDeviceKind.Multimeter);
-	}
-
-	async void OnPickHalo2(object? sender, TappedEventArgs e)
-	{
-		await DismissPickerAsync();
-		SelectDevice(MeasureDeviceKind.Halo2);
-	}
-
-	(Grid overlay, BoxView scrim, Border sheet) BuildPickerOverlay()
-	{
-		var scrim = new BoxView();
-		scrim.SetDynamicResource(BoxView.ColorProperty, "OverlayScrim");
-		var scrimTap = new TapGestureRecognizer();
-		scrimTap.Tapped += OnDismissMeasurePicker;
-		scrim.GestureRecognizers.Add(scrimTap);
-
-		var sheet = new Border
+		var indicator = new ActivityIndicator
 		{
-			VerticalOptions = LayoutOptions.End,
-			StrokeThickness = 0,
-			Padding = new Thickness(20, 16, 20, 24),
-			StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(20, 20, 0, 0) }
-		};
-		sheet.SetDynamicResource(Border.BackgroundColorProperty, "Surface");
-		sheet.Shadow = new Shadow
-		{
-			Brush = new SolidColorBrush(ThemeColors.SoftShadow),
-			Offset = new Point(0, -4),
-			Radius = 16,
-			Opacity = 1
-		};
-
-		var photoRow = BuildDeviceRow(
-			"HI",
-			"HI97105 Photometer",
-			"Measure and download with Marine Master Multiparameter Photometer",
-			isTeal: true,
-			OnPickPhotometer);
-
-		var divider = new BoxView { HeightRequest = 1 };
-		divider.SetDynamicResource(BoxView.ColorProperty, "Divider");
-
-		var multiRow = BuildDeviceRow(
-			"94",
-			"HI98x94 - Multiparameter",
-			"Download logs with HI98x94 - Multiparameter",
-			isTeal: false,
-			OnPickMultimeter);
-
-		var divider2 = new BoxView { HeightRequest = 1 };
-		divider2.SetDynamicResource(BoxView.ColorProperty, "Divider");
-
-		var haloRow = BuildDeviceRow(
-			"tab_halo",
-			"Halo 2",
-			"Live pH, mV and temperature tracking with tags",
-			isTeal: true,
-			OnPickHalo2);
-
-		var stack = new VerticalStackLayout { Spacing = 16 };
-		var handle = new BoxView { HeightRequest = 4, WidthRequest = 40, CornerRadius = 2, HorizontalOptions = LayoutOptions.Center };
-		handle.SetDynamicResource(BoxView.ColorProperty, "HandleBar");
-		stack.Children.Add(handle);
-
-		var titleLabel = new Label
-		{
-			Text = "Select Device to Measure/Download",
-			FontSize = 18,
-			FontAttributes = FontAttributes.Bold,
-			HorizontalOptions = LayoutOptions.Center
-		};
-		titleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurface");
-		stack.Children.Add(titleLabel);
-
-		stack.Children.Add(photoRow);
-		stack.Children.Add(divider);
-		stack.Children.Add(multiRow);
-		stack.Children.Add(divider2);
-		stack.Children.Add(haloRow);
-		sheet.Content = stack;
-
-		var grid = new Grid { IsVisible = false, InputTransparent = true };
-		grid.Children.Add(scrim);
-		grid.Children.Add(sheet);
-		return (grid, scrim, sheet);
-	}
-
-	Border BuildDeviceRow(string thumb, string title, string subtitle, bool isTeal, EventHandler<TappedEventArgs> onTap)
-	{
-		var tileBg = isTeal ? "SubtleTeal" : "SubtleGreen";
-		var row = new Border
-		{
-			StrokeThickness = 0,
-			Padding = new Thickness(12)
-		};
-		row.SetDynamicResource(Border.BackgroundColorProperty, "SurfaceSecondary");
-		var tap = new TapGestureRecognizer();
-		tap.Tapped += onTap;
-		row.GestureRecognizers.Add(tap);
-
-		var icon = new Border
-		{
+			Color = AppConstants.Primary,
 			WidthRequest = 36,
 			HeightRequest = 36,
-			StrokeThickness = 1,
-			Stroke = AppConstants.Primary,
-			StrokeShape = new RoundRectangle { CornerRadius = 8 }
+			HorizontalOptions = LayoutOptions.Center
 		};
-		icon.SetDynamicResource(Border.BackgroundColorProperty, tileBg);
-		icon.Content = thumb == "tab_halo"
-			? new Image
-			{
-				Source = "tab_halo.png",
-				WidthRequest = 26,
-				HeightRequest = 26,
-				Aspect = Aspect.AspectFit,
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
-			}
-			: new Label
-			{
-				Text = thumb,
-				FontSize = 11,
-				FontAttributes = FontAttributes.Bold,
-				TextColor = AppConstants.Primary,
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
-			};
+		var label = new Label
+		{
+			FontSize = 14,
+			HorizontalTextAlignment = TextAlignment.Center,
+			Margin = new Thickness(24, 12, 24, 0)
+		};
+		label.SetDynamicResource(Label.TextColorProperty, "OnSurface");
 
-		var titleLbl = new Label
+		var stack = new VerticalStackLayout
 		{
-			Text = title,
-			FontAttributes = FontAttributes.Bold,
-			FontSize = 15
+			Spacing = 0,
+			HorizontalOptions = LayoutOptions.Center,
+			VerticalOptions = LayoutOptions.Center,
+			Children = { indicator, label }
 		};
-		titleLbl.SetDynamicResource(Label.TextColorProperty, "OnSurface");
-		var subLbl = new Label
-		{
-			Text = subtitle,
-			FontSize = 12,
-			LineBreakMode = LineBreakMode.WordWrap
-		};
-		subLbl.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
 
-		var inner = new Grid
-		{
-			ColumnDefinitions = new ColumnDefinitionCollection(
-				new ColumnDefinition(GridLength.Auto),
-				new ColumnDefinition(GridLength.Star),
-				new ColumnDefinition(GridLength.Auto)),
-			RowDefinitions = new RowDefinitionCollection(new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto)),
-			ColumnSpacing = 12
-		};
-		inner.Children.Add(icon);
-		Grid.SetRowSpan(icon, 2);
-		inner.Children.Add(titleLbl);
-		Grid.SetColumn(titleLbl, 1);
-		inner.Children.Add(subLbl);
-		Grid.SetColumn(subLbl, 1);
-		Grid.SetRow(subLbl, 1);
-		var chevron = new Label
-		{
-			Text = "\u203A",
-			FontSize = 28,
-			TextColor = AppConstants.Primary,
-			VerticalOptions = LayoutOptions.Center
-		};
-		inner.Children.Add(chevron);
-		Grid.SetColumn(chevron, 2);
-		Grid.SetRowSpan(chevron, 2);
+		var scrim = new BoxView();
+		scrim.SetDynamicResource(BoxView.ColorProperty, "OverlayScrim");
 
-		row.Content = inner;
-		return row;
+		var overlay = new Grid
+		{
+			IsVisible = false,
+			InputTransparent = true,
+			Children = { scrim, stack }
+		};
+		return (overlay, indicator, label);
 	}
 
 	protected override void OnAppearing()
@@ -488,15 +359,15 @@ public sealed class MeasureTabPage : ContentPage
 		base.OnAppearing();
 		ApplyNavigationChrome();
 		RefreshShellNavigation();
-		if (_halo2.IsVisible)
+		if (_halo2 is { IsVisible: true })
 			_halo2.SyncSettingsFromPreferences();
 	}
 
 	public void ApplyTheme()
 	{
-		_photometer.ApplyTheme();
-		_multimeter.ApplyTheme();
-		_halo2.ApplyTheme();
+		_photometer?.ApplyTheme();
+		_multimeter?.ApplyTheme();
+		_halo2?.ApplyTheme();
 		if (_viewModel.ActiveDevice is null)
 			_viewModel.RefreshForTheme();
 		ApplyNavigationChrome();

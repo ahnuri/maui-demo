@@ -220,6 +220,11 @@ public partial class AppFlyoutViewModel : LocalizedViewModelBase
 				_session.SignOut();
 				await shell.GoToAsync("//home");
 				return;
+			case FlyoutNavAction.ShellRoute when item.Id == "measure":
+				_selectedRouteId = item.Id;
+				UpdateSelectionStates();
+				await shell.PresentMeasureDevicePickerAsync();
+				return;
 			case FlyoutNavAction.ShellRoute when !string.IsNullOrEmpty(item.ShellRoute):
 				_selectedRouteId = item.Id;
 				UpdateSelectionStates();

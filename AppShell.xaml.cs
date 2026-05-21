@@ -18,9 +18,9 @@ public partial class AppShell : Shell
 	string? _lastNavLocation;
 	LocalizationService? _localization;
 	MeasureDeviceKind? _pendingMeasureDevice;
-	bool _suppressMeasurePicker;
 	readonly AppFlyoutViewModel _flyoutViewModel;
 	readonly AppFlyoutView _flyoutView;
+	readonly MeasureDevicePickerPresenter _measureDevicePicker;
 
 	public AppShell()
 	{
@@ -30,6 +30,7 @@ public partial class AppShell : Shell
 		var appHost = (App)Application.Current!;
 		_flyoutViewModel = appHost.Services.GetRequiredService<AppFlyoutViewModel>();
 		_flyoutView = appHost.Services.GetRequiredService<AppFlyoutView>();
+		_measureDevicePicker = new MeasureDevicePickerPresenter(OnMeasureDevicePickedAsync);
 		FlyoutContent = _flyoutView;
 
 		PropertyChanged += (_, e) =>
@@ -48,7 +49,10 @@ public partial class AppShell : Shell
 		Navigated += OnShellNavigated;
 		ApplyShellChrome();
 		_flyoutViewModel.SetSelectedRoute(CurrentState?.Location?.OriginalString);
+		Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(600), PreWarmMeasureTab);
 	}
+
+	public void PreWarmMeasureTab() => _ = MeasureShellContent.Content;
 
 	void OnLocalizationCultureChanged(object? sender, EventArgs e) =>
 		MainThread.BeginInvokeOnMainThread(RefreshShellLocalization);
@@ -107,33 +111,65 @@ public partial class AppShell : Shell
 		var loc = e.Current?.Location?.OriginalString ?? string.Empty;
 		var wasMeasure = IsMeasureRoute(_lastNavLocation);
 		var isMeasure = IsMeasureRoute(loc);
-		if (isMeasure && !wasMeasure && MeasureShellContent.Content is MeasureTabPage mp)
+		if (isMeasure && !wasMeasure && _pendingMeasureDevice is { } pending
+		    && MeasureShellContent.Content is MeasureTabPage mp)
 		{
-			if (_pendingMeasureDevice is { } device)
-			{
-				mp.SelectDevice(device);
-				_pendingMeasureDevice = null;
-				_suppressMeasurePicker = false;
-			}
-			else if (!_suppressMeasurePicker)
-			{
-				mp.ShowDevicePicker();
-			}
+			mp.SelectDevice(pending);
+			_pendingMeasureDevice = null;
 		}
 
 		_lastNavLocation = loc;
 	}
 
+	/// <summary>True when the shell is already on the Measure tab.</summary>
+	public bool IsOnMeasureTab() => IsMeasureRoute(CurrentState?.Location?.OriginalString);
+
+	MeasureTabPage? GetMeasureTabPage() => MeasureShellContent.Content as MeasureTabPage;
+
+	/// <summary>Shows device picker on the current page without navigating away first.</summary>
+	public Task PresentMeasureDevicePickerAsync() => _measureDevicePicker.PresentAsync();
+
+	async Task OnMeasureDevicePickedAsync(MeasureDeviceKind kind)
+	{
+		if (IsOnMeasureTab() && GetMeasureTabPage() is MeasureTabPage measureTab)
+		{
+			measureTab.SelectDevice(kind);
+			return;
+		}
+
+		await NavigateToMeasureDeviceAsync(kind);
+	}
+
+	static string GetOpeningMessage(MeasureDeviceKind kind) => kind switch
+	{
+		MeasureDeviceKind.Photometer => "Opening photometer…",
+		MeasureDeviceKind.Multimeter => "Opening multiparameter…",
+		MeasureDeviceKind.Halo2 => "Opening Halo 2…",
+		_ => "Loading…"
+	};
+
 	/// <summary>Switch to Measure tab and open the given device view.</summary>
 	public async Task NavigateToMeasureDeviceAsync(MeasureDeviceKind device)
 	{
-		_pendingMeasureDevice = device;
-		_suppressMeasurePicker = true;
-		await GoToAsync("//measure");
-		if (MeasureShellContent.Content is MeasureTabPage mp)
+		var showNavigating = !IsOnMeasureTab();
+		if (showNavigating)
+			_measureDevicePicker.ShowNavigating(GetOpeningMessage(device));
+
+		try
 		{
-			mp.SelectDevice(device);
-			_pendingMeasureDevice = null;
+			_pendingMeasureDevice = device;
+			await GoToAsync("//measure");
+
+			if (_pendingMeasureDevice is not null && GetMeasureTabPage() is MeasureTabPage mp)
+			{
+				mp.SelectDevice(device);
+				_pendingMeasureDevice = null;
+			}
+		}
+		finally
+		{
+			if (showNavigating)
+				_measureDevicePicker.HideNavigating();
 		}
 	}
 
