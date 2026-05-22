@@ -65,6 +65,12 @@ public partial class App : Application
 				case Halo2LogDetailPage halo2LogDetail:
 					halo2LogDetail.ApplyTheme();
 					break;
+				case LogHistoryDeviceLogsPage deviceLogs:
+					deviceLogs.ApplyTheme();
+					break;
+				case LogHistoryTankReadingsPage tankReadings:
+					tankReadings.ApplyTheme();
+					break;
 			}
 		}
 	}

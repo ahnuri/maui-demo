@@ -37,14 +37,56 @@ public static class NavToolbar
 	}
 
 	/// <summary>Pushed detail pages with a fixed title (not Shell tab labels).</summary>
-	public static void ConfigureDetail(ContentPage page, string title)
+	public static void ConfigureDetail(ContentPage page, string title, string? subtitle = null)
 	{
 		if (Application.Current is not App app)
 			return;
 
-		page.Title = title;
+		if (string.IsNullOrWhiteSpace(subtitle))
+		{
+			Shell.SetTitleView(page, null);
+			page.Title = title;
+		}
+		else
+		{
+			page.Title = string.Empty;
+			Shell.SetTitleView(page, CreateTitleStack(title, subtitle));
+		}
+
 		page.ToolbarItems.Clear();
 		page.ToolbarItems.Add(CreateSettingsItem(page, app, app.Services.GetRequiredService<LocalizationService>()));
+	}
+
+	static View CreateTitleStack(string title, string subtitle)
+	{
+		var titleLabel = new Label
+		{
+			Text = title,
+			FontSize = 17,
+			FontAttributes = FontAttributes.Bold,
+			HorizontalTextAlignment = TextAlignment.Center,
+			LineBreakMode = LineBreakMode.TailTruncation,
+			MaxLines = 1
+		};
+		titleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurface");
+
+		var subtitleLabel = new Label
+		{
+			Text = subtitle,
+			FontSize = 12,
+			HorizontalTextAlignment = TextAlignment.Center,
+			LineBreakMode = LineBreakMode.TailTruncation,
+			MaxLines = 2
+		};
+		subtitleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
+
+		return new VerticalStackLayout
+		{
+			Spacing = 1,
+			VerticalOptions = LayoutOptions.Center,
+			HorizontalOptions = LayoutOptions.Center,
+			Children = { titleLabel, subtitleLabel }
+		};
 	}
 
 	static ToolbarItem CreateBluetoothScanItem(ContentPage page, App app, LocalizationService loc) => new()

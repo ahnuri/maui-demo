@@ -50,7 +50,7 @@ public partial class HannaCloudSettingsViewModel : LocalizedViewModelBase
 		var halo2 = new CloudSyncDeviceItem
 		{
 			Name = Loc.T("Cloud_Halo2Device"),
-			DeviceIcon = "tab_halo.png",
+			DeviceIcon = "halo2_device_icon.png",
 			HasChildOptions = true,
 			IsEnabled = true,
 			LogFilesEnabled = true,

@@ -137,7 +137,7 @@ public partial class DeviceViewModel : PageViewModelBase
 	{
 		MeasureDeviceKind.Photometer => "tab_photometer.png",
 		MeasureDeviceKind.Multimeter => "tab_multimeter.png",
-		MeasureDeviceKind.Halo2 => "tab_halo.png",
+		MeasureDeviceKind.Halo2 => "halo2_device_icon.png",
 		_ => InferIcon(name)
 	};
 
@@ -153,7 +153,7 @@ public partial class DeviceViewModel : PageViewModelBase
 	{
 		var n = name.ToUpperInvariant();
 		if (n.Contains("HALO"))
-			return "tab_halo.png";
+			return "halo2_device_icon.png";
 		if (n.Contains("97115") || n.Contains("PHOTO") || n.Contains("PT1"))
 			return "tab_photometer.png";
 		if (n.Contains("98494") || n.Contains("98X") || n.Contains("MULTI"))

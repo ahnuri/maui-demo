@@ -277,7 +277,7 @@ public sealed class MeasureDevicePickerPresenter
 		icon.Content = thumb == "tab_halo"
 			? new Image
 			{
-				Source = "tab_halo.png",
+				Source = "halo2_device_icon.png",
 				WidthRequest = 26,
 				HeightRequest = 26,
 				Aspect = Aspect.AspectFit,

@@ -9,7 +9,7 @@ public sealed class UserSessionService
 	const string ProfilePrefix = "hanna_profile_";
 
 	public bool IsLoggedIn { get; private set; }
-	public string Email { get; private set; } = "abdul.nuri@hannalab.com";
+	public string Email { get; private set; } = "abdul@hannainst.in";
 	public bool IsVerified => Preferences.Get("hanna_verified", true);
 
 	/// <summary>When logged in, true = cloud sync active (green), false = paused (grey).</summary>
@@ -22,7 +22,7 @@ public sealed class UserSessionService
 	public void Load()
 	{
 		IsLoggedIn = Preferences.Get(LoggedInKey, true);
-		Email = Preferences.Get(EmailKey, "abdul.nuri@hannalab.com");
+		Email = Preferences.Get(EmailKey, "abdul@hannainst.in");
 	}
 
 	public string GetDisplayName()

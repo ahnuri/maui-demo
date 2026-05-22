@@ -44,6 +44,8 @@ public static class MauiProgram
 		builder.Services.AddTransient<PhotometerDeviceSettingsPage>();
 		builder.Services.AddTransient<LanguageSelectionPage>();
 		builder.Services.AddTransient<Halo2LogDetailPage>();
+		builder.Services.AddTransient<LogHistoryDeviceLogsPage>();
+		builder.Services.AddTransient<LogHistoryTankReadingsPage>();
 		builder.Services.AddTransient<AppFlyoutView>();
 
 #if DEBUG

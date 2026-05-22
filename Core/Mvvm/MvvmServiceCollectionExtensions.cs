@@ -23,7 +23,9 @@ public static class MvvmServiceCollectionExtensions
 
 		services.AddTransient<Features.Device.DeviceViewModel>();
 		services.AddTransient<HelpViewModel>();
-		services.AddTransient<LogsViewModel>();
+		services.AddTransient<LogHistoryHomeViewModel>();
+		services.AddTransient<LogHistoryDeviceLogsViewModel>();
+		services.AddTransient<LogHistoryTankReadingsViewModel>();
 		services.AddTransient<Halo2LogDetailViewModel>();
 		services.AddTransient<DeviceInfoViewModel>();
 		services.AddTransient<SettingsViewModel>();
