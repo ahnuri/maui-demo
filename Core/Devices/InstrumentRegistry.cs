@@ -3,6 +3,10 @@ namespace HannaUIDemo.Core.Devices;
 /// <summary>Central catalog of instrument families and their UI metadata.</summary>
 public static class InstrumentRegistry
 {
+	// Device-picker icons (PickerIcon). When set, the picker uses an Image control;
+	// when null, it falls back to PickerThumbText as a tinted text badge.
+	// Halo 2 already used its product shot; we now do the same for the other two so the
+	// picker is visually consistent across all instruments.
 	static readonly InstrumentFamily[] Families =
 	[
 		new(
@@ -10,7 +14,7 @@ public static class InstrumentRegistry
 			"HI97115 - Meter",
 			"Wireless photometer",
 			"HI",
-			null,
+			"photometer_hi97115.png",
 			PickerUsesTealAccent: true,
 			MeasureNavigationTitleKey: "HI97115 - Meter",
 			OpeningMessage: "Opening photometer…"),
@@ -19,7 +23,7 @@ public static class InstrumentRegistry
 			"HI98x94 - Multiparameter",
 			"Log recall & download",
 			"94",
-			null,
+			"hi98494_multimeter_icon.png",
 			PickerUsesTealAccent: false,
 			MeasureNavigationTitleKey: "HI98x94 - Multiparameter",
 			OpeningMessage: "Opening multiparameter…"),

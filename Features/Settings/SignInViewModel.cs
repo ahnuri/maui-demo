@@ -16,7 +16,9 @@ public partial class SignInViewModel : LocalizedViewModelBase
 	public SignInViewModel(UserSessionService session)
 	{
 		_session = session;
-		_email = session.Email;
+		// Email is the UI demo's signature — always show the fixed identity regardless of
+		// what the previous session persisted. The Sign-In page binds this read-only.
+		_email = UserSessionService.DemoEmail;
 		_password = "demo";
 		ApplyLocalization();
 	}

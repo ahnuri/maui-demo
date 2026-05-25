@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:logs="clr-namespace:HannaUIDemo.Features.Instruments.Logs"
+             x:Class="HannaUIDemo.Features.Instruments.Logs.LogsTabPage"
+             Title="Log History"
+             BackgroundColor="{DynamicResource PageBackground}"
+             Shell.NavBarIsVisible="True"
+             Shell.NavBarHasShadow="False"
+             Shell.BackgroundColor="{DynamicResource PageBackground}">
+    <logs:LogHistoryHomeView x:Name="RootView" />
+</ContentPage>

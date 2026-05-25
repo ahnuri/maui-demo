@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Instruments.Photometer.Logs.LogHistoryTankReadingsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:photoLogs="clr-namespace:HannaUIDemo.Features.Instruments.Photometer.Logs"
+    x:DataType="photoLogs:LogHistoryTankReadingsViewModel"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="PhotometerReadingTemplate" x:DataType="photoLogs:PhotometerLogReadingViewModel">
+            <Grid Padding="0,10" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" RowDefinitions="Auto,Auto,Auto" RowSpacing="2">
+                <Label FontAttributes="Bold" FontSize="14" Text="{Binding ParameterName}" TextColor="{DynamicResource OnSurface}" />
+                <Label Grid.Row="1" FontSize="13" Text="{Binding ValueDisplay}" TextColor="{DynamicResource OnSurface}" />
+                <Label Grid.Row="2" FontSize="11" Text="{Binding Note}" TextColor="{DynamicResource OnSurfaceMuted}" />
+                <Label Grid.Column="1" Grid.RowSpan="3" FontSize="11" HorizontalTextAlignment="End" LineBreakMode="WordWrap" MaxLines="3" Text="{Binding Timestamp}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" WidthRequest="108" />
+                <Image
+                    Grid.Column="2"
+                    Grid.RowSpan="3"
+                    WidthRequest="22"
+                    HeightRequest="22"
+                    Aspect="AspectFit"
+                    SemanticProperties.Description="{Binding CloudUploadAccessibilityHint}"
+                    Source="{Binding CloudSyncIconSource}"
+                    VerticalOptions="Center" />
+            </Grid>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout Grid.Row="0" Padding="16,12,16,0" Spacing="8">
+            <VerticalStackLayout Spacing="2">
+                <Label FontAttributes="Bold" FontSize="17" Text="{Binding TankTitle}" TextColor="{DynamicResource OnSurface}" />
+                <Label FontSize="12" Text="{Binding TankSubtitle}" TextColor="{DynamicResource OnSurfaceVariant}" />
+            </VerticalStackLayout>
+            <Button BackgroundColor="Transparent" Command="{Binding RenameTankCommand}" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" Text="Rename tank" TextColor="{StaticResource Primary}" />
+            <Border Padding="12,10" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+                    <Label FontSize="12" Text="From:" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Border Grid.Column="1" Padding="10,6" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label FontSize="12" Text="{Binding DateFrom}" TextColor="{DynamicResource OnSurface}" />
+                    </Border>
+                    <Label Grid.Column="2" FontSize="12" Text="To:" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Border Grid.Column="3" Padding="10,6" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label FontSize="12" Text="{Binding DateTo}" TextColor="{DynamicResource OnSurface}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,8,16,24" BindableLayout.ItemTemplate="{StaticResource PhotometerReadingTemplate}" BindableLayout.ItemsSource="{Binding Readings}" Spacing="0" />
+        </ScrollView>
+    </Grid>
+</ContentView>

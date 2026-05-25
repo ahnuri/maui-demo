@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Instruments.Logs.LogHistoryDeviceLogsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:logs="clr-namespace:HannaUIDemo.Features.Instruments.Logs"
+    x:DataType="logs:LogHistoryDeviceLogsViewModel"
+    x:Name="RootDeviceLogsView"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="ModelFilterChipTemplate" x:DataType="logs:LogModelFilterChipViewModel">
+            <Border HeightRequest="52" Padding="14,10" BackgroundColor="{Binding BackgroundColor}" Stroke="{Binding StrokeColor}" StrokeThickness="1.5" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootDeviceLogsView}, Path=BindingContext.SelectModelFilterCommand}" CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="3" VerticalOptions="Center">
+                    <Label FontAttributes="{Binding FontAttributes}" FontSize="14" HorizontalTextAlignment="Center" Text="{Binding Label}" TextColor="{Binding TextColor}" />
+                    <Label FontSize="11" HorizontalTextAlignment="Center" Text="{Binding CountLine}" TextColor="{Binding TextColor}" />
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TankGroupTemplate" x:DataType="logs:LogTankGroupViewModel">
+            <Border Margin="0,0,0,8" Padding="12" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenTankCommand}" />
+                </Border.GestureRecognizers>
+                <!-- Layout (per design):
+                       Row 0: TankName  sync_icon . . . . . . . . . .
+                       Row 1: date → date  . . . . . . . . . . chevron (mid-right)
+                       Row 2: file/record summary
+                -->
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="3" ColumnSpacing="8">
+                    <HorizontalStackLayout Grid.ColumnSpan="2" Spacing="8" VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            LineBreakMode="TailTruncation"
+                            MaxLines="1"
+                            Text="{Binding TankName}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                        <Image
+                            WidthRequest="18"
+                            HeightRequest="18"
+                            Aspect="AspectFit"
+                            SemanticProperties.Description="{Binding CloudUploadAccessibilityHint}"
+                            Source="{Binding CloudSyncIconSource}"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label
+                        Grid.Row="1"
+                        FontSize="11"
+                        Text="{Binding DateRangeSummary}"
+                        TextColor="{DynamicResource OnSurfaceVariant}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        FontSize="20"
+                        IsVisible="{Binding ShowDetailChevron}"
+                        Text="&#x203A;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Spacing="10">
+                        <Label FontSize="11" Text="{Binding FileCountLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <Label FontAttributes="Bold" FontSize="11" Text="{Binding RecordCountLabel}" TextColor="{StaticResource Primary}" />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="LogEntryTemplate" x:DataType="logs:LogEntryViewModel">
+            <Border Margin="0,0,0,8" Padding="12" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{Binding CardStroke}" StrokeThickness="1.5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenLogCommand}" />
+                </Border.GestureRecognizers>
+                <!-- Layout (per design):
+                       Row 0: File_name sync_icon . . . . . . . . . .
+                       Row 1: date → date  . . . . . . . . . . chevron (mid-right)
+                       Row 2: records pill
+                -->
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                    <CheckBox Grid.RowSpan="3" IsChecked="{Binding IsSelected}" IsVisible="{Binding IsEditModeActive}" Color="{StaticResource Primary}" VerticalOptions="Start" />
+                    <HorizontalStackLayout Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            LineBreakMode="TailTruncation"
+                            MaxLines="1"
+                            Text="{Binding Title}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                        <Image
+                            WidthRequest="18"
+                            HeightRequest="18"
+                            Aspect="AspectFit"
+                            SemanticProperties.Description="{Binding CloudUploadAccessibilityHint}"
+                            Source="{Binding CloudSyncIconSource}"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Grid.Row="1" Grid.Column="1" FontSize="11" Text="{Binding DateRangeLabel}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        FontSize="20"
+                        IsVisible="{Binding ShowDetailChevron}"
+                        Text="&#x203A;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Border Grid.Row="2" Grid.Column="1" Padding="6,3" BackgroundColor="{Binding RecordCountBackground}" HorizontalOptions="Start" IsVisible="{Binding ShowRecordCount}" StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6" />
+                        </Border.StrokeShape>
+                        <Label FontAttributes="Bold" FontSize="10" Text="{Binding RecordCount, StringFormat='{0} records'}" TextColor="{Binding RecordCountColor}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ModelSectionTemplate" x:DataType="logs:LogModelSectionViewModel">
+            <Border Margin="0,0,0,14" Padding="14" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Image
+                            Grid.RowSpan="2"
+                            HeightRequest="28"
+                            WidthRequest="28"
+                            Source="{Binding DeviceIcon}"
+                            Aspect="AspectFit"
+                            VerticalOptions="Center" />
+                        <Label
+                            Grid.Column="1"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding DeviceLabel}"
+                            TextColor="{DynamicResource OnSurface}"
+                            VerticalOptions="Center" />
+                        <Label
+                            Grid.Column="2"
+                            FontAttributes="Bold"
+                            FontSize="11"
+                            HorizontalTextAlignment="End"
+                            LineBreakMode="NoWrap"
+                            Text="{Binding SummaryLabel}"
+                            TextColor="{Binding Accent}"
+                            VerticalOptions="Center" />
+                        <Grid Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                            <Label
+                                FontSize="11"
+                                HorizontalTextAlignment="Start"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding FirmwareLabel}"
+                                TextColor="{DynamicResource OnSurfaceVariant}"
+                                VerticalOptions="Center" />
+                            <BoxView
+                                Grid.Column="1"
+                                WidthRequest="1"
+                                HeightRequest="14"
+                                Color="{DynamicResource Divider}"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center" />
+                            <Label
+                                Grid.Column="2"
+                                FontSize="11"
+                                HorizontalOptions="Fill"
+                                HorizontalTextAlignment="End"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding BleLabel}"
+                                TextColor="{DynamicResource OnSurfaceVariant}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{DynamicResource Divider}" />
+                    <VerticalStackLayout BindableLayout.ItemTemplate="{StaticResource TankGroupTemplate}" BindableLayout.ItemsSource="{Binding TankGroups}" IsVisible="{Binding IsPhotometer}" Spacing="0" />
+                    <VerticalStackLayout BindableLayout.ItemTemplate="{StaticResource LogEntryTemplate}" BindableLayout.ItemsSource="{Binding LogEntries}" IsVisible="{Binding IsPhotometer, Converter={StaticResource InvertedBoolConverter}}" Spacing="0" />
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <VerticalStackLayout Grid.Row="0" Padding="16,8,16,0" Spacing="8">
+            <Label FontSize="11" Text="{Binding ModelFilterHint}" TextColor="{DynamicResource OnSurfaceMuted}" />
+            <ScrollView HeightRequest="56" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                <HorizontalStackLayout BindableLayout.ItemTemplate="{StaticResource ModelFilterChipTemplate}" BindableLayout.ItemsSource="{Binding ModelFilters}" Spacing="8" VerticalOptions="Center" />
+            </ScrollView>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding ShowLogActionRow}">
+                <Label
+                    FontSize="12"
+                    IsVisible="{Binding ShowEditModeActions}"
+                    Text="Tap logs to select"
+                    TextColor="{DynamicResource OnSurfaceVariant}"
+                    VerticalOptions="Center" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="16" HorizontalOptions="End" VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        IsVisible="{Binding ShowEditModeActions}"
+                        Text="Select all"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectAllVisibleCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label
+                        FontSize="12"
+                        IsVisible="{Binding ShowClearSelection}"
+                        Text="Clear"
+                        TextColor="{DynamicResource OnSurfaceVariant}"
+                        VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ClearSelectionCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        Text="{Binding EditModeButtonText}"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleEditModeCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,8,16,24" BindableLayout.ItemTemplate="{StaticResource ModelSectionTemplate}" BindableLayout.ItemsSource="{Binding ModelSections}" Spacing="0" />
+        </ScrollView>
+
+        <Border Grid.Row="2" Padding="14,10" BackgroundColor="{DynamicResource Surface}" IsVisible="{Binding ShowSelectionBar}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+            <VerticalStackLayout Spacing="8">
+                <Label FontAttributes="Bold" FontSize="13" Text="{Binding SelectionSummary}" TextColor="{DynamicResource OnSurface}" />
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Button BackgroundColor="{StaticResource Primary}" Command="{Binding ShareSelectedCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" Text="Share" TextColor="White" />
+                    <Button Grid.Column="1" BackgroundColor="Transparent" BorderColor="{DynamicResource Divider}" BorderWidth="1" Command="{Binding DeleteSelectedCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" Text="Delete" TextColor="{DynamicResource OnSurface}" />
+                    <Button Grid.Column="2" BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1.5" Command="{Binding SyncSelectedToCloudCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" IsEnabled="{Binding IsSyncing, Converter={StaticResource InvertedBoolConverter}}" Text="Sync" TextColor="{StaticResource Primary}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

@@ -2,14 +2,24 @@ using HannaUIDemo.Features.Device;
 
 namespace HannaUIDemo.Core.Devices;
 
-/// <summary>Resolves Maui image asset names and thumb text for instrument rows.</summary>
+/// <summary>
+/// Resolves Maui image asset names and thumb text for instrument rows.
+/// Single source of truth for the three canonical product-shot icons:
+///   • Photometer  → <see cref="PhotometerIcon"/>
+///   • Multimeter  → <see cref="MultimeterIcon"/>
+///   • Halo 2      → <see cref="Halo2Icon"/>
+/// </summary>
 public static class DeviceIconResolver
 {
+	public const string PhotometerIcon = "photometer_hi97115.png";
+	public const string MultimeterIcon = "hi98494_multimeter_icon.png";
+	public const string Halo2Icon = "halo2_device_icon.png";
+
 	public static string? ResolveIcon(InstrumentKind? kind, string name) => kind switch
 	{
-		InstrumentKind.Photometer => "tab_photometer.png",
-		InstrumentKind.Multimeter => "tab_multimeter.png",
-		InstrumentKind.Halo2 => "halo2_device_icon.png",
+		InstrumentKind.Photometer => PhotometerIcon,
+		InstrumentKind.Multimeter => MultimeterIcon,
+		InstrumentKind.Halo2 => Halo2Icon,
 		_ => InferIcon(name)
 	};
 
@@ -25,11 +35,11 @@ public static class DeviceIconResolver
 	{
 		var n = name.ToUpperInvariant();
 		if (n.Contains("HALO"))
-			return "halo2_device_icon.png";
+			return Halo2Icon;
 		if (n.Contains("97115") || n.Contains("PHOTO") || n.Contains("PT1"))
-			return "tab_photometer.png";
+			return PhotometerIcon;
 		if (n.Contains("98494") || n.Contains("98X") || n.Contains("MULTI"))
-			return "tab_multimeter.png";
+			return MultimeterIcon;
 		return null;
 	}
 }

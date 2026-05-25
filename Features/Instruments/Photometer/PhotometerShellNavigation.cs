@@ -1,5 +1,6 @@
 using HannaUIDemo;
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Core.Helpers;
 using HannaUIDemo.Features.Measure;
 
@@ -23,8 +24,11 @@ internal static class PhotometerShellNavigation
 
 		if (photometer.IsNewAnalysis)
 		{
-			host.ClearTitleView();
-			host.SetTitle(tabViewModel.NavigationTitle);
+			// Landing state: "[photometer icon]  HI97115 - Meter".
+			// Clear page.Title so platforms don't render the string title alongside the
+			// custom TitleView (Android duplicates otherwise).
+			host.SetTitle(string.Empty);
+			host.SetTitleView(BuildLandingTitleView(tabViewModel.NavigationTitle));
 		}
 		else
 		{
@@ -64,6 +68,40 @@ internal static class PhotometerShellNavigation
 
 		if (Application.Current is App app)
 			host.AddToolbarItem(NavToolbar.CreateProfileItem(host.Page, app));
+	}
+
+	/// <summary>
+	/// Photometer landing title: device icon followed by the meter name. Mirrors the
+	/// multimeter nav title style so the three instrument families share a consistent header.
+	/// </summary>
+	static View BuildLandingTitleView(string meterName)
+	{
+		var icon = new Image
+		{
+			Source = DeviceIconResolver.PhotometerIcon,
+			Aspect = Aspect.AspectFit,
+			WidthRequest = 22,
+			HeightRequest = 22,
+			VerticalOptions = LayoutOptions.Center
+		};
+
+		var label = new Label
+		{
+			Text = meterName,
+			FontSize = 17,
+			FontAttributes = FontAttributes.Bold,
+			VerticalOptions = LayoutOptions.Center,
+			LineBreakMode = LineBreakMode.TailTruncation
+		};
+		label.SetDynamicResource(Label.TextColorProperty, "OnSurface");
+
+		return new HorizontalStackLayout
+		{
+			Spacing = 8,
+			VerticalOptions = LayoutOptions.Center,
+			HorizontalOptions = LayoutOptions.Center,
+			Children = { icon, label }
+		};
 	}
 
 	static View BuildFlowTitleView(string meterName, string tankName)

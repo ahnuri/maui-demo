@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HannaUIDemo.Core.Auth;
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Core.Mvvm;
 
 namespace HannaUIDemo.Features.Settings;
@@ -50,7 +51,7 @@ public partial class HannaCloudSettingsViewModel : LocalizedViewModelBase
 		var halo2 = new CloudSyncDeviceItem
 		{
 			Name = Loc.T("Cloud_Halo2Device"),
-			DeviceIcon = "halo2_device_icon.png",
+			DeviceIcon = DeviceIconResolver.Halo2Icon,
 			HasChildOptions = true,
 			IsEnabled = true,
 			LogFilesEnabled = true,
@@ -61,8 +62,9 @@ public partial class HannaCloudSettingsViewModel : LocalizedViewModelBase
 		halo2.RefreshChildVisibility();
 		Devices.Add(halo2);
 
-		Devices.Add(new CloudSyncDeviceItem { Name = "HI97115 Marine Photometer", DeviceIcon = "tab_photometer.png", IsEnabled = true });
-		Devices.Add(new CloudSyncDeviceItem { Name = "HI98494 Multiparameter Meter", DeviceIcon = "tab_multimeter.png", IsEnabled = true });
-		Devices.Add(new CloudSyncDeviceItem { Name = "HI98594 Multiparameter Meter", DeviceIcon = "tab_multimeter.png", IsEnabled = true });
+		// All multimeter SKUs share the same canonical product-shot icon for visual consistency.
+		Devices.Add(new CloudSyncDeviceItem { Name = "HI97115 Marine Photometer", DeviceIcon = DeviceIconResolver.PhotometerIcon, IsEnabled = true });
+		Devices.Add(new CloudSyncDeviceItem { Name = "HI98494 Multiparameter Meter", DeviceIcon = DeviceIconResolver.MultimeterIcon, IsEnabled = true });
+		Devices.Add(new CloudSyncDeviceItem { Name = "HI98594 Multiparameter Meter", DeviceIcon = DeviceIconResolver.MultimeterIcon, IsEnabled = true });
 	}
 }

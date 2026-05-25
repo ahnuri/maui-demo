@@ -17,7 +17,9 @@
 
             <Border Padding="14,12" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">
                 <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
-                <Entry Keyboard="Email" Placeholder="{Binding EmailPlaceholder}" Text="{Binding Email}" TextColor="{DynamicResource OnSurface}" />
+                <!-- Email is the demo UI signature (abdul@hannainst.in). Pinned read-only so
+                     reviewers always see the same identity; behaviour-only, no visual disabling. -->
+                <Entry IsReadOnly="True" Keyboard="Email" Placeholder="{Binding EmailPlaceholder}" Text="{Binding Email}" TextColor="{DynamicResource OnSurface}" />
             </Border>
 
             <Border Padding="14,12" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="0.5">

@@ -8,8 +8,15 @@ public sealed class UserSessionService
 	public const string CloudSyncEnabledKey = "hanna_cloud_sync_enabled";
 	const string ProfilePrefix = "hanna_profile_";
 
+	/// <summary>
+	/// Fixed demo identity for this UI prototype. Treated as the "signature" of the demo —
+	/// the Sign-In screen pins the email field to this value (read-only) so reviewers always
+	/// see the same account, no matter the persisted session state.
+	/// </summary>
+	public const string DemoEmail = "abdul@hannainst.in";
+
 	public bool IsLoggedIn { get; private set; }
-	public string Email { get; private set; } = "abdul@hannainst.in";
+	public string Email { get; private set; } = DemoEmail;
 	public bool IsVerified => Preferences.Get("hanna_verified", true);
 
 	/// <summary>When logged in, true = cloud sync active (green), false = paused (grey).</summary>
@@ -22,7 +29,7 @@ public sealed class UserSessionService
 	public void Load()
 	{
 		IsLoggedIn = Preferences.Get(LoggedInKey, true);
-		Email = Preferences.Get(EmailKey, "abdul@hannainst.in");
+		Email = Preferences.Get(EmailKey, DemoEmail);
 	}
 
 	public string GetDisplayName()

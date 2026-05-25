@@ -36,28 +36,38 @@ public static class NavToolbar
 			page.ToolbarItems.Add(CreateDisconnectItem(loc, onDisconnectAsync));
 	}
 
-	/// <summary>Pushed detail pages with a fixed title (not Shell tab labels).</summary>
-	public static void ConfigureDetail(ContentPage page, string title, string? subtitle = null)
+	/// <summary>
+	/// Pushed detail pages with a fixed title (not Shell tab labels).
+	/// When <paramref name="iconSource"/> is supplied the title is rendered as
+	/// <c>[icon]  title</c> (with <paramref name="subtitle"/> stacked under the title if present).
+	/// </summary>
+	public static void ConfigureDetail(ContentPage page, string title, string? subtitle = null, string? iconSource = null)
 	{
 		if (Application.Current is not App app)
 			return;
 
-		if (string.IsNullOrWhiteSpace(subtitle))
+		var hasIcon = !string.IsNullOrWhiteSpace(iconSource);
+		var hasSubtitle = !string.IsNullOrWhiteSpace(subtitle);
+
+		if (!hasIcon && !hasSubtitle)
 		{
+			// Cheapest path — let Shell render its standard title label.
 			Shell.SetTitleView(page, null);
 			page.Title = title;
 		}
 		else
 		{
+			// Custom TitleView replaces the platform title; clear page.Title so platforms
+			// (Android in particular) don't render both the string and the view.
 			page.Title = string.Empty;
-			Shell.SetTitleView(page, CreateTitleStack(title, subtitle));
+			Shell.SetTitleView(page, CreateTitleStack(title, subtitle, iconSource));
 		}
 
 		page.ToolbarItems.Clear();
 		page.ToolbarItems.Add(CreateSettingsItem(page, app, app.Services.GetRequiredService<LocalizationService>()));
 	}
 
-	static View CreateTitleStack(string title, string subtitle)
+	static View CreateTitleStack(string title, string? subtitle, string? iconSource)
 	{
 		var titleLabel = new Label
 		{
@@ -65,27 +75,58 @@ public static class NavToolbar
 			FontSize = 17,
 			FontAttributes = FontAttributes.Bold,
 			HorizontalTextAlignment = TextAlignment.Center,
+			VerticalOptions = LayoutOptions.Center,
 			LineBreakMode = LineBreakMode.TailTruncation,
 			MaxLines = 1
 		};
 		titleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurface");
 
-		var subtitleLabel = new Label
+		View textBlock;
+		if (!string.IsNullOrWhiteSpace(subtitle))
 		{
-			Text = subtitle,
-			FontSize = 12,
-			HorizontalTextAlignment = TextAlignment.Center,
-			LineBreakMode = LineBreakMode.TailTruncation,
-			MaxLines = 2
-		};
-		subtitleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
+			var subtitleLabel = new Label
+			{
+				Text = subtitle,
+				FontSize = 12,
+				HorizontalTextAlignment = TextAlignment.Center,
+				LineBreakMode = LineBreakMode.TailTruncation,
+				MaxLines = 2
+			};
+			subtitleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
 
-		return new VerticalStackLayout
+			textBlock = new VerticalStackLayout
+			{
+				Spacing = 1,
+				VerticalOptions = LayoutOptions.Center,
+				HorizontalOptions = LayoutOptions.Center,
+				Children = { titleLabel, subtitleLabel }
+			};
+		}
+		else
 		{
-			Spacing = 1,
+			textBlock = titleLabel;
+		}
+
+		if (string.IsNullOrWhiteSpace(iconSource))
+			return textBlock;
+
+		// Icon + text composition for "device_icon  device name" headers on per-device
+		// detail screens (log history per family, photometer measure landing, etc.).
+		var icon = new Image
+		{
+			Source = iconSource,
+			Aspect = Aspect.AspectFit,
+			WidthRequest = 22,
+			HeightRequest = 22,
+			VerticalOptions = LayoutOptions.Center
+		};
+
+		return new HorizontalStackLayout
+		{
+			Spacing = 8,
 			VerticalOptions = LayoutOptions.Center,
 			HorizontalOptions = LayoutOptions.Center,
-			Children = { titleLabel, subtitleLabel }
+			Children = { icon, textBlock }
 		};
 	}
 

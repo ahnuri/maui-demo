@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HannaUIDemo.Features.Instruments.Photometer.Logs.LogHistoryTankReadingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:photoLogs="clr-namespace:HannaUIDemo.Features.Instruments.Photometer.Logs"
+    BackgroundColor="{DynamicResource PageBackground}"
+    Shell.NavBarIsVisible="True"
+    Shell.NavBarHasShadow="False"
+    Shell.BackgroundColor="{DynamicResource PageBackground}">
+    <photoLogs:LogHistoryTankReadingsView x:Name="RootView" />
+</ContentPage>

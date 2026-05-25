@@ -1,4 +1,9 @@
-## .NET / MAUI
+## .NET / MAUI build output
+## Note: these patterns are deliberately ANCHORED to the repo root (leading '/')
+## or scoped to the well-known build folder names. Earlier the unanchored
+## "[Ll]ogs/" was matching every source directory named "Logs/" anywhere in the
+## tree (Features/Instruments/Logs, Features/Instruments/Halo2/Logs, ...),
+## which hid them from VS Code / Cursor search.
 bin/
 obj/
 [Dd]ebug/
@@ -7,11 +12,11 @@ x64/
 x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
+/bld/
+/[Bb]in/
+/[Oo]bj/
+/[Ll]og/
+/[Ll]ogs/
 
 ## Build results
 *.dll

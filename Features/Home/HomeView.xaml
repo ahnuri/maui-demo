@@ -176,7 +176,7 @@
                                 </Border.StrokeShape>
                                 <Image
                                     Aspect="AspectFit"
-                                    Source="hi98594_new.png" />
+                                    Source="hi98494_multimeter_icon.png" />
                             </Border>
                         </Grid>
                     </Grid>

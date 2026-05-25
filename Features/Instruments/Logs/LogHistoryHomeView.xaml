@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Instruments.Logs.LogHistoryHomeView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:logs="clr-namespace:HannaUIDemo.Features.Instruments.Logs"
+    x:DataType="logs:LogHistoryHomeViewModel"
+    x:Name="RootHomeView"
+    BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentView.Resources>
+        <DataTemplate x:Key="DeviceTypeCardTemplate" x:DataType="logs:LogDeviceTypeCardViewModel">
+            <Border
+                Margin="0,0,0,12"
+                Padding="16"
+                BackgroundColor="{DynamicResource Surface}"
+                Stroke="{DynamicResource Divider}"
+                StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource SoftShadow}" Offset="0,2" Opacity="1" Radius="10" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootHomeView}, Path=BindingContext.OpenDeviceTypeCommand}" CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="5">
+                    <Border
+                        Grid.RowSpan="6"
+                        WidthRequest="56"
+                        HeightRequest="56"
+                        BackgroundColor="{Binding AccentBackground}"
+                        Stroke="{Binding Accent}"
+                        StrokeThickness="1.5"
+                        VerticalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Image HeightRequest="32" WidthRequest="32" Source="{Binding DeviceIcon}" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Grid.Column="1" FontAttributes="Bold" FontSize="17" Text="{Binding Title}" TextColor="{DynamicResource OnSurface}" />
+                    <Label Grid.Row="1" Grid.Column="1" FontSize="12" Text="{Binding Subtitle}" TextColor="{DynamicResource OnSurfaceVariant}" LineBreakMode="WordWrap" />
+                    <Label Grid.Row="2" Grid.Column="1" FontSize="11" Text="{Binding LastRecordedLabel, StringFormat='Last recorded: {0}'}" TextColor="{DynamicResource OnSurfaceMuted}" />
+                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Spacing="12">
+                        <Label FontSize="11" Text="{Binding FileCountLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <Label FontAttributes="Bold" FontSize="11" Text="{Binding RecordCountLabel}" TextColor="{Binding Accent}" />
+                    </HorizontalStackLayout>
+                    <Label Grid.Row="4" Grid.Column="1" FontSize="11" Text="{Binding ConnectedLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                    <Border
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        Padding="8,4"
+                        BackgroundColor="{Binding CloudSyncBackground}"
+                        HorizontalOptions="Start"
+                        Stroke="{Binding CloudSyncColor}"
+                        StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label FontSize="10" Text="&#x2601;" TextColor="{Binding CloudSyncColor}" VerticalOptions="Center" />
+                            <Label FontAttributes="Bold" FontSize="11" Text="{Binding CloudSyncLabel}" TextColor="{Binding CloudSyncColor}" />
+                        </HorizontalStackLayout>
+                    </Border>
+                    <Label Grid.Column="2" Grid.RowSpan="6" FontSize="26" Text="&#x203A;" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </ContentView.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,12,16,24" Spacing="8">
+            <Label FontSize="13" Text="Select a device type to view saved logs" TextColor="{DynamicResource OnSurfaceVariant}" />
+            <VerticalStackLayout BindableLayout.ItemTemplate="{StaticResource DeviceTypeCardTemplate}" BindableLayout.ItemsSource="{Binding DeviceTypeCards}" Spacing="0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

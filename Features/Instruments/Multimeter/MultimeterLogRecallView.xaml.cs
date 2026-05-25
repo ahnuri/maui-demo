@@ -75,24 +75,27 @@ public partial class MultimeterLogRecallView : ContentView
 		stats.Children.Add(lodCell);
 		Grid.SetColumn(lodCell, 2);
 
+		// Compact "Sync from meter" chip — smaller padding/font/corner so it doesn't
+		// dominate the log-recall card header.
 		var syncBtn = new Border
 		{
-			Padding = new Thickness(14, 10),
+			Padding = new Thickness(10, 6),
 			Stroke = AppConstants.Primary,
-			StrokeThickness = 1.5,
+			StrokeThickness = 1.2,
 			BackgroundColor = Colors.Transparent,
-			StrokeShape = new RoundRectangle { CornerRadius = 24 },
-			HorizontalOptions = LayoutOptions.End
+			StrokeShape = new RoundRectangle { CornerRadius = 16 },
+			HorizontalOptions = LayoutOptions.End,
+			VerticalOptions = LayoutOptions.Center
 		};
-		var syncInner = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
+		var syncInner = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
 		if (_viewModel.IsSyncing)
 		{
 			syncInner.Children.Add(new ActivityIndicator
 			{
 				IsRunning = true,
 				Color = AppConstants.Primary,
-				WidthRequest = 18,
-				HeightRequest = 18,
+				WidthRequest = 14,
+				HeightRequest = 14,
 				VerticalOptions = LayoutOptions.Center
 			});
 		}
@@ -101,7 +104,7 @@ public partial class MultimeterLogRecallView : ContentView
 			syncInner.Children.Add(new Label
 			{
 				Text = "\u21BB",
-				FontSize = 18,
+				FontSize = 14,
 				TextColor = AppConstants.Primary,
 				VerticalOptions = LayoutOptions.Center
 			});
@@ -111,7 +114,7 @@ public partial class MultimeterLogRecallView : ContentView
 		{
 			Text = _viewModel.IsSyncing ? "Syncing…" : "Sync from meter",
 			FontAttributes = FontAttributes.Bold,
-			FontSize = 13,
+			FontSize = 12,
 			TextColor = AppConstants.Primary,
 			VerticalOptions = LayoutOptions.Center
 		});
