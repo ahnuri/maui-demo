@@ -1,10 +1,11 @@
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Core.Helpers;
 using HannaUIDemo.Core.Localization;
-using HannaUIDemo.Features.Halo2;
+using HannaUIDemo.Features.Instruments.Halo2;
 using HannaUIDemo.Features.Help;
 using HannaUIDemo.Features.Home;
 using HannaUIDemo.Features.Info;
-using HannaUIDemo.Features.Logs;
+using HannaUIDemo.Features.Instruments.Logs;
 using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Flyout;
 using HannaUIDemo.Theme;
@@ -13,11 +14,14 @@ using Microsoft.Maui.ApplicationModel;
 
 namespace HannaUIDemo;
 
+/// <summary>
+/// Root Shell: flyout menu, tab routes (Home, Measure, Logs, Help), and cross-tab navigation helpers.
+/// </summary>
 public partial class AppShell : Shell
 {
 	string? _lastNavLocation;
 	LocalizationService? _localization;
-	MeasureDeviceKind? _pendingMeasureDevice;
+	InstrumentKind? _pendingMeasureDevice;
 	readonly AppFlyoutViewModel _flyoutViewModel;
 	readonly AppFlyoutView _flyoutView;
 	readonly MeasureDevicePickerPresenter _measureDevicePicker;
@@ -129,7 +133,7 @@ public partial class AppShell : Shell
 	/// <summary>Shows device picker on the current page without navigating away first.</summary>
 	public Task PresentMeasureDevicePickerAsync() => _measureDevicePicker.PresentAsync();
 
-	async Task OnMeasureDevicePickedAsync(MeasureDeviceKind kind)
+	async Task OnMeasureDevicePickedAsync(InstrumentKind kind)
 	{
 		if (IsOnMeasureTab() && GetMeasureTabPage() is MeasureTabPage measureTab)
 		{
@@ -140,16 +144,11 @@ public partial class AppShell : Shell
 		await NavigateToMeasureDeviceAsync(kind);
 	}
 
-	static string GetOpeningMessage(MeasureDeviceKind kind) => kind switch
-	{
-		MeasureDeviceKind.Photometer => "Opening photometer…",
-		MeasureDeviceKind.Multimeter => "Opening multiparameter…",
-		MeasureDeviceKind.Halo2 => "Opening Halo 2…",
-		_ => "Loading…"
-	};
+	static string GetOpeningMessage(InstrumentKind kind) =>
+		InstrumentRegistry.GetOpeningMessage(kind);
 
 	/// <summary>Switch to Measure tab and open the given device view.</summary>
-	public async Task NavigateToMeasureDeviceAsync(MeasureDeviceKind device)
+	public async Task NavigateToMeasureDeviceAsync(InstrumentKind device)
 	{
 		var showNavigating = !IsOnMeasureTab();
 		if (showNavigating)

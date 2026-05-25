@@ -1,4 +1,5 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Theme;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
@@ -23,7 +24,7 @@ public sealed class MeasureDevicePickerPresenter
 	readonly Grid _navBusyOverlay;
 	readonly ActivityIndicator _navBusyIndicator;
 	readonly Label _navBusyLabel;
-	readonly Func<MeasureDeviceKind, Task> _onDevicePickedAsync;
+	readonly Func<InstrumentKind, Task> _onDevicePickedAsync;
 
 	ContentPage? _hostPage;
 	View? _savedContent;
@@ -32,7 +33,7 @@ public sealed class MeasureDevicePickerPresenter
 	bool _isAnimating;
 	int _navBusyDepth;
 
-	public MeasureDevicePickerPresenter(Func<MeasureDeviceKind, Task> onDevicePickedAsync)
+	public MeasureDevicePickerPresenter(Func<InstrumentKind, Task> onDevicePickedAsync)
 	{
 		_onDevicePickedAsync = onDevicePickedAsync;
 		(_overlay, _scrim, _sheet) = BuildOverlay();
@@ -85,6 +86,7 @@ public sealed class MeasureDevicePickerPresenter
 			_overlay.InputTransparent = true;
 			_isOpen = false;
 			_isAnimating = false;
+			DetachFromHost();
 		}
 	}
 
@@ -99,6 +101,12 @@ public sealed class MeasureDevicePickerPresenter
 		_hostGrid = new Grid();
 		if (_savedContent is not null)
 			_hostGrid.Children.Add(_savedContent);
+
+		_overlay.IsVisible = false;
+		_overlay.InputTransparent = true;
+		_navBusyOverlay.IsVisible = false;
+		_navBusyOverlay.InputTransparent = true;
+
 		_hostGrid.Children.Add(_overlay);
 		_hostGrid.Children.Add(_navBusyOverlay);
 		page.Content = _hostGrid;
@@ -211,34 +219,25 @@ public sealed class MeasureDevicePickerPresenter
 		titleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurface");
 		stack.Children.Add(titleLabel);
 
-		stack.Children.Add(BuildDeviceRow(
-			"HI",
-			"HI97105 Photometer",
-			"Measure and download with Marine Master Multiparameter Photometer",
-			isTeal: true,
-			MeasureDeviceKind.Photometer));
+		var families = InstrumentRegistry.All;
+		for (var i = 0; i < families.Count; i++)
+		{
+			if (i > 0)
+			{
+				var divider = new BoxView { HeightRequest = 1 };
+				divider.SetDynamicResource(BoxView.ColorProperty, "Divider");
+				stack.Children.Add(divider);
+			}
 
-		var divider = new BoxView { HeightRequest = 1 };
-		divider.SetDynamicResource(BoxView.ColorProperty, "Divider");
-		stack.Children.Add(divider);
-
-		stack.Children.Add(BuildDeviceRow(
-			"94",
-			"HI98x94 - Multiparameter",
-			"Download logs with HI98x94 - Multiparameter",
-			isTeal: false,
-			MeasureDeviceKind.Multimeter));
-
-		var divider2 = new BoxView { HeightRequest = 1 };
-		divider2.SetDynamicResource(BoxView.ColorProperty, "Divider");
-		stack.Children.Add(divider2);
-
-		stack.Children.Add(BuildDeviceRow(
-			"tab_halo",
-			"Halo 2",
-			"Live pH, mV and temperature tracking with tags",
-			isTeal: true,
-			MeasureDeviceKind.Halo2));
+			var family = families[i];
+			var thumb = family.PickerIcon ?? family.PickerThumbText ?? "?";
+			stack.Children.Add(BuildDeviceRow(
+				thumb,
+				family.PickerTitle,
+				family.PickerSubtitle,
+				family.PickerUsesTealAccent,
+				family.Kind));
+		}
 
 		sheet.Content = stack;
 
@@ -250,12 +249,13 @@ public sealed class MeasureDevicePickerPresenter
 		{
 			IsVisible = false,
 			InputTransparent = true,
+			CascadeInputTransparent = true,
 			Children = { scrim, sheet }
 		};
 		return (overlay, scrim, sheet);
 	}
 
-	Border BuildDeviceRow(string thumb, string title, string subtitle, bool isTeal, MeasureDeviceKind kind)
+	Border BuildDeviceRow(string thumb, string title, string subtitle, bool isTeal, InstrumentKind kind)
 	{
 		var tileBg = isTeal ? "SubtleTeal" : "SubtleGreen";
 		var row = new Border
@@ -274,10 +274,10 @@ public sealed class MeasureDevicePickerPresenter
 			StrokeShape = new RoundRectangle { CornerRadius = 8 }
 		};
 		icon.SetDynamicResource(Border.BackgroundColorProperty, tileBg);
-		icon.Content = thumb == "tab_halo"
+		icon.Content = thumb.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
 			? new Image
 			{
-				Source = "halo2_device_icon.png",
+				Source = thumb,
 				WidthRequest = 26,
 				HeightRequest = 26,
 				Aspect = Aspect.AspectFit,
@@ -346,13 +346,20 @@ public sealed class MeasureDevicePickerPresenter
 		return row;
 	}
 
-	async Task OnRowTappedAsync(MeasureDeviceKind kind)
+	async Task OnRowTappedAsync(InstrumentKind kind)
 	{
 		if (_isAnimating)
 			return;
 
 		HideImmediately();
-		await _onDevicePickedAsync(kind);
+		try
+		{
+			await _onDevicePickedAsync(kind);
+		}
+		finally
+		{
+			DetachFromHost();
+		}
 	}
 
 	static (Grid overlay, ActivityIndicator indicator, Label label) BuildNavBusyOverlay()
@@ -387,6 +394,7 @@ public sealed class MeasureDevicePickerPresenter
 		{
 			IsVisible = false,
 			InputTransparent = true,
+			CascadeInputTransparent = true,
 			Children = { scrim, stack }
 		};
 		return (overlay, indicator, label);

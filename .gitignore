@@ -112,6 +112,9 @@ coverage*.info
 *.coverage
 *.coveragexml
 
+## IDE cache
+*.csproj.lscache
+
 ## Misc
 *.bak
 *.orig

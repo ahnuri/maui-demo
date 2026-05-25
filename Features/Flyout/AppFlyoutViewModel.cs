@@ -13,6 +13,9 @@ using Microsoft.Maui.ApplicationModel;
 
 namespace HannaUIDemo.Features.Flyout;
 
+/// <summary>
+/// Flyout menu ViewModel: user profile, cloud sync status, navigation items, and sign-in/out commands.
+/// </summary>
 public partial class AppFlyoutViewModel : LocalizedViewModelBase
 {
 	readonly UserSessionService _session;

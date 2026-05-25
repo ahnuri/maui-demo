@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="HannaUIDemo.Features.Instruments.Multimeter.MultimeterLogRecallView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{DynamicResource PageBackground}">
+    <ScrollView x:Name="Scroll" Padding="16,12,16,28">
+        <VerticalStackLayout x:Name="Root" Spacing="0" />
+    </ScrollView>
+</ContentView>

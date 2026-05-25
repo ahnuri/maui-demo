@@ -1,14 +1,20 @@
 ﻿using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
-using HannaUIDemo.Features.Halo2;
-using HannaUIDemo.Features.Logs;
+using HannaUIDemo.Features.Instruments.Halo2;
+using HannaUIDemo.Features.Instruments.Halo2.Logs;
+using HannaUIDemo.Features.Instruments.Logs;
+using HannaUIDemo.Features.Instruments.Photometer;
+using HannaUIDemo.Features.Instruments.Photometer.Logs;
 using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo;
 
+/// <summary>
+/// Application host: applies stored theme/language, wires semantic resources, and refreshes open pages on theme change.
+/// </summary>
 public partial class App : Application
 {
 	public App(IServiceProvider services)
@@ -35,6 +41,7 @@ public partial class App : Application
 		}
 	}
 
+	/// <summary>Re-applies theme styling to pages currently on the navigation stack.</summary>
 	static void RefreshNavigationStack(Page? page)
 	{
 		if (page is not Shell { CurrentPage: { } current })

@@ -5,7 +5,10 @@ using HannaUIDemo.Features.Device;
 
 namespace HannaUIDemo.Features.Help;
 
-/// <summary>Help content sections and navigation to Devices.</summary>
+/// <summary>
+/// Help tab ViewModel: static guidance sections and navigation to the Devices screen.
+/// Uses [RelayCommand] for user actions; content is demo copy until wired to CMS or docs API.
+/// </summary>
 public partial class HelpViewModel : PageViewModelBase
 {
 	public ObservableCollection<HelpItem> Items { get; } = new();

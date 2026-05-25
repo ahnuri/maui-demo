@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:help="clr-namespace:HannaUIDemo.Features.Help"
     xmlns:home="clr-namespace:HannaUIDemo.Features.Home"
-    xmlns:logs="clr-namespace:HannaUIDemo.Features.Logs"
+    xmlns:logs="clr-namespace:HannaUIDemo.Features.Instruments.Logs"
     xmlns:measure="clr-namespace:HannaUIDemo.Features.Measure"
     Title=""
     FlyoutBehavior="Flyout"

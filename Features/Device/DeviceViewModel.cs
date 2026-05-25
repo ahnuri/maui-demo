@@ -1,15 +1,19 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using HannaUIDemo.Core.Localization;
+using HannaUIDemo.Core.Demo;
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Measure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Device;
 
-/// <summary>Devices screen state: connection toggles, discovery lists, and measure navigation.</summary>
-public partial class DeviceViewModel : PageViewModelBase
+/// <summary>
+/// Devices tab ViewModel: BLE scan simulation, connect/disconnect, and navigation to Measure.
+/// Uses CommunityToolkit.Mvvm for bindable state and commands.
+/// </summary>
+public partial class DeviceViewModel : LocalizedViewModelBase
 {
 	[ObservableProperty] private string _pageSubtitle = string.Empty;
 	[ObservableProperty] private string _headerTitle = string.Empty;
@@ -25,15 +29,19 @@ public partial class DeviceViewModel : PageViewModelBase
 	[ObservableProperty] private bool _isScanning;
 	[ObservableProperty] private int _connectedCount;
 
+	/// <summary>True when no instruments are connected — drives empty-state hint visibility.</summary>
 	public bool ShowNoConnectedHint => ConnectedCount == 0;
+
+	/// <summary>True while a discovery scan is running — drives scan banner visibility.</summary>
 	public bool ShowScanBanner => IsScanning;
 
+	/// <summary>Toolbar label toggles between Start Scan and Stop based on <see cref="IsScanning"/>.</summary>
 	public string ScanToolbarText => IsScanning ? Loc.T("Toolbar_Stop") : Loc.T("Toolbar_Scan");
+
+	/// <summary>Status line shown under the header during an active scan.</summary>
 	public string ScanStatusText => IsScanning ? Loc.T("Device_ScanStatus") : string.Empty;
 
-	LocalizationService Loc => AppServices.Get<LocalizationService>();
-
-	readonly HashSet<string> _connectedIds = ["hi97115", "hi98494", "halo2"];
+	readonly HashSet<string> _connectedIds = [.. DemoDeviceCatalog.DefaultConnectedIds];
 	CancellationTokenSource? _scanCts;
 
 	public ObservableCollection<DeviceListItem> ConnectedDevices { get; } = new();
@@ -42,13 +50,14 @@ public partial class DeviceViewModel : PageViewModelBase
 
 	public DeviceViewModel()
 	{
-		ApplyLocalization();
 		RebuildLists();
+		ApplyLocalization();
 	}
 
+	/// <summary>Called from the view when culture changes outside the base subscription.</summary>
 	public void RefreshLocalization() => ApplyLocalization();
 
-	void ApplyLocalization()
+	protected override void ApplyLocalization()
 	{
 		PageSubtitle = Loc.T("Device_PageSubtitle");
 		HeaderTitle = Loc.T("Device_Header");
@@ -67,98 +76,21 @@ public partial class DeviceViewModel : PageViewModelBase
 
 	public override void RefreshForTheme()
 	{
+		base.RefreshForTheme();
 		RebuildLists();
-		ApplyLocalization();
 	}
 
+	/// <summary>Rebuilds the three device lists from the demo catalog and current connection set.</summary>
 	void RebuildLists()
 	{
-		Replace(ConnectedDevices, GetConnectedCatalog().Where(d => d.IsConnected));
-		Replace(AssociatedDevices, GetAssociatedCatalog().Where(d => !d.IsConnected));
-		Replace(AvailableDevices, GetAvailableCatalog());
+		Replace(ConnectedDevices, DemoDeviceCatalog.ConnectedDevices(_connectedIds));
+		foreach (var item in ConnectedDevices)
+			item.IsConnected = true;
+
+		Replace(AssociatedDevices, DemoDeviceCatalog.AssociatedDevices(_connectedIds));
+		Replace(AvailableDevices, DemoDeviceCatalog.AvailableDevices());
 		ConnectedCount = ConnectedDevices.Count;
 		OnPropertyChanged(nameof(ShowNoConnectedHint));
-	}
-
-	IEnumerable<DeviceListItem> GetConnectedCatalog() =>
-	[
-		BuildItem("hi97115", "Marine Master Multiparameter Photometer", "HI97105-001", "1.4.2", 92, "2 min ago",
-			MeasureDeviceKind.Photometer),
-		BuildItem("hi98494", "HI98x94 - Multiparameter", "HI98494-MM", "2.1.0", 78, "8 min ago",
-			MeasureDeviceKind.Multimeter),
-		BuildItem("halo2", "Halo 2", "HI12322", "3.0.1", 44, "Just now",
-			MeasureDeviceKind.Halo2),
-	];
-
-	IEnumerable<DeviceListItem> GetAssociatedCatalog() =>
-	[
-		BuildItem("hi97115-pt1", "HI97115-PT1", "HI97115-PT1", null, null, null, null),
-		BuildItem("hi9810391", "HI9810391-Halo", "HI9810391", null, null, null, null),
-	];
-
-	IEnumerable<DeviceListItem> GetAvailableCatalog() =>
-	[
-		BuildItem("hi98494-ak1", "HI98494-AK1", "HI98494-AK1", null, null, null, null, strong: true),
-		BuildItem("hi9810392", "HI9810392-Halo2", "HI9810392", null, null, null, null, strong: false, signal: "Low"),
-	];
-
-	DeviceListItem BuildItem(
-		string id,
-		string name,
-		string serial,
-		string? firmware,
-		int? battery,
-		string? lastSeen,
-		MeasureDeviceKind? kind,
-		bool strong = true,
-		string signal = "Strong")
-	{
-		var connected = _connectedIds.Contains(id);
-		var item = new DeviceListItem
-		{
-			Id = id,
-			Name = name,
-			Serial = serial,
-			Firmware = firmware,
-			BatteryPercent = battery,
-			LastSeen = lastSeen,
-			DeviceIcon = ResolveIcon(kind, name),
-			ThumbText = ResolveThumb(kind, name),
-			SignalText = signal,
-			IsStrongSignal = strong,
-			IsConnected = connected,
-			MeasureKind = kind
-		};
-		item.RefreshChrome();
-		return item;
-	}
-
-	static string? ResolveIcon(MeasureDeviceKind? kind, string name) => kind switch
-	{
-		MeasureDeviceKind.Photometer => "tab_photometer.png",
-		MeasureDeviceKind.Multimeter => "tab_multimeter.png",
-		MeasureDeviceKind.Halo2 => "halo2_device_icon.png",
-		_ => InferIcon(name)
-	};
-
-	static string? ResolveThumb(MeasureDeviceKind? kind, string name)
-	{
-		if (kind is not null || InferIcon(name) is not null)
-			return null;
-
-		return name.Length >= 2 ? name[..2].ToUpperInvariant() : name.ToUpperInvariant();
-	}
-
-	static string? InferIcon(string name)
-	{
-		var n = name.ToUpperInvariant();
-		if (n.Contains("HALO"))
-			return "halo2_device_icon.png";
-		if (n.Contains("97115") || n.Contains("PHOTO") || n.Contains("PT1"))
-			return "tab_photometer.png";
-		if (n.Contains("98494") || n.Contains("98X") || n.Contains("MULTI"))
-			return "tab_multimeter.png";
-		return null;
 	}
 
 	static void Replace(ObservableCollection<DeviceListItem> target, IEnumerable<DeviceListItem> items)
@@ -168,6 +100,7 @@ public partial class DeviceViewModel : PageViewModelBase
 			target.Add(item);
 	}
 
+	/// <summary>Toggles connect/disconnect for the tapped instrument row.</summary>
 	[RelayCommand]
 	void ToggleConnection(DeviceListItem? item)
 	{
@@ -202,12 +135,12 @@ public partial class DeviceViewModel : PageViewModelBase
 		item.IsConnected = false;
 		item.RefreshChrome();
 
-		if (item.MeasureKind is not null)
-			ClearMeasureSelectionIfNeeded(item.MeasureKind.Value);
+		if (item.InstrumentKind is not null)
+			ClearMeasureSelectionIfNeeded(item.InstrumentKind.Value);
 
 		ConnectedDevices.Remove(item);
 
-		if (GetAssociatedCatalog().Any(d => d.Id == item.Id) || item.MeasureKind is not null)
+		if (DemoDeviceCatalog.AssociatedDevices(_connectedIds).Any(d => d.Id == item.Id) || item.InstrumentKind is not null)
 		{
 			if (AssociatedDevices.All(d => d.Id != item.Id))
 				AssociatedDevices.Insert(0, item);
@@ -221,7 +154,8 @@ public partial class DeviceViewModel : PageViewModelBase
 		OnPropertyChanged(nameof(ShowNoConnectedHint));
 	}
 
-	void ClearMeasureSelectionIfNeeded(MeasureDeviceKind kind)
+	/// <summary>Clears the active measure device if the disconnected instrument was selected.</summary>
+	void ClearMeasureSelectionIfNeeded(InstrumentKind kind)
 	{
 		if (Application.Current is not App app)
 			return;
@@ -236,10 +170,11 @@ public partial class DeviceViewModel : PageViewModelBase
 			measurePage.DisconnectDevice();
 	}
 
+	/// <summary>Opens the Measure tab for a connected instrument that supports measurement.</summary>
 	[RelayCommand]
 	async Task OpenMeasureAsync(DeviceListItem? item)
 	{
-		if (item is null || !item.CanOpenMeasure || item.MeasureKind is not { } kind
+		if (item is null || !item.CanOpenMeasure || item.InstrumentKind is not { } kind
 		    || Shell.Current is not AppShell shell)
 			return;
 
@@ -249,6 +184,7 @@ public partial class DeviceViewModel : PageViewModelBase
 		await shell.NavigateToMeasureDeviceAsync(kind);
 	}
 
+	/// <summary>Starts a scan or cancels an in-progress scan.</summary>
 	[RelayCommand]
 	async Task ScanOrStopAsync()
 	{
@@ -261,6 +197,7 @@ public partial class DeviceViewModel : PageViewModelBase
 		await ScanAsync();
 	}
 
+	/// <summary>Simulates a BLE discovery pass, then refreshes nearby devices.</summary>
 	[RelayCommand]
 	async Task ScanAsync()
 	{

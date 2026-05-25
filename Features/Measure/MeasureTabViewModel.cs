@@ -1,65 +1,123 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+
+using HannaUIDemo.Core.Devices;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
+
+
 
 namespace HannaUIDemo.Features.Measure;
 
-/// <summary>Measure tab selection state (which instrument view is active).</summary>
+
+
+/// <summary>Measure tab state: which instrument module is active.</summary>
+
 public partial class MeasureTabViewModel : LocalizedViewModelBase
+
 {
+
 	public MeasureTabViewModel() => ApplyLocalization();
 
-	[ObservableProperty] private MeasureDeviceKind? _activeDevice;
+
+
+	[ObservableProperty] private InstrumentKind? _activeDevice;
+
 	[ObservableProperty] private string _emptyStateMessage = string.Empty;
 
+
+
 	public bool HasActiveDevice => ActiveDevice is not null;
-	public bool IsPhotometerActive => ActiveDevice == MeasureDeviceKind.Photometer;
-	public bool IsMultimeterActive => ActiveDevice == MeasureDeviceKind.Multimeter;
-	public bool IsHalo2Active => ActiveDevice == MeasureDeviceKind.Halo2;
+
 	public bool ShowEmptyState => ActiveDevice is null;
 
+
+
 	public string NavigationTitle => ActiveDevice switch
+
 	{
-		MeasureDeviceKind.Photometer => "HI97115 - Meter",
-		MeasureDeviceKind.Multimeter => "HI98x94 - Multiparameter",
-		MeasureDeviceKind.Halo2 => Loc.T("Shell_Home"),
+
+		InstrumentKind.Photometer => ResolveTitle(InstrumentKind.Photometer, Loc),
+
+		InstrumentKind.Multimeter => ResolveTitle(InstrumentKind.Multimeter, Loc),
+
+		InstrumentKind.Halo2 => Loc.T("Shell_Home"),
+
 		_ => Loc.T("Shell_Measure")
+
 	};
 
-	public bool UsesHaloNavigationTitle => ActiveDevice == MeasureDeviceKind.Halo2;
 
-	public void Select(MeasureDeviceKind kind)
+
+	public bool UsesHaloNavigationTitle => ActiveDevice == InstrumentKind.Halo2;
+
+
+
+	public void Select(InstrumentKind kind)
+
 	{
+
 		ActiveDevice = kind;
-		NotifyVisibility();
+
+		NotifyDerived();
+
 	}
+
+
 
 	public void Disconnect()
+
 	{
+
 		ActiveDevice = null;
-		NotifyVisibility();
+
+		NotifyDerived();
+
 	}
+
+
 
 	protected override void ApplyLocalization()
+
 	{
-		if (ActiveDevice is null)
-			EmptyStateMessage = Loc.T("Measure_EmptyState");
+
+		EmptyStateMessage = Loc.T("Measure_EmptyState");
+
+		NotifyDerived();
+
 	}
 
-	partial void OnActiveDeviceChanged(MeasureDeviceKind? value)
+
+
+	partial void OnActiveDeviceChanged(InstrumentKind? value) => NotifyDerived();
+
+
+
+	static string ResolveTitle(InstrumentKind kind, LocalizationService loc)
+
 	{
-		NotifyVisibility();
-		if (value is null)
-			EmptyStateMessage = Loc.T("Measure_EmptyState");
+
+		var key = InstrumentRegistry.Get(kind).MeasureNavigationTitleKey;
+
+		return key.StartsWith("Shell_", StringComparison.Ordinal) ? loc.T(key) : key;
+
 	}
 
-	void NotifyVisibility()
+
+
+	void NotifyDerived()
+
 	{
+
 		OnPropertyChanged(nameof(HasActiveDevice));
-		OnPropertyChanged(nameof(IsPhotometerActive));
-		OnPropertyChanged(nameof(IsMultimeterActive));
-		OnPropertyChanged(nameof(IsHalo2Active));
+
 		OnPropertyChanged(nameof(ShowEmptyState));
+
 		OnPropertyChanged(nameof(NavigationTitle));
+
 		OnPropertyChanged(nameof(UsesHaloNavigationTitle));
+
 	}
+
 }
+
+

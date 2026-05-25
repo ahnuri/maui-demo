@@ -9,7 +9,8 @@
     BackgroundColor="{DynamicResource FlyoutBackground}">
 
     <ContentView.Resources>
-        <DataTemplate x:Key="FlyoutNavRowTemplate" x:DataType="flyout:FlyoutNavItem">
+        <DataTemplate x:Key="FlyoutNavRowTemplate"
+                x:DataType="flyout:FlyoutNavItem">
             <Grid
                 BackgroundColor="{Binding RowBackground}"
                 ColumnDefinitions="4,Auto,*,Auto"
@@ -18,7 +19,7 @@
                 <BoxView
                     BackgroundColor="{StaticResource Primary}"
                     IsVisible="{Binding ShowActiveBar}"
-                    WidthRequest="4" />
+                    WidthRequest="4"/>
                 <Border
                     Grid.Column="1"
                     Margin="14,0,0,0"
@@ -29,7 +30,7 @@
                     VerticalOptions="Center"
                     WidthRequest="32">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
+                        <RoundRectangle CornerRadius="8"/>
                     </Border.StrokeShape>
                     <Image
                         Aspect="AspectFit"
@@ -37,7 +38,7 @@
                         HorizontalOptions="Center"
                         Source="{Binding IconSource}"
                         VerticalOptions="Center"
-                        WidthRequest="{Binding IconSize}" />
+                        WidthRequest="{Binding IconSize}"/>
                 </Border>
                 <Label
                     Grid.Column="2"
@@ -46,7 +47,7 @@
                     FontSize="16"
                     Text="{Binding Title}"
                     TextColor="{Binding TitleColor}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
                 <Label
                     Grid.Column="3"
                     FontSize="22"
@@ -54,15 +55,17 @@
                     Margin="0,0,16,0"
                     Text="&#x203A;"
                     TextColor="{DynamicResource OnSurfaceVariant}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
                 <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding Source={x:Reference FlyoutRoot}, Path=BindingContext.NavigateCommand}" CommandParameter="{Binding .}" />
+                    <TapGestureRecognizer Command="{Binding Source={x:Reference FlyoutRoot}, Path=BindingContext.NavigateCommand}"
+                            CommandParameter="{Binding .}"/>
                 </Grid.GestureRecognizers>
             </Grid>
         </DataTemplate>
     </ContentView.Resources>
 
-    <Grid RowDefinitions="*,Auto" RowSpacing="0">
+    <Grid RowDefinitions="*,Auto"
+            RowSpacing="0">
 
         <!-- Native list scroll + sticky collapsed profile -->
         <Grid Grid.Row="0">
@@ -72,7 +75,8 @@
                 Scrolled="OnFlyoutScrolled"
                 SelectionMode="None">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout ItemSpacing="0" Orientation="Vertical" />
+                    <LinearItemsLayout ItemSpacing="0"
+                            Orientation="Vertical"/>
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.Header>
@@ -80,204 +84,213 @@
                         Spacing="0"
                         BindingContext="{Binding Source={x:Reference FlyoutRoot}, Path=BindingContext}">
 
-                    <!-- Signed-in profile (collapses on scroll) -->
-                    <Grid
-                        x:Name="SignedInProfileRoot"
-                        IsVisible="{Binding IsLoggedIn}"
-                        Padding="12,12,12,10">
-                        <Border
-                            Padding="14,12"
-                            Stroke="{DynamicResource Divider}"
-                            StrokeThickness="1">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16" />
-                            </Border.StrokeShape>
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Offset="0" Color="{DynamicResource FlyoutProfileCard}" />
-                                    <GradientStop Offset="0.68" Color="{DynamicResource FlyoutProfileCard}" />
-                                    <GradientStop Offset="1" Color="{DynamicResource SubtleTeal}" />
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <!-- Signed-in profile (collapses on scroll) -->
+                        <Grid
+                            x:Name="SignedInProfileRoot"
+                            IsVisible="{Binding IsLoggedIn}"
+                            Padding="12,12,12,10">
+                            <Border
+                                Padding="14,12"
+                                Stroke="{DynamicResource Divider}"
+                                StrokeThickness="1">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16"/>
+                                </Border.StrokeShape>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                            EndPoint="1,1">
+                                        <GradientStop Offset="0"
+                                                Color="{DynamicResource FlyoutProfileCard}"/>
+                                        <GradientStop Offset="0.68"
+                                                Color="{DynamicResource FlyoutProfileCard}"/>
+                                        <GradientStop Offset="1"
+                                                Color="{DynamicResource SubtleTeal}"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
 
-                            <Grid
-                                ColumnDefinitions="Auto,*,Auto"
-                                ColumnSpacing="12">
-                                <Border
-                                    BackgroundColor="{DynamicResource FlyoutIconBadge}"
-                                    HeightRequest="56"
-                                    Stroke="{DynamicResource Divider}"
-                                    StrokeThickness="0.5"
-                                    WidthRequest="56">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="28" />
-                                    </Border.StrokeShape>
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="19"
-                                        HorizontalOptions="Center"
-                                        Text="{Binding Initials}"
-                                        TextColor="{StaticResource Primary}"
-                                        VerticalOptions="Center" />
-                                </Border>
-
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Spacing="3"
-                                    VerticalOptions="Center">
-                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                <Grid
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    ColumnSpacing="12">
+                                    <Border
+                                        BackgroundColor="{DynamicResource FlyoutIconBadge}"
+                                        HeightRequest="56"
+                                        Stroke="{DynamicResource Divider}"
+                                        StrokeThickness="0.5"
+                                        WidthRequest="56">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="28"/>
+                                        </Border.StrokeShape>
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="19"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding Initials}"
+                                            TextColor="{StaticResource Primary}"
+                                            VerticalOptions="Center"/>
+                                    </Border>
+
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="3"
+                                        VerticalOptions="Center">
+                                        <Grid
+                                            ColumnDefinitions="Auto,Auto"
+                                            ColumnSpacing="10">
+
+                                            <Label
+                                                Grid.Column="0"
+                                                FontAttributes="Bold"
+                                                FontSize="19"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="1"
+                                                Text="{Binding DisplayName}"
+                                                TextColor="{DynamicResource OnSurface}"
+                                                VerticalOptions="Center"/>
+
+                                            <Border
+                                                Grid.Column="1"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                HeightRequest="18"
+                                                IsVisible="{Binding ShowVerifiedBadge}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center"
+                                                WidthRequest="18">
+
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="9"/>
+                                                </Border.StrokeShape>
+
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="11"
+                                                    HorizontalOptions="Center"
+                                                    Text="&#x2713;"
+                                                    TextColor="White"
+                                                    VerticalOptions="Center"/>
+
+                                            </Border>
+
+                                        </Grid>
+                                        <Label
+                                            FontSize="13"
                                             LineBreakMode="TailTruncation"
                                             MaxLines="1"
-                                            Text="{Binding DisplayName}"
-                                            TextColor="{DynamicResource OnSurface}"
-                                            VerticalOptions="Center" />
-                                        <Label
-                                            Grid.Column="1"
-                                            FontSize="18"
-                                            IsVisible="{Binding ShowCloudSyncStatus}"
-                                            SemanticProperties.Description="{Binding CloudSyncHint}"
-                                            Text="&#x2601;"
-                                            TextColor="{Binding CloudSyncStatusColor}"
-                                            VerticalOptions="Center" />
-                                        <Border
-                                            Grid.Column="2"
-                                            BackgroundColor="{StaticResource Primary}"
-                                            HeightRequest="18"
-                                            IsVisible="{Binding ShowVerifiedBadge}"
-                                            StrokeThickness="0"
-                                            VerticalOptions="Center"
-                                            WidthRequest="18">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="9" />
-                                            </Border.StrokeShape>
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="11"
-                                                HorizontalOptions="Center"
-                                                Text="&#x2713;"
-                                                TextColor="White"
-                                                VerticalOptions="Center" />
-                                        </Border>
-                                    </Grid>
+                                            Text="{Binding Email}"
+                                            TextColor="{DynamicResource OnSurfaceVariant}"/>
+                                    </VerticalStackLayout>
+
                                     <Label
-                                        FontSize="13"
-                                        LineBreakMode="TailTruncation"
-                                        MaxLines="1"
-                                        Text="{Binding Email}"
-                                        TextColor="{DynamicResource OnSurfaceVariant}" />
-                                </VerticalStackLayout>
+                                        Grid.Column="2"
+                                        FontSize="24"
+                                        Text="&#x203A;"
+                                        TextColor="{DynamicResource OnSurfaceVariant}"
+                                        VerticalOptions="Center"/>
+                                </Grid>
 
-                                <Label
-                                    Grid.Column="2"
-                                    FontSize="24"
-                                    Text="&#x203A;"
-                                    TextColor="{DynamicResource OnSurfaceVariant}"
-                                    VerticalOptions="Center" />
-                            </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ViewProfileCommand}"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </Grid>
 
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ViewProfileCommand}" />
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </Grid>
+                        <!-- Guest profile -->
+                        <Grid
+                            x:Name="GuestProfileRoot"
+                            IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
+                            Padding="12,12,12,10">
+                            <Border
+                                Padding="14,12"
+                                Stroke="{DynamicResource Divider}"
+                                StrokeThickness="1">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16"/>
+                                </Border.StrokeShape>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                            EndPoint="1,1">
+                                        <GradientStop Offset="0"
+                                                Color="{DynamicResource FlyoutProfileCard}"/>
+                                        <GradientStop Offset="0.72"
+                                                Color="{DynamicResource FlyoutProfileCard}"/>
+                                        <GradientStop Offset="1"
+                                                Color="{DynamicResource SubtleTeal}"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
 
-                    <!-- Guest profile -->
-                    <Grid
-                        x:Name="GuestProfileRoot"
-                        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
-                        Padding="12,12,12,10">
+                                <Grid
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    ColumnSpacing="12">
+                                    <Border
+                                        BackgroundColor="{DynamicResource FlyoutIconBadge}"
+                                        HeightRequest="52"
+                                        Stroke="{DynamicResource Divider}"
+                                        StrokeThickness="0.5"
+                                        VerticalOptions="Center"
+                                        WidthRequest="52">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="26"/>
+                                        </Border.StrokeShape>
+                                        <Image
+                                            Aspect="AspectFit"
+                                            HeightRequest="26"
+                                            HorizontalOptions="Center"
+                                            Source="tab_profile"
+                                            VerticalOptions="Center"
+                                            WidthRequest="26"/>
+                                    </Border>
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="3"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="1"
+                                            Text="{Binding WelcomeTitle}"
+                                            TextColor="{DynamicResource OnSurface}"/>
+                                        <Label
+                                            FontSize="13"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Text="{Binding WelcomeMessage}"
+                                            TextColor="{DynamicResource OnSurfaceVariant}"/>
+                                    </VerticalStackLayout>
+                                    <Border
+                                        Grid.Column="2"
+                                        Padding="10,7"
+                                        BackgroundColor="{DynamicResource SubtleTeal}"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10"/>
+                                        </Border.StrokeShape>
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            Text="{Binding SignInLabel}"
+                                            TextColor="{StaticResource Primary}"/>
+                                    </Border>
+                                </Grid>
+
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding LoginCommand}"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </Grid>
+
                         <Border
-                            Padding="14,12"
+                            Margin="12,2,12,8"
+                            BackgroundColor="{DynamicResource FlyoutMenuGroup}"
                             Stroke="{DynamicResource Divider}"
                             StrokeThickness="1">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16" />
+                                <RoundRectangle CornerRadius="14"/>
                             </Border.StrokeShape>
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Offset="0" Color="{DynamicResource FlyoutProfileCard}" />
-                                    <GradientStop Offset="0.72" Color="{DynamicResource FlyoutProfileCard}" />
-                                    <GradientStop Offset="1" Color="{DynamicResource SubtleTeal}" />
-                                </LinearGradientBrush>
-                            </Border.Background>
-
-                            <Grid
-                                ColumnDefinitions="Auto,*,Auto"
-                                ColumnSpacing="12">
-                                <Border
-                                    BackgroundColor="{DynamicResource FlyoutIconBadge}"
-                                    HeightRequest="52"
-                                    Stroke="{DynamicResource Divider}"
-                                    StrokeThickness="0.5"
-                                    VerticalOptions="Center"
-                                    WidthRequest="52">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="26" />
-                                    </Border.StrokeShape>
-                                    <Image
-                                        Aspect="AspectFit"
-                                        HeightRequest="26"
-                                        HorizontalOptions="Center"
-                                        Source="tab_profile"
-                                        VerticalOptions="Center"
-                                        WidthRequest="26" />
-                                </Border>
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Spacing="3"
-                                    VerticalOptions="Center">
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="18"
-                                        LineBreakMode="TailTruncation"
-                                        MaxLines="1"
-                                        Text="{Binding WelcomeTitle}"
-                                        TextColor="{DynamicResource OnSurface}" />
-                                    <Label
-                                        FontSize="13"
-                                        LineBreakMode="TailTruncation"
-                                        MaxLines="2"
-                                        Text="{Binding WelcomeMessage}"
-                                        TextColor="{DynamicResource OnSurfaceVariant}" />
-                                </VerticalStackLayout>
-                                <Border
-                                    Grid.Column="2"
-                                    Padding="10,7"
-                                    BackgroundColor="{DynamicResource SubtleTeal}"
-                                    StrokeThickness="0"
-                                    VerticalOptions="Center">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10" />
-                                    </Border.StrokeShape>
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
-                                        Text="{Binding SignInLabel}"
-                                        TextColor="{StaticResource Primary}" />
-                                </Border>
-                            </Grid>
-
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding LoginCommand}" />
-                            </Border.GestureRecognizers>
+                            <VerticalStackLayout
+                                BindableLayout.ItemTemplate="{StaticResource FlyoutNavRowTemplate}"
+                                BindableLayout.ItemsSource="{Binding MainNavItems}"/>
                         </Border>
-                    </Grid>
-
-                    <Border
-                        Margin="12,2,12,8"
-                        BackgroundColor="{DynamicResource FlyoutMenuGroup}"
-                        Stroke="{DynamicResource Divider}"
-                        StrokeThickness="1">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout
-                            BindableLayout.ItemTemplate="{StaticResource FlyoutNavRowTemplate}"
-                            BindableLayout.ItemsSource="{Binding MainNavItems}" />
-                    </Border>
                     </VerticalStackLayout>
                 </CollectionView.Header>
 
@@ -291,13 +304,14 @@
                             Stroke="{DynamicResource Divider}"
                             StrokeThickness="1">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="14" />
+                                <RoundRectangle CornerRadius="14"/>
                             </Border.StrokeShape>
                             <VerticalStackLayout
                                 BindableLayout.ItemTemplate="{StaticResource FlyoutNavRowTemplate}"
-                                BindableLayout.ItemsSource="{Binding FooterNavItems}" />
+                                BindableLayout.ItemsSource="{Binding FooterNavItems}"/>
                         </Border>
-                        <BoxView HeightRequest="24" Color="Transparent" />
+                        <BoxView HeightRequest="24"
+                                Color="Transparent"/>
                     </VerticalStackLayout>
                 </CollectionView.Footer>
             </CollectionView>
@@ -323,7 +337,7 @@
                         VerticalOptions="Center"
                         WidthRequest="40">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="20" />
+                            <RoundRectangle CornerRadius="20"/>
                         </Border.StrokeShape>
                         <Label
                             FontAttributes="Bold"
@@ -331,7 +345,7 @@
                             HorizontalOptions="Center"
                             Text="{Binding Initials}"
                             TextColor="{StaticResource Primary}"
-                            VerticalOptions="Center" />
+                            VerticalOptions="Center"/>
                     </Border>
                     <Grid
                         Grid.Column="1"
@@ -345,7 +359,7 @@
                             MaxLines="1"
                             Text="{Binding DisplayName}"
                             TextColor="{DynamicResource OnSurface}"
-                            VerticalOptions="Center" />
+                            VerticalOptions="Center"/>
                         <Border
                             Grid.Column="1"
                             BackgroundColor="{StaticResource Primary}"
@@ -355,7 +369,7 @@
                             VerticalOptions="Center"
                             WidthRequest="16">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
+                                <RoundRectangle CornerRadius="8"/>
                             </Border.StrokeShape>
                             <Label
                                 FontAttributes="Bold"
@@ -363,14 +377,16 @@
                                 HorizontalOptions="Center"
                                 Text="&#x2713;"
                                 TextColor="White"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"/>
                         </Border>
                     </Grid>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ViewProfileCommand}" />
+                        <TapGestureRecognizer Command="{Binding ViewProfileCommand}"/>
                     </Grid.GestureRecognizers>
                 </Grid>
-                <BoxView Grid.Row="1" Color="{DynamicResource Divider}" HeightRequest="1" />
+                <BoxView Grid.Row="1"
+                        Color="{DynamicResource Divider}"
+                        HeightRequest="1"/>
             </Grid>
 
             <!-- Sticky collapsed bar: guest -->
@@ -392,7 +408,7 @@
                         LineBreakMode="TailTruncation"
                         Text="{Binding WelcomeTitle}"
                         TextColor="{DynamicResource OnSurface}"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center"/>
                     <Label
                         Grid.Column="1"
                         FontAttributes="Bold"
@@ -401,11 +417,13 @@
                         TextColor="{StaticResource Primary}"
                         VerticalOptions="Center">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding LoginCommand}" />
+                            <TapGestureRecognizer Command="{Binding LoginCommand}"/>
                         </Label.GestureRecognizers>
                     </Label>
                 </Grid>
-                <BoxView Grid.Row="1" Color="{DynamicResource Divider}" HeightRequest="1" />
+                <BoxView Grid.Row="1"
+                        Color="{DynamicResource Divider}"
+                        HeightRequest="1"/>
             </Grid>
 
         </Grid>
@@ -421,28 +439,28 @@
                 HorizontalOptions="Center"
                 StrokeThickness="0">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
+                    <RoundRectangle CornerRadius="12"/>
                 </Border.StrokeShape>
                 <Image
                     Aspect="AspectFit"
                     HeightRequest="46"
                     MaximumWidthRequest="260"
                     SemanticProperties.Description="Hanna Instruments company logo"
-                    Source="hanna_instruments_logo.png" />
+                    Source="hanna_instruments_logo.png"/>
             </Border>
             <Label
                 Margin="0,14,0,0"
                 FontSize="11"
                 HorizontalTextAlignment="Center"
                 Text="{Binding VersionText}"
-                TextColor="{DynamicResource OnSurfaceVariant}" />
+                TextColor="{DynamicResource OnSurfaceVariant}"/>
             <Label
                 Margin="0,4,0,0"
                 FontSize="10"
                 HorizontalTextAlignment="Center"
                 LineBreakMode="WordWrap"
                 Text="{Binding CopyrightText}"
-                TextColor="{DynamicResource OnSurfaceVariant}" />
+                TextColor="{DynamicResource OnSurfaceVariant}"/>
             <Label
                 Margin="0,10,0,0"
                 FontSize="13"
@@ -451,7 +469,7 @@
                 TextColor="{StaticResource Primary}"
                 TextDecorations="Underline">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenPrivacyPolicyCommand}" />
+                    <TapGestureRecognizer Command="{Binding OpenPrivacyPolicyCommand}"/>
                 </Label.GestureRecognizers>
             </Label>
             <HorizontalStackLayout
@@ -459,23 +477,23 @@
                 HorizontalOptions="Center"
                 Spacing="6">
                 <HorizontalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenLanguageCommand}" />
+                    <TapGestureRecognizer Command="{Binding OpenLanguageCommand}"/>
                 </HorizontalStackLayout.GestureRecognizers>
                 <Label
                     FontSize="14"
                     Text="&#x1F310;"
                     TextColor="{StaticResource Primary}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
                 <Label
                     FontSize="14"
                     Text="{Binding LanguageLineText}"
                     TextColor="{StaticResource Primary}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
                 <Label
                     FontSize="18"
                     Text="&#x25BE;"
                     TextColor="{StaticResource Primary}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </Grid>

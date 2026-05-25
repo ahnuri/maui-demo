@@ -1,11 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HannaUIDemo.Core.Constants;
-using HannaUIDemo.Features.Measure;
+using HannaUIDemo.Core.Devices;
 using HannaUIDemo.Theme;
 
 namespace HannaUIDemo.Features.Device;
 
-/// <summary>One row in the Devices list (connected, associated, or discovered).</summary>
+/// <summary>
+/// One instrument row in the Devices list. Observable chrome updates when connection or theme changes.
+/// </summary>
 public partial class DeviceListItem : ObservableObject
 {
 	public required string Id { get; init; }
@@ -19,7 +21,7 @@ public partial class DeviceListItem : ObservableObject
 	public string? ThumbText { get; init; }
 	public string SignalText { get; init; } = "Strong";
 	public bool IsStrongSignal { get; init; }
-	public MeasureDeviceKind? MeasureKind { get; init; }
+	public InstrumentKind? InstrumentKind { get; init; }
 
 	[ObservableProperty] private bool _isConnected;
 
@@ -32,7 +34,7 @@ public partial class DeviceListItem : ObservableObject
 
 	public bool ShowDeviceIcon => !string.IsNullOrEmpty(DeviceIcon);
 	public bool ShowThumb => !ShowDeviceIcon && !string.IsNullOrWhiteSpace(ThumbText);
-	public bool CanOpenMeasure => IsConnected && MeasureKind is not null;
+	public bool CanOpenMeasure => IsConnected && InstrumentKind is not null;
 	public bool ShowMeasureLink => CanOpenMeasure;
 	public bool ShowBattery => BatteryPercent is not null;
 
@@ -102,4 +104,4 @@ public partial class DeviceListItem : ObservableObject
 		OnPropertyChanged(nameof(ShowMeasureLink));
 	}
 }
-
+

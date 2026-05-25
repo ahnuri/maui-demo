@@ -3,16 +3,19 @@ using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
-using HannaUIDemo.Features.Halo2;
+using HannaUIDemo.Features.Instruments.Halo2;
+using HannaUIDemo.Features.Instruments.Halo2.Logs;
+using HannaUIDemo.Features.Instruments.Logs;
+using HannaUIDemo.Features.Instruments.Photometer;
+using HannaUIDemo.Features.Instruments.Photometer.Logs;
 using HannaUIDemo.Features.Localization;
-using HannaUIDemo.Features.Logs;
-using HannaUIDemo.Features.Measure;
 using HannaUIDemo.Features.Settings;
 using HannaUIDemo.Features.Flyout;
 using Microsoft.Extensions.Logging;
 
 namespace HannaUIDemo;
 
+/// <summary>MAUI entry point: services, ViewModels, instrument modules, and navigation pages.</summary>
 public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
