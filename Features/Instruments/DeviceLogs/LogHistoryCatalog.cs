@@ -1,7 +1,9 @@
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Features.Instruments.Abstractions;
 using HannaUIDemo.Features.Instruments.Halo2.Logs;
 using HannaUIDemo.Features.Instruments.Multimeter.Logs;
 using HannaUIDemo.Features.Instruments.Photometer.Logs;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Logs;
 
@@ -10,6 +12,8 @@ namespace HannaUIDemo.Features.Instruments.Logs;
 /// </summary>
 public static class LogHistoryCatalog
 {
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
+
 	static readonly IInstrumentLogContributor[] Contributors =
 	[
 		new Halo2LogContributor(),
@@ -43,7 +47,7 @@ public static class LogHistoryCatalog
 	}
 
 	public static string GetTankName(string modelId, int tankId) =>
-		TankNames.TryGetValue((modelId, tankId), out var name) ? name : $"Tank {tankId}";
+		TankNames.TryGetValue((modelId, tankId), out var name) ? name : Loc.T("LogHistory_TankNameFormat", tankId);
 
 	public static void SetTankName(string modelId, int tankId, string name) =>
 		TankNames[(modelId, tankId)] = name.Trim();
@@ -51,7 +55,7 @@ public static class LogHistoryCatalog
 	public static string GetLastRecordedLabel(IEnumerable<LogEntryViewModel> entries, InstrumentKind kind)
 	{
 		var latest = entries.Where(e => e.InstrumentKind == kind).OrderByDescending(e => e.Start).FirstOrDefault();
-		return latest is null ? "No recordings yet" : latest.Start;
+		return latest is null ? Loc.T("LogHistory_HomeNoRecordings") : latest.Start;
 	}
 
 	public static IReadOnlyList<LogDeviceModelInfo> ModelsFor(InstrumentKind kind) =>
@@ -75,7 +79,9 @@ public sealed record LogDeviceModelInfo(
 	string FirmwareVersion,
 	string BleVersion)
 {
-	public string DeviceLabel => $"{SerialNumber} - {DeviceName}";
+	public string DeviceLabel => ((App)Application.Current!).Services
+		.GetRequiredService<LocalizationService>()
+		.T("LogHistory_DeviceLabelFormat", SerialNumber, DeviceName);
 }
 
 public sealed record PhotometerLogReadingInfo(

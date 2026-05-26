@@ -46,7 +46,7 @@ public static class DemoDeviceCatalog
 	static IEnumerable<DeviceListItem> AvailableCatalog() =>
 	[
 		Build("hi98494-ak1", "HI98494-AK1", "HI98494-AK1", null, null, null, null, strong: true),
-		Build("hi9810392", "HI9810392-Halo2", "HI9810392", null, null, null, null, strong: false, signal: "Low"),
+		Build("hi9810392", "HI9810392-Halo2", "HI9810392", null, null, null, null, strong: false, signalKey: "Device_Signal_Low"),
 	];
 
 	static DeviceListItem Build(
@@ -58,7 +58,7 @@ public static class DemoDeviceCatalog
 		string? lastSeen,
 		InstrumentKind? kind,
 		bool strong = true,
-		string signal = "Strong")
+		string signalKey = "Device_Signal_Strong")
 	{
 		var item = new DeviceListItem
 		{
@@ -68,7 +68,7 @@ public static class DemoDeviceCatalog
 			Firmware = firmware,
 			BatteryPercent = battery,
 			LastSeen = lastSeen,
-			SignalText = signal,
+			SignalTextKey = signalKey,
 			IsStrongSignal = strong,
 			InstrumentKind = kind,
 			DeviceIcon = DeviceIconResolver.ResolveIcon(kind, name),

@@ -20,7 +20,7 @@ namespace HannaUIDemo;
 public partial class AppShell : Shell
 {
 	string? _lastNavLocation;
-	LocalizationService? _localization;
+	readonly LocalizationService _localization;
 	InstrumentKind? _pendingMeasureDevice;
 	readonly AppFlyoutViewModel _flyoutViewModel;
 	readonly AppFlyoutView _flyoutView;
@@ -34,7 +34,8 @@ public partial class AppShell : Shell
 		var appHost = (App)Application.Current!;
 		_flyoutViewModel = appHost.Services.GetRequiredService<AppFlyoutViewModel>();
 		_flyoutView = appHost.Services.GetRequiredService<AppFlyoutView>();
-		_measureDevicePicker = new MeasureDevicePickerPresenter(OnMeasureDevicePickedAsync);
+		_localization = appHost.Services.GetRequiredService<LocalizationService>();
+		_measureDevicePicker = new MeasureDevicePickerPresenter(OnMeasureDevicePickedAsync, _localization);
 		FlyoutContent = _flyoutView;
 
 		PropertyChanged += (_, e) =>
@@ -43,12 +44,8 @@ public partial class AppShell : Shell
 				_flyoutView.ResetCollapse();
 		};
 
-		if (Application.Current is App app)
-		{
-			_localization = app.Services.GetRequiredService<LocalizationService>();
-			LocalizationService.CultureChanged += OnLocalizationCultureChanged;
-			RefreshShellLocalization();
-		}
+		LocalizationService.CultureChanged += OnLocalizationCultureChanged;
+		RefreshShellLocalization();
 
 		Navigated += OnShellNavigated;
 		ApplyShellChrome();
@@ -63,9 +60,6 @@ public partial class AppShell : Shell
 
 	void RefreshShellLocalization()
 	{
-		if (_localization is null)
-			return;
-
 		HomeShellContent.Title = _localization.T("Shell_Home");
 		MeasureShellContent.Title = _localization.T("Shell_Measure");
 		LogsShellContent.Title = _localization.T("Shell_LogHistory");
@@ -144,8 +138,8 @@ public partial class AppShell : Shell
 		await NavigateToMeasureDeviceAsync(kind);
 	}
 
-	static string GetOpeningMessage(InstrumentKind kind) =>
-		InstrumentRegistry.GetOpeningMessage(kind);
+	string GetOpeningMessage(InstrumentKind kind) =>
+		InstrumentRegistry.GetOpeningMessage(kind, _localization);
 
 	/// <summary>Switch to Measure tab and open the given device view.</summary>
 	public async Task NavigateToMeasureDeviceAsync(InstrumentKind device)

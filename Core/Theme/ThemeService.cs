@@ -1,6 +1,6 @@
 using HannaUIDemo;
 
-namespace HannaUIDemo.Core.Theme;
+namespace HannaUIDemo.Theme;
 
 /// <summary>Persists and applies light / dark / system appearance.</summary>
 public sealed class ThemeService

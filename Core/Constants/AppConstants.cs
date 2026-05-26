@@ -1,6 +1,14 @@
+using HannaUIDemo.Theme;
+
 namespace HannaUIDemo.Core.Constants;
 
-/// <summary>Layout metrics and brand accents (theme-independent).</summary>
+/// <summary>
+/// Brand colors and convenience aliases over <see cref="Tokens"/>. New UI code should
+/// prefer <c>Tokens.*</c> directly (font sizes, spacing, radii, icon sizes, …) and
+/// reach for <see cref="ThemeColors"/> for theme-aware colors. The named layout
+/// constants below remain for backwards compatibility — they now forward to
+/// <see cref="Tokens"/>.
+/// </summary>
 public static class AppConstants
 {
 	public static readonly Color Primary = Color.FromArgb("#0EA5C6");
@@ -11,29 +19,30 @@ public static class AppConstants
 
 	public const string MeasureTabTitle = "Measure";
 
-	public const double RadiusCard = 18;
-	public const double RadiusCardSmall = 16;
-	public const double RadiusTile = 14;
-	public const double RadiusChip = 12;
-	public const double RadiusButton = 14;
-	public const double RadiusIconBox = 10;
+	// ── Aliases forwarding to Tokens (kept so existing call-sites compile) ────────
+	public const double RadiusCard = Tokens.Radius.Xxxl;          // 18
+	public const double RadiusCardSmall = Tokens.Radius.Xxl;       // 16
+	public const double RadiusTile = Tokens.Radius.Xl;             // 14
+	public const double RadiusChip = Tokens.Radius.Lg;             // 12
+	public const double RadiusButton = Tokens.Radius.Xl;           // 14
+	public const double RadiusIconBox = Tokens.Radius.Md;          // 10
 
-	public const double SpacingScreen = 16;
-	public const double SpacingSection = 24;
-	public const double SpacingTile = 16;
-	public const double SpacingTight = 12;
-	public const double SpacingTiny = 8;
+	public const double SpacingScreen = Tokens.Spacing.Lg;         // 16
+	public const double SpacingSection = Tokens.Spacing.Xxl;       // 24
+	public const double SpacingTile = Tokens.Spacing.Lg;           // 16
+	public const double SpacingTight = Tokens.Spacing.Md;          // 12
+	public const double SpacingTiny = Tokens.Spacing.Sm;           // 8
 
-	public const double ButtonHeight = 54;
-	public const double IconSizeMedium = 24;
-	public const double IconSizeSmall = 20;
-	public const double AvatarSizeSmall = 40;
-	public const double AvatarSizeMedium = 44;
+	public const double ButtonHeight = Tokens.ButtonHeight.Lg;     // 54
+	public const double IconSizeMedium = Tokens.IconSize.MdPlus;   // 24
+	public const double IconSizeSmall = Tokens.IconSize.SmPlus;    // 20
+	public const double AvatarSizeSmall = Tokens.Avatar.Sm;        // 40
+	public const double AvatarSizeMedium = Tokens.Avatar.Md;       // 44
 
-	public const double FontSizeAppBarTitle = 20;
-	public const double FontSizeSectionTitle = 18;
-	public const double FontSizeBody = 14;
-	public const double FontSizeCaption = 12;
+	public const double FontSizeAppBarTitle = Tokens.FontSize.LargeTitle;     // 20
+	public const double FontSizeSectionTitle = Tokens.FontSize.SectionTitle;  // 18
+	public const double FontSizeBody = Tokens.FontSize.BodyLarge;             // 14
+	public const double FontSizeCaption = Tokens.FontSize.Small;              // 12
 
 	/// <summary>MauiImage asset names (no path; extension omitted at runtime).</summary>
 	public static class TabIcons

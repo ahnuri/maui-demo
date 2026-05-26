@@ -5,11 +5,11 @@ using HannaUIDemo.Core.Mvvm;
 namespace HannaUIDemo.Features.Instruments.Photometer;
 
 /// <summary>Demo state for HI97115 on-device settings (backlight, contrast, etc.). Persisted locally.</summary>
-public partial class PhotometerDeviceSettingsViewModel : PageViewModelBase
+public partial class PhotometerDeviceSettingsViewModel : LocalizedViewModelBase
 {
 	const string Pfx = "photometer_device_";
 
-	[ObservableProperty] private string _startupViewLabel = "Method Selection";
+	[ObservableProperty] private string _startupViewLabel = string.Empty;
 
 	[RelayCommand]
 	async Task OpenStartupViewInfoAsync()
@@ -17,9 +17,9 @@ public partial class PhotometerDeviceSettingsViewModel : PageViewModelBase
 		if (Shell.Current?.CurrentPage is null)
 			return;
 		await Shell.Current.CurrentPage.DisplayAlertAsync(
-			"Start-up view",
-			"Method selection lets you pick individual methods. Method group uses a predefined set.",
-			"OK");
+			Loc.T("Photometer_Settings_StartupViewTitle"),
+			Loc.T("Photometer_Settings_StartupViewInfo"),
+			Loc.T("Common_OK"));
 	}
 
 	[ObservableProperty] private double _backlightPercent = 72;
@@ -39,11 +39,13 @@ public partial class PhotometerDeviceSettingsViewModel : PageViewModelBase
 
 	public PhotometerDeviceSettingsViewModel()
 	{
-		StartupViewLabel = Preferences.Get($"{Pfx}startup", "Method Selection");
+		var startupDefault = Loc.T("Photometer_Settings_StartupMethodSelection");
+		var langDefault = Loc.T("Photometer_Settings_DefaultLang");
+		StartupViewLabel = Preferences.Get($"{Pfx}startup", startupDefault);
 		BacklightPercent = Preferences.Get($"{Pfx}backlight", 72);
 		ContrastPercent = Preferences.Get($"{Pfx}contrast", 55);
 		SeparatorUsesComma = Preferences.Get($"{Pfx}sep_comma", true);
-		DeviceLanguage = Preferences.Get($"{Pfx}lang", "English");
+		DeviceLanguage = Preferences.Get($"{Pfx}lang", langDefault);
 		BeepEnabled = Preferences.Get($"{Pfx}beep", true);
 		TutorialEnabled = Preferences.Get($"{Pfx}tutorial", false);
 	}

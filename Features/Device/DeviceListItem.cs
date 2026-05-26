@@ -1,7 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Devices;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Device;
 
@@ -10,6 +12,8 @@ namespace HannaUIDemo.Features.Device;
 /// </summary>
 public partial class DeviceListItem : ObservableObject
 {
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
+
 	public required string Id { get; init; }
 	public required string Name { get; init; }
 	public string? Serial { get; init; }
@@ -19,7 +23,9 @@ public partial class DeviceListItem : ObservableObject
 	/// <summary>Maui image file name (e.g. tab_halo.png).</summary>
 	public string? DeviceIcon { get; init; }
 	public string? ThumbText { get; init; }
-	public string SignalText { get; init; } = "Strong";
+	/// <summary>Localization key for the signal strength label (e.g. "Device_Signal_Strong").</summary>
+	public string SignalTextKey { get; init; } = "Device_Signal_Strong";
+	public string SignalText => Loc.T(SignalTextKey);
 	public bool IsStrongSignal { get; init; }
 	public InstrumentKind? InstrumentKind { get; init; }
 
@@ -38,7 +44,9 @@ public partial class DeviceListItem : ObservableObject
 	public bool ShowMeasureLink => CanOpenMeasure;
 	public bool ShowBattery => BatteryPercent is not null;
 
-	public string SignalStatusText => IsConnected ? $"Connected · {SignalText}" : SignalText;
+	public string SignalStatusText => IsConnected
+		? Loc.T("Device_SignalConnectedFormat", SignalText)
+		: SignalText;
 
 	/// <summary>Plain serial number for the device row.</summary>
 	public string SerialNumber => Serial ?? string.Empty;
@@ -64,9 +72,11 @@ public partial class DeviceListItem : ObservableObject
 
 	public bool ShowSecondaryLine => !string.IsNullOrEmpty(SecondaryLine);
 
-	public string BatteryPillText => BatteryPercent is { } pct ? $"{pct}%" : string.Empty;
+	public string BatteryPillText => BatteryPercent is { } pct ? Loc.T("Common_PercentFormat", pct) : string.Empty;
 
-	public string ConnectionButtonText => IsConnected ? "Disconnect" : "Connect";
+	public string ConnectionButtonText => IsConnected
+		? Loc.T("Device_Action_Disconnect")
+		: Loc.T("Device_Action_Connect");
 
 	partial void OnIsConnectedChanged(bool value) => RefreshChrome();
 

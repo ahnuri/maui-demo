@@ -43,6 +43,20 @@ public partial class HomeViewModel : LocalizedViewModelBase
 	public string WorkflowReview { get; private set; } = string.Empty;
 	public string WorkflowReviewSub { get; private set; } = string.Empty;
 	public string CapabilitiesSection { get; private set; } = string.Empty;
+	public string CapabilityLiveStream { get; private set; } = string.Empty;
+	public string CapabilityLiveStreamSub { get; private set; } = string.Empty;
+	public string CapabilityTagReadings { get; private set; } = string.Empty;
+	public string CapabilityTagReadingsSub { get; private set; } = string.Empty;
+	public string CapabilityAutoManualLogs { get; private set; } = string.Empty;
+	public string CapabilityAutoManualLogsSub { get; private set; } = string.Empty;
+	public string CapabilityPdfCsvExport { get; private set; } = string.Empty;
+	public string CapabilityPdfCsvExportSub { get; private set; } = string.Empty;
+	public string CapabilityCloudSync { get; private set; } = string.Empty;
+	public string CapabilityCloudSyncSub { get; private set; } = string.Empty;
+	public string CapabilityMethodUnit { get; private set; } = string.Empty;
+	public string CapabilityMethodUnitSub { get; private set; } = string.Empty;
+	public string CapabilityTableGraph { get; private set; } = string.Empty;
+	public string CapabilityTableGraphSub { get; private set; } = string.Empty;
 
 	[RelayCommand]
 	Task ScanDevicesAsync() => OpenDevicesAsync();
@@ -98,6 +112,20 @@ public partial class HomeViewModel : LocalizedViewModelBase
 		WorkflowReview = Loc.T("Home_WorkflowReview");
 		WorkflowReviewSub = Loc.T("Home_WorkflowReviewSub");
 		CapabilitiesSection = Loc.T("Home_CapabilitiesSection");
+		CapabilityLiveStream = Loc.T("Home_Capability_LiveStream");
+		CapabilityLiveStreamSub = Loc.T("Home_Capability_LiveStreamSub");
+		CapabilityTagReadings = Loc.T("Home_Capability_TagReadings");
+		CapabilityTagReadingsSub = Loc.T("Home_Capability_TagReadingsSub");
+		CapabilityAutoManualLogs = Loc.T("Home_Capability_AutoManualLogs");
+		CapabilityAutoManualLogsSub = Loc.T("Home_Capability_AutoManualLogsSub");
+		CapabilityPdfCsvExport = Loc.T("Home_Capability_PdfCsvExport");
+		CapabilityPdfCsvExportSub = Loc.T("Home_Capability_PdfCsvExportSub");
+		CapabilityCloudSync = Loc.T("Home_Capability_CloudSync");
+		CapabilityCloudSyncSub = Loc.T("Home_Capability_CloudSyncSub");
+		CapabilityMethodUnit = Loc.T("Home_Capability_MethodUnit");
+		CapabilityMethodUnitSub = Loc.T("Home_Capability_MethodUnitSub");
+		CapabilityTableGraph = Loc.T("Home_Capability_TableGraph");
+		CapabilityTableGraphSub = Loc.T("Home_Capability_TableGraphSub");
 
 		NotifyHeroStringsChanged();
 		UpdateConnectedSummary();
@@ -133,6 +161,20 @@ public partial class HomeViewModel : LocalizedViewModelBase
 		OnPropertyChanged(nameof(WorkflowReview));
 		OnPropertyChanged(nameof(WorkflowReviewSub));
 		OnPropertyChanged(nameof(CapabilitiesSection));
+		OnPropertyChanged(nameof(CapabilityLiveStream));
+		OnPropertyChanged(nameof(CapabilityLiveStreamSub));
+		OnPropertyChanged(nameof(CapabilityTagReadings));
+		OnPropertyChanged(nameof(CapabilityTagReadingsSub));
+		OnPropertyChanged(nameof(CapabilityAutoManualLogs));
+		OnPropertyChanged(nameof(CapabilityAutoManualLogsSub));
+		OnPropertyChanged(nameof(CapabilityPdfCsvExport));
+		OnPropertyChanged(nameof(CapabilityPdfCsvExportSub));
+		OnPropertyChanged(nameof(CapabilityCloudSync));
+		OnPropertyChanged(nameof(CapabilityCloudSyncSub));
+		OnPropertyChanged(nameof(CapabilityMethodUnit));
+		OnPropertyChanged(nameof(CapabilityMethodUnitSub));
+		OnPropertyChanged(nameof(CapabilityTableGraph));
+		OnPropertyChanged(nameof(CapabilityTableGraphSub));
 	}
 
 	partial void OnConnectedDevicesCountChanged(int value) => UpdateConnectedSummary();

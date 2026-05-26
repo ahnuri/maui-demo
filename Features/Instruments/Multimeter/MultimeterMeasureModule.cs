@@ -7,9 +7,6 @@ namespace HannaUIDemo.Features.Instruments.Multimeter;
 /// <summary>Measure tab module for HI98x94 multiparameter log recall.</summary>
 public sealed class MultimeterMeasureModule : IInstrumentMeasureModule
 {
-	/// <summary>Title text shown alongside the device icon in the Shell nav bar.</summary>
-	const string NavigationTitleText = "HI98x94 - Multimeter";
-
 	/// <summary>Canonical device icon (resolved through <see cref="DeviceIconResolver"/>).</summary>
 	static readonly string NavigationIcon = DeviceIconResolver.MultimeterIcon;
 
@@ -24,7 +21,7 @@ public sealed class MultimeterMeasureModule : IInstrumentMeasureModule
 	public bool UsesLabChrome => false;
 
 	/// <summary>Plain-text fallback (also used for accessibility / Shell.Title).</summary>
-	public string GetNavigationTitle(LocalizationService loc) => NavigationTitleText;
+	public string GetNavigationTitle(LocalizationService loc) => loc.T("Instrument_Multimeter_NavTitle");
 
 	public void ApplyTheme() => View.ApplyTheme();
 
@@ -42,11 +39,11 @@ public sealed class MultimeterMeasureModule : IInstrumentMeasureModule
 		// Clear the string title so the TitleView is the only text rendered (otherwise some
 		// platforms render both, producing duplicate text in the nav bar).
 		host.SetTitle(string.Empty);
-		host.SetTitleView(BuildTitleView());
+		host.SetTitleView(BuildTitleView(viewModel.Loc.T("Instrument_Multimeter_NavTitle")));
 		return true;
 	}
 
-	static View BuildTitleView()
+	static View BuildTitleView(string titleText)
 	{
 		var icon = new Image
 		{
@@ -59,7 +56,7 @@ public sealed class MultimeterMeasureModule : IInstrumentMeasureModule
 
 		var label = new Label
 		{
-			Text = NavigationTitleText,
+			Text = titleText,
 			FontSize = 17,
 			FontAttributes = FontAttributes.Bold,
 			VerticalOptions = LayoutOptions.Center,

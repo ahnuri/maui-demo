@@ -9,20 +9,13 @@ public sealed class Halo2LogNavigator : IInstrumentLogNavigator
 {
 	public InstrumentKind Kind => InstrumentKind.Halo2;
 
-	// public async Task NavigateToSessionAsync(Page hostPage, LogEntryViewModel entry)
-	// {
-	// 	var detailPage = AppServices.Get<Halo2LogDetailPage>();
-	// 	detailPage.ViewModel.LoadFrom(entry);
-	// 	await hostPage.Navigation.PushAsync(detailPage);
-	// }
-
-	public Task NavigateToSessionAsync(Page hostPage, LogEntryViewModel entry) =>
-		hostPage.DisplayAlertAsync(
-			"Log detail",
-			"Detailed views for Halo 2 logs is in progress.",
-			"OK");
+	public async Task NavigateToSessionAsync(Page hostPage, LogEntryViewModel entry)
+	{
+		var detailPage = AppServices.Get<Halo2LogDetailPage>();
+		detailPage.ViewModel.LoadFrom(entry);
+		await hostPage.Navigation.PushAsync(detailPage);
+	}
 
 	public Task NavigateToTankAsync(Page hostPage, LogTankGroupViewModel tank) =>
 		Task.CompletedTask;
 }
-

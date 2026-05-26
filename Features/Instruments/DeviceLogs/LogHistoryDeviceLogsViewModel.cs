@@ -12,7 +12,7 @@ namespace HannaUIDemo.Features.Instruments.Logs;
 /// Log History detail ViewModel for one device family (Halo, photometer, or multimeter).
 /// Manages model filters, edit mode, selection, sync, and navigation to tank readings or Halo detail.
 /// </summary>
-public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
+public partial class LogHistoryDeviceLogsViewModel : LocalizedViewModelBase
 {
 	[ObservableProperty] private bool _isSyncing;
 	[ObservableProperty] private bool _isEditMode;
@@ -35,10 +35,21 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 	public bool ShowLogActionRow => ShowLogEditButton;
 	public bool ShowEditModeActions => IsEditMode && ShowLogEditButton;
 	public bool ShowClearSelection => IsEditMode && SelectedCount > 0;
-	public string EditModeButtonText => IsEditMode ? "Done" : "Edit";
+	public string EditModeButtonText => IsEditMode ? Loc.T("Common_Done") : Loc.T("Common_Edit");
 	public bool ShowSelectionBar => IsEditMode && SelectedCount > 0 && ShowLogEditButton;
-	public string SelectionSummary => SelectedCount == 1 ? "1 log selected" : $"{SelectedCount} logs selected";
-	public string ModelFilterHint => IsPhotometerList ? "Filter by device · tanks" : "Filter by device · log files";
+	public string SelectionSummary => SelectedCount == 1
+		? Loc.T("LogHistory_SelectionFormat", 1)
+		: Loc.T("LogHistory_SelectionFormatMany", SelectedCount);
+	public string ModelFilterHint => IsPhotometerList
+		? Loc.T("LogHistory_FilterByDeviceTanks")
+		: Loc.T("LogHistory_FilterByDeviceFiles");
+
+	public string TapToSelectHint => Loc.T("LogHistory_TapToSelect");
+	public string SelectAllLabel => Loc.T("Common_SelectAll");
+	public string ClearLabel => Loc.T("Common_Clear");
+	public string ShareLabel => Loc.T("Common_Share");
+	public string DeleteLabel => Loc.T("Common_Delete");
+	public string SyncLabel => Loc.T("Common_Sync");
 
 	public int SelectedCount => VisibleLogEntries().Count(e => e.IsSelected);
 
@@ -53,8 +64,8 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 		WireEntries();
 		PageTitle = TypeTitle(kind);
 		PageSubtitle = kind == InstrumentKind.Photometer
-			? "Tanks grouped by device"
-			: "Log files grouped by device";
+			? Loc.T("LogHistory_PageSubtitle_Tanks")
+			: Loc.T("LogHistory_PageSubtitle_Files");
 		LoadModelSections();
 		OnPropertyChanged(nameof(IsPhotometerList));
 		OnPropertyChanged(nameof(ShowLogEditButton));
@@ -62,6 +73,24 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 	}
 
 	public override void RefreshForTheme() => LoadModelSections();
+
+	protected override void ApplyLocalization()
+	{
+		PageTitle = TypeTitle(_kind);
+		PageSubtitle = _kind == InstrumentKind.Photometer
+			? Loc.T("LogHistory_PageSubtitle_Tanks")
+			: Loc.T("LogHistory_PageSubtitle_Files");
+		OnPropertyChanged(nameof(EditModeButtonText));
+		OnPropertyChanged(nameof(SelectionSummary));
+		OnPropertyChanged(nameof(ModelFilterHint));
+		OnPropertyChanged(nameof(TapToSelectHint));
+		OnPropertyChanged(nameof(SelectAllLabel));
+		OnPropertyChanged(nameof(ClearLabel));
+		OnPropertyChanged(nameof(ShareLabel));
+		OnPropertyChanged(nameof(DeleteLabel));
+		OnPropertyChanged(nameof(SyncLabel));
+		LoadModelSections();
+	}
 
 	public string TryGetTankName(string modelId, int tankId) =>
 		LogHistoryCatalog.GetTankName(modelId, tankId);
@@ -151,13 +180,19 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 		if (selected.Count == 0 || Shell.Current?.CurrentPage is not Page page)
 			return;
 
-		var format = await page.DisplayActionSheetAsync("Export selected logs", "Cancel", null, "PDF", "CSV");
-		if (string.IsNullOrEmpty(format) || format == "Cancel")
+		var cancel = Loc.T("Common_Cancel");
+		var format = await page.DisplayActionSheetAsync(
+			Loc.T("LogHistory_ExportTitle"),
+			cancel,
+			null,
+			Loc.T("Common_Pdf"),
+			Loc.T("Common_Csv"));
+		if (string.IsNullOrEmpty(format) || format == cancel)
 			return;
 
 		await Share.Default.RequestAsync(new ShareTextRequest
 		{
-			Title = $"Hanna Lab logs ({format})",
+			Title = Loc.T("LogHistory_ExportSubject", format),
 			Text = BuildExportBody(selected, format)
 		});
 	}
@@ -170,10 +205,14 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 			return;
 
 		var message = selected.Count == 1
-			? $"Delete \"{selected[0].Title}\" from Hanna Lab? This cannot be undone."
-			: $"Delete {selected.Count} logs from Hanna Lab? This cannot be undone.";
+			? Loc.T("LogHistory_DeleteSingleFormat", selected[0].Title)
+			: Loc.T("LogHistory_DeleteMultiFormat", selected.Count);
 
-		if (!await page.DisplayAlertAsync("Delete logs", message, "Delete", "Cancel"))
+		if (!await page.DisplayAlertAsync(
+				Loc.T("LogHistory_DeleteDialogTitle"),
+				message,
+				Loc.T("Common_Delete"),
+				Loc.T("Common_Cancel")))
 			return;
 
 		LogHistoryData.RemoveEntries(selected);
@@ -195,7 +234,10 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 			await Task.Delay(1400);
 			foreach (var entry in selected)
 				entry.IsUploadedToCloud = true;
-			await page.DisplayAlertAsync("Cloud upload", $"{selected.Count} log file(s) uploaded to cloud.", "OK");
+			await page.DisplayAlertAsync(
+				Loc.T("LogHistory_CloudUploadDialogTitle"),
+				Loc.T("LogHistory_CloudUploadDialogFormat", selected.Count),
+				Loc.T("Common_OK"));
 		}
 		finally
 		{
@@ -262,7 +304,9 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 	void LoadModelFilters()
 	{
 		ModelFilters.Clear();
-		var unit = _kind == InstrumentKind.Photometer ? "tanks" : "logs";
+		var unit = _kind == InstrumentKind.Photometer
+			? Loc.T("LogHistory_TankCountUnit")
+			: Loc.T("LogHistory_LogCountUnit");
 		var entries = LogHistoryData.Entries.Where(e => e.InstrumentKind == _kind).ToList();
 
 		var totalCount = _kind == InstrumentKind.Photometer ? CountTanks(entries) : entries.Count;
@@ -270,7 +314,7 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 		ModelFilters.Add(new LogModelFilterChipViewModel
 		{
 			ModelId = null,
-			Label = "All",
+			Label = Loc.T("Multimeter_LogRecall_FilterAll"),
 			Count = totalCount,
 			UnitLabel = unit
 		});
@@ -340,12 +384,12 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 		return ModelSections.SelectMany(s => s.LogEntries);
 	}
 
-	static string TypeTitle(InstrumentKind kind) => kind switch
+	string TypeTitle(InstrumentKind kind) => kind switch
 	{
-		InstrumentKind.Halo2 => "Halo 2",
-		InstrumentKind.Photometer => "HI97115 Photometer",
-		InstrumentKind.Multimeter => "Multimeter",
-		_ => "Logs"
+		InstrumentKind.Halo2 => Loc.T("LogHistory_TypeTitle_Halo2"),
+		InstrumentKind.Photometer => Loc.T("LogHistory_TypeTitle_Photometer"),
+		InstrumentKind.Multimeter => Loc.T("LogHistory_TypeTitle_Multimeter"),
+		_ => Loc.T("LogHistory_TypeTitle_Generic")
 	};
 
 	static int CountTanks(IEnumerable<LogEntryViewModel> entries) =>
@@ -359,20 +403,20 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 		return int.TryParse(digits, out var n) ? n : 0;
 	}
 
-	static string BuildDateRangeSummary(IReadOnlyList<LogEntryViewModel> entries)
+	string BuildDateRangeSummary(IReadOnlyList<LogEntryViewModel> entries)
 	{
 		if (entries.Count == 0)
-			return "—";
+			return Loc.T("Common_Empty");
 		if (entries.Count == 1)
 			return entries[0].DateRangeLabel;
-		return $"{entries.Min(e => e.Start)}  →  {entries.Max(e => e.Stop)}";
+		return Loc.T("LogHistory_DateRangeArrowFormat", entries.Min(e => e.Start) ?? string.Empty, entries.Max(e => e.Stop) ?? string.Empty);
 	}
 
-	static string BuildExportBody(IReadOnlyList<LogEntryViewModel> logs, string format)
+	string BuildExportBody(IReadOnlyList<LogEntryViewModel> logs, string format)
 	{
-		if (format == "CSV")
+		if (format == Loc.T("Common_Csv"))
 		{
-			var lines = new List<string> { "Device,Model,Title,TankId,Start,Stop,Records,Parameters" };
+			var lines = new List<string> { Loc.T("LogHistory_ExportCsvHeader") };
 			foreach (var log in logs)
 			{
 				lines.Add(string.Join(",",
@@ -385,7 +429,7 @@ public partial class LogHistoryDeviceLogsViewModel : PageViewModelBase
 
 		var pdfLines = logs.Select(log =>
 			$"• {log.Title} ({log.DeviceBadge})\n  {log.Start} → {log.Stop}\n  Records: {log.RecordCount}");
-		return "Hanna Lab — Log history export\n\n" + string.Join("\n\n", pdfLines);
+		return Loc.T("LogHistory_ExportSubject_Pdf_Header") + "\n\n" + string.Join("\n\n", pdfLines);
 	}
 
 	static string Csv(string value) =>

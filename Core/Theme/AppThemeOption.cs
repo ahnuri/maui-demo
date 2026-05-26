@@ -1,4 +1,4 @@
-namespace HannaUIDemo.Core.Theme;
+namespace HannaUIDemo.Theme;
 
 /// <summary>User-selected appearance (maps to <see cref="Application.UserAppTheme"/>).</summary>
 public enum AppThemeOption

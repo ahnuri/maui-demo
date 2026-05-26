@@ -7,32 +7,44 @@ using HannaUIDemo.Features.Device;
 namespace HannaUIDemo.Features.Info;
 
 /// <summary>Connected device information and rename.</summary>
-public partial class DeviceInfoViewModel : PageViewModelBase
+public partial class DeviceInfoViewModel : LocalizedViewModelBase
 {
 	[ObservableProperty] private string _deviceName = "HI97115-Photometer";
 	[ObservableProperty] private bool _showFirmwareBanner = true;
 
 	public ObservableCollection<InfoSectionViewModel> Sections { get; } = new();
 
+	public string ConnectedLabel => Loc.T("Info_Status_Connected");
+	public string FirmwareUpdateBanner => Loc.T("Info_Banner_FirmwareUpdate");
+	public string OpenDevicesLabel => Loc.T("Info_OpenDevicesButton");
+
 	public DeviceInfoViewModel() => LoadSections();
 
 	public override void RefreshForTheme() => LoadSections();
 
+	protected override void ApplyLocalization()
+	{
+		LoadSections();
+		OnPropertyChanged(nameof(ConnectedLabel));
+		OnPropertyChanged(nameof(FirmwareUpdateBanner));
+		OnPropertyChanged(nameof(OpenDevicesLabel));
+	}
+
 	void LoadSections()
 	{
 		Sections.Clear();
-		Sections.Add(CreateSection("\u2139", "Device Details",
-			("Device Name", DeviceName),
-			("Model", "HI9810392"),
-			("Serial Number", "SN-H2-039284")));
-		Sections.Add(CreateSection("\u2699", "Software", ShowFirmwareBanner,
-			("Firmware Version", "v1.3.2"),
-			("Bluetooth Version", "v5.0"),
-			("Language", "English"),
-			("Language Pack Version", "v1.0.4")));
-		Sections.Add(CreateSection("\u2192", "Connection",
-			("Last Connected", "3rd Feb 2026, 15:55"),
-			("Connection Duration", "47 Minutes")));
+		Sections.Add(CreateSection("\u2139", Loc.T("Info_Section_DeviceDetails"),
+			(Loc.T("Info_Field_DeviceName"), DeviceName),
+			(Loc.T("Info_Field_Model"), "HI9810392"),
+			(Loc.T("Info_Field_SerialNumber"), "SN-H2-039284")));
+		Sections.Add(CreateSection("\u2699", Loc.T("Info_Section_Software"), ShowFirmwareBanner,
+			(Loc.T("Info_Field_FirmwareVersion"), "v1.3.2"),
+			(Loc.T("Info_Field_BluetoothVersion"), "v5.0"),
+			(Loc.T("Info_Field_Language"), Loc.T("Photometer_Settings_DefaultLang")),
+			(Loc.T("Info_Field_LanguagePackVersion"), "v1.0.4")));
+		Sections.Add(CreateSection("\u2192", Loc.T("Info_Section_Connection"),
+			(Loc.T("Info_Field_LastConnected"), "3rd Feb 2026, 15:55"),
+			(Loc.T("Info_Field_ConnectionDuration"), Loc.T("Info_Value_47Minutes"))));
 	}
 
 	static InfoSectionViewModel CreateSection(string icon, string title, params (string Label, string Value)[] rows) =>
@@ -53,11 +65,11 @@ public partial class DeviceInfoViewModel : PageViewModelBase
 			return;
 
 		var result = await page.DisplayPromptAsync(
-			"Rename Device",
-			"Device Name",
+			Loc.T("Info_RenameDialog_Title"),
+			Loc.T("Info_Field_DeviceName"),
 			initialValue: DeviceName,
 			maxLength: 30,
-			placeholder: "e.g. Lab Photometer 1");
+			placeholder: Loc.T("Info_RenameDialog_Placeholder"));
 
 		if (string.IsNullOrWhiteSpace(result) || result.Trim() == DeviceName)
 			return;
@@ -65,7 +77,10 @@ public partial class DeviceInfoViewModel : PageViewModelBase
 		DeviceName = result.Trim();
 		OnPropertyChanged(nameof(DeviceName));
 		LoadSections();
-		await page.DisplayAlertAsync("Device", $"Device renamed to \"{DeviceName}\"", "OK");
+		await page.DisplayAlertAsync(
+			Loc.T("Info_RenameDialog_ToastTitle"),
+			Loc.T("Info_RenameDialog_ToastMessage", DeviceName),
+			Loc.T("Common_OK"));
 	}
 
 	[RelayCommand]

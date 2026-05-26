@@ -12,16 +12,10 @@ public sealed class PhotometerLogNavigator : IInstrumentLogNavigator
 	public Task NavigateToSessionAsync(Page hostPage, LogEntryViewModel entry) =>
 		hostPage.DisplayAlertAsync("Log detail", "Open a tank to view readings.", "OK");
 
-	// public async Task NavigateToTankAsync(Page hostPage, LogTankGroupViewModel tank)
-	// {
-	// 	var page = AppServices.Get<LogHistoryTankReadingsPage>();
-	// 	page.Initialize(tank);
-	// 	await hostPage.Navigation.PushAsync(page);
-	// }
-
-	public async Task NavigateToTankAsync(Page hostPage, LogTankGroupViewModel tank) =>
-		hostPage.DisplayAlertAsync(
-			"Log detail",
-			"Detailed views for Photometer logs is in progress.",
-			"OK");
+	public async Task NavigateToTankAsync(Page hostPage, LogTankGroupViewModel tank)
+	{
+		var page = AppServices.Get<LogHistoryTankReadingsPage>();
+		page.Initialize(tank);
+		await hostPage.Navigation.PushAsync(page);
+	}
 }

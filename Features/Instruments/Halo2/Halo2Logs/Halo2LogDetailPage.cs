@@ -1,5 +1,6 @@
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Helpers;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Features.Instruments.Halo2;
 using HannaUIDemo.Features.Instruments.Logs;
 using HannaUIDemo.Theme;
@@ -14,6 +15,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 	enum DataFilter { All, Tagged }
 
 	readonly Halo2LogDetailViewModel _viewModel;
+	readonly LocalizationService _loc;
 	readonly VerticalStackLayout _contentHost;
 	readonly Label _logFileNameLabel;
 	readonly Label _recordedDateLabel;
@@ -27,8 +29,9 @@ public sealed class Halo2LogDetailPage : ContentPage
 	public Halo2LogDetailPage(Halo2LogDetailViewModel viewModel)
 	{
 		_viewModel = viewModel;
+		_loc = viewModel.Loc;
 		BindingContext = viewModel;
-		Title = "Log Details";
+		Title = _loc.T("Halo_Log_Details_Title");
 		Shell.SetNavBarIsVisible(this, true);
 		Shell.SetNavBarHasShadow(this, false);
 		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
@@ -73,13 +76,13 @@ public sealed class Halo2LogDetailPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		NavToolbar.ConfigureDetail(this, "Log Details", subtitle: null);
+		NavToolbar.ConfigureDetail(this, _loc.T("Halo_Log_Details_Title"), subtitle: null);
 		ShellChrome.ApplyStandard(this);
 	}
 
 	public void ApplyTheme()
 	{
-		NavToolbar.ConfigureDetail(this, "Log Details", subtitle: null);
+		NavToolbar.ConfigureDetail(this, _loc.T("Halo_Log_Details_Title"), subtitle: null);
 		ShellChrome.ApplyStandard(this);
 		RebuildContent();
 	}
@@ -99,7 +102,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 		editTap.SetBinding(TapGestureRecognizer.CommandProperty,
 			new Binding(nameof(Halo2LogDetailViewModel.RenameLogCommand), source: _viewModel));
 		edit.GestureRecognizers.Add(editTap);
-		SemanticProperties.SetDescription(edit, "Rename log file");
+		SemanticProperties.SetDescription(edit, _loc.T("Halo_Log_RenameLogAccessibility"));
 
 		var nameRow = new Grid
 		{
@@ -135,9 +138,9 @@ public sealed class Halo2LogDetailPage : ContentPage
 			Padding = new Thickness(0, 2),
 			Children =
 			{
-				BuildModeButton(DetailView.Table, HaloMeasureModeIconKind.Table, "Table view"),
-				BuildModeButton(DetailView.Graph, HaloMeasureModeIconKind.Chart, "Graph view"),
-				BuildModeButton(DetailView.Calibration, HaloMeasureModeIconKind.Calibration, "GLP calibration data"),
+				BuildModeButton(DetailView.Table, HaloMeasureModeIconKind.Table, _loc.T("Halo_Log_TableViewAccessibility")),
+				BuildModeButton(DetailView.Graph, HaloMeasureModeIconKind.Chart, _loc.T("Halo_Log_GraphViewAccessibility")),
+				BuildModeButton(DetailView.Calibration, HaloMeasureModeIconKind.Calibration, _loc.T("Halo_Log_CalibrationViewAccessibility")),
 				BuildShareButton()
 			}
 		};
@@ -202,7 +205,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 		shareTap.SetBinding(TapGestureRecognizer.CommandProperty,
 			new Binding(nameof(Halo2LogDetailViewModel.ExportLogCommand), source: _viewModel));
 		button.GestureRecognizers.Add(shareTap);
-		SemanticProperties.SetDescription(button, "Export log as PDF or CSV");
+		SemanticProperties.SetDescription(button, _loc.T("Halo_Log_ExportAccessibility"));
 		return button;
 	}
 
@@ -245,8 +248,8 @@ public sealed class Halo2LogDetailPage : ContentPage
 			VerticalOptions = LayoutOptions.Center
 		};
 
-		var allChip = BuildFilterSegment("All Data", DataFilter.All);
-		var taggedChip = BuildFilterSegment("Tagged Data", DataFilter.Tagged);
+		var allChip = BuildFilterSegment(_loc.T("Halo_Log_Filter_All"), DataFilter.All);
+		var taggedChip = BuildFilterSegment(_loc.T("Halo_Log_Filter_Tagged"), DataFilter.Tagged);
 
 		var segmentGrid = new Grid
 		{
@@ -358,7 +361,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 
 		if (rows.Count == 0)
 		{
-			stack.Children.Add(BuildEmptyFilterState("No tagged readings in this log."));
+			stack.Children.Add(BuildEmptyFilterState(_loc.T("Halo_Log_NoTagged")));
 			return stack;
 		}
 
@@ -413,11 +416,11 @@ public sealed class Halo2LogDetailPage : ContentPage
 			Padding = TableCellPadding,
 			BackgroundColor = Color.FromArgb("#CBD5E1")
 		};
-		AddHeaderCell(header, "#rec", 0);
-		AddHeaderCell(header, "pH", 1);
-		AddHeaderCell(header, "mV", 2);
-		AddHeaderCell(header, "Temp (°C)", 3);
-		AddHeaderCell(header, "Date", 4);
+		AddHeaderCell(header, _loc.T("Halo_Log_Table_RecordHeader"), 0);
+		AddHeaderCell(header, _loc.T("Halo_Log_Table_PhHeader"), 1);
+		AddHeaderCell(header, _loc.T("Halo_Log_Table_MvHeader"), 2);
+		AddHeaderCell(header, _loc.T("Halo_Log_Table_TempHeader"), 3);
+		AddHeaderCell(header, _loc.T("Halo_Log_Table_DateHeader"), 4);
 		return header;
 	}
 
@@ -507,7 +510,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 				{
 					new Label
 					{
-						Text = "Work in progress",
+						Text = _loc.T("Halo_Log_WorkInProgress"),
 						FontAttributes = FontAttributes.Bold,
 						FontSize = 17,
 						HorizontalTextAlignment = TextAlignment.Center,
@@ -515,7 +518,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 					},
 					new Label
 					{
-						Text = "Graph view for saved Halo 2 logs will be available in a future update.",
+						Text = _loc.T("Halo_Log_GraphWipMessage"),
 						FontSize = 14,
 						HorizontalTextAlignment = TextAlignment.Center,
 						LineBreakMode = LineBreakMode.WordWrap,
@@ -542,9 +545,9 @@ public sealed class Halo2LogDetailPage : ContentPage
 			Padding = new Thickness(14, 14),
 			BackgroundColor = ThemeColors.SurfaceSecondary
 		};
-		AddCalibrationMetric(header, "Last Calibration:", Halo2CalibrationDemoData.LastCalibrationDisplay, 0);
-		AddCalibrationMetric(header, "Offset:", Halo2CalibrationDemoData.OffsetDisplay, 1);
-		AddCalibrationMetric(header, "Average Slope:", Halo2CalibrationDemoData.AverageSlopeDisplay, 2);
+		AddCalibrationMetric(header, _loc.T("Halo_Calibration_LastLabel"), Halo2CalibrationDemoData.LastCalibrationDisplay, 0);
+		AddCalibrationMetric(header, _loc.T("Halo_Calibration_OffsetLabel"), Halo2CalibrationDemoData.OffsetDisplay, 1);
+		AddCalibrationMetric(header, _loc.T("Halo_Calibration_AvgSlopeLabel"), Halo2CalibrationDemoData.AverageSlopeDisplay, 2);
 
 		var pointsGrid = new Grid
 		{
@@ -645,7 +648,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 		Grid.SetColumn(stack, column);
 	}
 
-	static View BuildCalibrationSlopeLabel(string slopePercent) =>
+	View BuildCalibrationSlopeLabel(string slopePercent) =>
 		new VerticalStackLayout
 		{
 			WidthRequest = 40,
@@ -656,7 +659,7 @@ public sealed class Halo2LogDetailPage : ContentPage
 			{
 				new Label
 				{
-					Text = "Slope:",
+					Text = _loc.T("Halo_Calibration_SlopeLabel"),
 					FontSize = 11,
 					TextColor = ThemeColors.OnSurfaceVariant,
 					HorizontalTextAlignment = TextAlignment.Center

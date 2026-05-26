@@ -1,5 +1,7 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Photometer;
 
@@ -8,6 +10,7 @@ public sealed class RerunMethodsPickerPage : ContentPage
 {
 	public sealed record RerunMethodOption(int Index, string Title, string DisplayValue);
 
+	readonly LocalizationService _loc;
 	readonly IReadOnlyList<RerunMethodOption> _methods;
 	readonly Action<IReadOnlyList<int>> _onRerun;
 	readonly HashSet<int> _selectedIndices = new();
@@ -16,16 +19,17 @@ public sealed class RerunMethodsPickerPage : ContentPage
 
 	public RerunMethodsPickerPage(IReadOnlyList<RerunMethodOption> methods, Action<IReadOnlyList<int>> onRerun)
 	{
+		_loc = ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
 		_methods = methods;
 		_onRerun = onRerun;
-		Title = "Re-run measurements";
+		Title = _loc.T("Photometer_Rerun_Title");
 		BackgroundColor = ThemeColors.StoreGroupedBackground;
 		Shell.SetNavBarHasShadow(this, false);
-		ToolbarItems.Add(new ToolbarItem("Cancel", null, OnCancel));
+		ToolbarItems.Add(new ToolbarItem(_loc.T("Common_Cancel"), null, OnCancel));
 
 		_rerunButton = new Button
 		{
-			Text = "Re-run",
+			Text = _loc.T("Photometer_Rerun_Button"),
 			HeightRequest = AppConstants.ButtonHeight,
 			BackgroundColor = AppConstants.Primary,
 			TextColor = Colors.White,
@@ -44,14 +48,14 @@ public sealed class RerunMethodsPickerPage : ContentPage
 			{
 				new Label
 				{
-					Text = "Select parameters",
+					Text = _loc.T("Photometer_Rerun_Heading"),
 					FontSize = 22,
 					FontAttributes = FontAttributes.Bold,
 					TextColor = ThemeColors.OnSurface
 				},
 				new Label
 				{
-					Text = "Choose one or more completed measurements to run again on the HI97115.",
+					Text = _loc.T("Photometer_Rerun_Hint"),
 					FontSize = 14,
 					TextColor = ThemeColors.OnSurfaceVariant,
 					LineBreakMode = LineBreakMode.WordWrap
@@ -95,7 +99,9 @@ public sealed class RerunMethodsPickerPage : ContentPage
 	void UpdateRerunButton()
 	{
 		var count = _selectedIndices.Count;
-		_rerunButton.Text = count > 0 ? $"Re-run ({count})" : "Re-run";
+		_rerunButton.Text = count > 0
+			? _loc.T("Photometer_Rerun_ButtonFormat", count)
+			: _loc.T("Photometer_Rerun_Button");
 		_rerunButton.IsEnabled = count > 0;
 	}
 
@@ -230,7 +236,7 @@ public sealed class RerunMethodsPickerPage : ContentPage
 			return $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[1][0])}";
 		if (parts.Length == 1 && parts[0].Length >= 2)
 			return parts[0][..2].ToUpperInvariant();
-		return parts.Length == 1 ? parts[0].ToUpperInvariant() : "?";
+		return parts.Length == 1 ? parts[0].ToUpperInvariant() : "?"; // single-character placeholder, not a translated label
 	}
 
 	static readonly Color[] InitialPalette =

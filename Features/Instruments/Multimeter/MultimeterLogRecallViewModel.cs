@@ -7,7 +7,7 @@ using Microsoft.Maui.ApplicationModel.DataTransfer;
 namespace HannaUIDemo.Features.Instruments.Multimeter;
 
 /// <summary>HI98494 / HI98594 log recall list, sync, download, and share.</summary>
-public partial class MultimeterLogRecallViewModel : PageViewModelBase
+public partial class MultimeterLogRecallViewModel : LocalizedViewModelBase
 {
 	[ObservableProperty] private MultimeterLogFilter _activeFilter = MultimeterLogFilter.All;
 	[ObservableProperty] private bool _isSyncing;
@@ -97,10 +97,10 @@ public partial class MultimeterLogRecallViewModel : PageViewModelBase
 				return;
 
 			var confirmReplace = await page.DisplayAlertAsync(
-				"Already downloaded",
-				$"\"{log.Title}\" is already saved in Hanna Lab. Download again and replace the existing file?",
-				"Download and replace",
-				"Cancel");
+				Loc.T("Multimeter_LogRecall_AlreadyDownloadedTitle"),
+				Loc.T("Multimeter_LogRecall_AlreadyDownloadedMessage", log.Title),
+				Loc.T("Multimeter_LogRecall_DownloadReplace"),
+				Loc.T("Common_Cancel"));
 
 			if (!confirmReplace)
 				return;
@@ -122,10 +122,10 @@ public partial class MultimeterLogRecallViewModel : PageViewModelBase
 			if (Shell.Current?.CurrentPage is Page page)
 			{
 				var message = replacing
-					? $"{log.RecordCount} records from \"{log.Title}\" replaced the previous download in Hanna Lab."
-					: $"{log.RecordCount} records from \"{log.Title}\" were saved to Hanna Lab.";
+					? Loc.T("Multimeter_LogRecall_DownloadReplacedFormat", log.RecordCount, log.Title)
+					: Loc.T("Multimeter_LogRecall_DownloadSavedFormat", log.RecordCount, log.Title);
 
-				await page.DisplayAlertAsync("Download complete", message, "OK");
+				await page.DisplayAlertAsync(Loc.T("Multimeter_LogRecall_DownloadCompleteTitle"), message, Loc.T("Common_OK"));
 			}
 		}
 		finally
@@ -141,13 +141,13 @@ public partial class MultimeterLogRecallViewModel : PageViewModelBase
 		if (log is null)
 			return;
 
-		var text =
-			$"HI98x94 log file: {log.Title}\n" +
-			$"Type: {log.FileTypeLabel}\n" +
-			$"Records: {log.RecordCount}\n" +
-			$"Start: {log.StartRecorded}\n" +
-			$"Stop: {log.StopRecorded}\n" +
-			$"Parameters: {log.ParametersSummary}";
+		var text = Loc.T("Multimeter_LogRecall_ShareBodyFormat",
+			log.Title,
+			log.FileTypeLabel,
+			log.RecordCount,
+			log.StartRecorded,
+			log.StopRecorded,
+			log.ParametersSummary);
 
 		await Share.Default.RequestAsync(new ShareTextRequest
 		{

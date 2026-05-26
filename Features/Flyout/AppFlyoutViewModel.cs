@@ -21,17 +21,17 @@ public partial class AppFlyoutViewModel : LocalizedViewModelBase
 	readonly UserSessionService _session;
 	string _selectedRouteId = "home";
 
-	[ObservableProperty] bool _isLoggedIn;
-	[ObservableProperty] string _displayName = string.Empty;
-	[ObservableProperty] string _email = string.Empty;
-	[ObservableProperty] string _initials = "?";
-	[ObservableProperty] bool _showVerifiedBadge;
-	[ObservableProperty] bool _showCloudSyncStatus;
-	[ObservableProperty] Color _cloudSyncStatusColor = ThemeColors.MutedSignalDot;
-	[ObservableProperty] string _versionText = string.Empty;
-	[ObservableProperty] string _copyrightText = string.Empty;
-	[ObservableProperty] string _privacyPolicyText = string.Empty;
-	[ObservableProperty] string _languageLineText = string.Empty;
+	[ObservableProperty] private bool _isLoggedIn;
+	[ObservableProperty] private string _displayName = string.Empty;
+	[ObservableProperty] private string _email = string.Empty;
+	[ObservableProperty] private string _initials = "?";
+	[ObservableProperty] private bool _showVerifiedBadge;
+	[ObservableProperty] private bool _showCloudSyncStatus;
+	[ObservableProperty] private Color _cloudSyncStatusColor = ThemeColors.MutedSignalDot;
+	[ObservableProperty] private string _versionText = string.Empty;
+	[ObservableProperty] private string _copyrightText = string.Empty;
+	[ObservableProperty] private string _privacyPolicyText = string.Empty;
+	[ObservableProperty] private string _languageLineText = string.Empty;
 
 	public ObservableCollection<FlyoutNavItem> MainNavItems { get; } = new();
 	public ObservableCollection<FlyoutNavItem> FooterNavItems { get; } = new();

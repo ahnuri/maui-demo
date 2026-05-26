@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:info="clr-namespace:HannaUIDemo.Features.Info"
              x:Class="HannaUIDemo.Features.Info.InfoTabPage"
-             Title="Device Information"
              BackgroundColor="{DynamicResource PageBackground}"
              Shell.NavBarIsVisible="True"
              Shell.NavBarHasShadow="False"

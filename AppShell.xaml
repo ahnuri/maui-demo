@@ -18,9 +18,11 @@
             Color="{StaticResource Primary}" />
     </Shell.FlyoutIcon>
 
+    <!-- ShellContent.Title is overridden at runtime in AppShell.RefreshShellLocalization
+         using the Shell_* translation keys. -->
+
     <ShellContent
         x:Name="HomeShellContent"
-        Title="Hanna Lab"
         Route="home"
         Icon="tab_halo"
         FlyoutItemIsVisible="False">
@@ -29,7 +31,6 @@
 
     <ShellContent
         x:Name="MeasureShellContent"
-        Title="Measure"
         Route="measure"
         Icon="tab_photometer"
         FlyoutItemIsVisible="False">
@@ -38,7 +39,6 @@
 
     <ShellContent
         x:Name="LogsShellContent"
-        Title="Log History"
         Route="logs"
         Icon="tab_logs"
         FlyoutItemIsVisible="False">
@@ -47,7 +47,6 @@
 
     <!-- <ShellContent
         x:Name="InfoShellContent"
-        Title="Information"
         Route="info"
         Icon="tab_info"
         FlyoutItemIsVisible="False">
@@ -56,7 +55,6 @@
 
     <ShellContent
         x:Name="HelpShellContent"
-        Title="Help"
         Route="help"
         Icon="tab_help"
         FlyoutItemIsVisible="False">

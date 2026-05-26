@@ -1,5 +1,6 @@
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Devices;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
@@ -25,6 +26,7 @@ public sealed class MeasureDevicePickerPresenter
 	readonly ActivityIndicator _navBusyIndicator;
 	readonly Label _navBusyLabel;
 	readonly Func<InstrumentKind, Task> _onDevicePickedAsync;
+	readonly LocalizationService _localization;
 
 	ContentPage? _hostPage;
 	View? _savedContent;
@@ -33,9 +35,10 @@ public sealed class MeasureDevicePickerPresenter
 	bool _isAnimating;
 	int _navBusyDepth;
 
-	public MeasureDevicePickerPresenter(Func<InstrumentKind, Task> onDevicePickedAsync)
+	public MeasureDevicePickerPresenter(Func<InstrumentKind, Task> onDevicePickedAsync, LocalizationService localization)
 	{
 		_onDevicePickedAsync = onDevicePickedAsync;
+		_localization = localization;
 		(_overlay, _scrim, _sheet) = BuildOverlay();
 		(_navBusyOverlay, _navBusyIndicator, _navBusyLabel) = BuildNavBusyOverlay();
 	}
@@ -118,7 +121,7 @@ public sealed class MeasureDevicePickerPresenter
 			return;
 
 		_navBusyDepth++;
-		_navBusyLabel.Text = message ?? "Loading…";
+		_navBusyLabel.Text = message ?? _localization.T("Measure_LoadingFallback");
 		_navBusyLabel.IsVisible = !string.IsNullOrWhiteSpace(message);
 		_navBusyOverlay.IsVisible = true;
 		_navBusyOverlay.InputTransparent = false;
@@ -211,7 +214,7 @@ public sealed class MeasureDevicePickerPresenter
 
 		var titleLabel = new Label
 		{
-			Text = "Select Device to Measure/Download",
+			Text = _localization.T("Measure_PickerTitle"),
 			FontSize = 18,
 			FontAttributes = FontAttributes.Bold,
 			HorizontalOptions = LayoutOptions.Center
@@ -233,8 +236,8 @@ public sealed class MeasureDevicePickerPresenter
 			var thumb = family.PickerIcon ?? family.PickerThumbText ?? "?";
 			stack.Children.Add(BuildDeviceRow(
 				thumb,
-				family.PickerTitle,
-				family.PickerSubtitle,
+				InstrumentRegistry.GetDisplayName(family.Kind, _localization),
+				InstrumentRegistry.GetSubtitle(family.Kind, _localization),
 				family.PickerUsesTealAccent,
 				family.Kind));
 		}

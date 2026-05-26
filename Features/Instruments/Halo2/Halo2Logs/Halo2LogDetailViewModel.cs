@@ -8,7 +8,7 @@ using Microsoft.Maui.ApplicationModel.DataTransfer;
 namespace HannaUIDemo.Features.Instruments.Halo2.Logs;
 
 /// <summary>View model for a saved Halo 2 log session detail screen.</summary>
-public partial class Halo2LogDetailViewModel : PageViewModelBase
+public partial class Halo2LogDetailViewModel : LocalizedViewModelBase
 {
 	LogEntryViewModel? _sourceEntry;
 
@@ -29,8 +29,8 @@ public partial class Halo2LogDetailViewModel : PageViewModelBase
 			return;
 
 		var name = await page.DisplayPromptAsync(
-			"Rename log",
-			"Log file name",
+			Loc.T("Halo_Log_RenameTitle"),
+			Loc.T("Halo_Log_RenameLabel"),
 			initialValue: LogFileName,
 			maxLength: 48);
 
@@ -48,20 +48,21 @@ public partial class Halo2LogDetailViewModel : PageViewModelBase
 		if (Shell.Current?.CurrentPage is not Page page)
 			return;
 
+		var cancel = Loc.T("Common_Cancel");
 		var format = await page.DisplayActionSheetAsync(
-			"Export log",
-			"Cancel",
+			Loc.T("Halo_Log_ExportTitle"),
+			cancel,
 			null,
-			"PDF",
-			"CSV");
+			Loc.T("Common_Pdf"),
+			Loc.T("Common_Csv"));
 
-		if (string.IsNullOrEmpty(format) || format == "Cancel")
+		if (string.IsNullOrEmpty(format) || format == cancel)
 			return;
 
-		var body = format == "CSV" ? BuildCsvExport() : BuildPdfExport();
+		var body = format == Loc.T("Common_Csv") ? BuildCsvExport() : BuildPdfExport();
 		await Share.Default.RequestAsync(new ShareTextRequest
 		{
-			Title = $"Hanna Lab — {LogFileName} ({format})",
+			Title = Loc.T("Halo_Log_ShareSubjectFormat", LogFileName, format),
 			Text = body
 		});
 	}
@@ -71,21 +72,25 @@ public partial class Halo2LogDetailViewModel : PageViewModelBase
 		var rows = Halo2LogDetailSampleData.Rows;
 		var lines = new List<string>
 		{
-			"Hanna Lab — Halo 2 log export",
-			$"Log: {LogFileName}",
-			$"Recorded: {RecordedDate}",
-			$"Last calibration: {Halo2CalibrationDemoData.LastCalibrationDisplay}",
-			$"Offset: {Halo2CalibrationDemoData.OffsetDisplay}",
-			$"Average slope: {Halo2CalibrationDemoData.AverageSlopeDisplay}",
+			Loc.T("Halo_Log_ExportPdf_Header"),
+			Loc.T("Halo_Log_ExportPdf_LogLineFormat", LogFileName),
+			Loc.T("Halo_Log_ExportPdf_RecordedFormat", RecordedDate),
+			Loc.T("Halo_Log_ExportPdf_LastCalibrationFormat", Halo2CalibrationDemoData.LastCalibrationDisplay),
+			Loc.T("Halo_Log_ExportPdf_OffsetFormat", Halo2CalibrationDemoData.OffsetDisplay),
+			Loc.T("Halo_Log_ExportPdf_AvgSlopeFormat", Halo2CalibrationDemoData.AverageSlopeDisplay),
 			"",
-			"Readings:",
+			Loc.T("Halo_Log_ExportPdf_ReadingsHeader"),
 		};
 
 		var rec = 1;
 		foreach (var row in rows)
 		{
-			var flags = row.isAlert ? " [alert]" : row.isTagged ? " [tagged]" : string.Empty;
-			lines.Add($"  #{rec}  pH {row.Ph}  mV {row.Mv}  {row.Temp} °C  {row.Date}{flags}");
+			var flags = row.isAlert
+				? Loc.T("Halo_Log_ExportPdf_FlagAlert")
+				: row.isTagged
+					? Loc.T("Halo_Log_ExportPdf_FlagTagged")
+					: string.Empty;
+			lines.Add(Loc.T("Halo_Log_ExportPdf_RowFormat", rec, row.Ph, row.Mv, row.Temp, row.Date, flags));
 			rec++;
 		}
 
@@ -96,18 +101,18 @@ public partial class Halo2LogDetailViewModel : PageViewModelBase
 	{
 		var header = new[]
 		{
-			"LogFileName", LogFileName,
-			"Recorded", RecordedDate,
-			"LastCalibration", Halo2CalibrationDemoData.LastCalibrationDisplay,
-			"Offset", Halo2CalibrationDemoData.OffsetDisplay,
-			"AverageSlope", Halo2CalibrationDemoData.AverageSlopeDisplay
+			Loc.T("Halo_Log_ExportCsv_HeaderLogName"), LogFileName,
+			Loc.T("Halo_Log_ExportCsv_HeaderRecorded"), RecordedDate,
+			Loc.T("Halo_Log_ExportCsv_HeaderLastCalibration"), Halo2CalibrationDemoData.LastCalibrationDisplay,
+			Loc.T("Halo_Log_ExportCsv_HeaderOffset"), Halo2CalibrationDemoData.OffsetDisplay,
+			Loc.T("Halo_Log_ExportCsv_HeaderAvgSlope"), Halo2CalibrationDemoData.AverageSlopeDisplay
 		};
 
 		var meta = string.Join(Environment.NewLine,
 			Enumerable.Range(0, header.Length / 2)
 				.Select(i => $"{Csv(header[i * 2])},{Csv(header[i * 2 + 1])}"));
 
-		var tableHeader = "#Rec,pH,mV,Temp_C,Date,Tagged,Alert";
+		var tableHeader = Loc.T("Halo_Log_ExportCsv_TableHeader");
 		var tableRows = Halo2LogDetailSampleData.Rows.Select((r, i) =>
 			$"{i + 1},{Csv(r.Ph)},{Csv(r.Mv)},{Csv(r.Temp)},{Csv(r.Date)},{r.isTagged},{r.isAlert}");
 

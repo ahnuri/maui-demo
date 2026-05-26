@@ -1,5 +1,4 @@
 ﻿using HannaUIDemo.Core.Localization;
-using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Features.Instruments.Halo2;
 using HannaUIDemo.Features.Instruments.Halo2.Logs;

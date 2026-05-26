@@ -18,9 +18,7 @@ public sealed class PhotometerMeasureModule : IInstrumentMeasureModule
 	public bool UsesLabChrome => false;
 
 	public string GetNavigationTitle(LocalizationService loc) =>
-		InstrumentRegistry.Get(Kind).MeasureNavigationTitleKey is { } key && key.StartsWith("Shell_", StringComparison.Ordinal)
-			? loc.T(key)
-			: InstrumentRegistry.Get(Kind).MeasureNavigationTitleKey;
+		InstrumentRegistry.GetMeasureNavigationTitle(Kind, loc);
 
 	public void ApplyTheme() => View.ApplyTheme();
 

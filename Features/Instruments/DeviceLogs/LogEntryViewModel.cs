@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HannaUIDemo.Core.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Logs;
 
@@ -7,6 +9,8 @@ namespace HannaUIDemo.Features.Instruments.Logs;
 public partial class LogEntryViewModel : ObservableObject
 {
 	const int CollapsedVisibleCount = 3;
+
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
 
 	public string Id { get; init; } = Guid.NewGuid().ToString("N");
 	public required string DeviceModelId { get; init; }
@@ -30,6 +34,11 @@ public partial class LogEntryViewModel : ObservableObject
 
 	public bool ShowRecordCount => !string.IsNullOrWhiteSpace(RecordCount);
 
+	/// <summary>Localized record-count pill label (e.g. "123 records").</summary>
+	public string RecordCountLabel => string.IsNullOrWhiteSpace(RecordCount)
+		? string.Empty
+		: Loc.T("LogHistory_RecordRowFormat", RecordCount!);
+
 	public bool ShowDetailChevron =>
 		InstrumentKind == InstrumentKind.Halo2 && TankId is null && !IsEditModeActive;
 
@@ -40,7 +49,7 @@ public partial class LogEntryViewModel : ObservableObject
 	public string CloudSyncIconSource => LogDeviceVisuals.CloudSyncIcon(IsUploadedToCloud);
 
 	public string CloudUploadAccessibilityHint =>
-		IsUploadedToCloud ? "Uploaded to cloud" : "Not uploaded to cloud";
+		IsUploadedToCloud ? Loc.T("Cloud_UploadedToCloud") : Loc.T("Cloud_NotUploadedToCloud");
 
 	partial void OnIsUploadedToCloudChanged(bool value)
 	{
@@ -55,40 +64,40 @@ public partial class LogEntryViewModel : ObservableObject
 		TankId is int id && Owner?.TryGetTankName(DeviceModelId, id) is { } name
 			? name
 			: TankId is int tid
-				? $"Tank {tid}"
+				? Loc.T("LogHistory_TankNameFormat", tid)
 				: string.Empty;
 
 	public Color RecordCountBackground => LogDeviceVisuals.AccentBackground;
 
 	public Color RecordCountColor => LogDeviceVisuals.Accent;
 
-	public string DateRangeLabel => $"{Start}  →  {Stop}";
+	public string DateRangeLabel => Loc.T("LogHistory_DateRangeArrowFormat", Start, Stop);
 
 	public string DeviceBadge => InstrumentKind switch
 	{
-		InstrumentKind.Halo2 => "Halo 2",
-		InstrumentKind.Photometer => "HI97115",
-		InstrumentKind.Multimeter => "HI98x94",
-		_ => "Log"
+		InstrumentKind.Halo2 => Loc.T("LogHistory_DeviceBadge_Halo2"),
+		InstrumentKind.Photometer => Loc.T("LogHistory_DeviceBadge_Photometer"),
+		InstrumentKind.Multimeter => Loc.T("LogHistory_DeviceBadge_Multimeter"),
+		_ => Loc.T("LogHistory_DeviceBadge_Generic")
 	};
 
 	public Color CardStroke => IsSelected ? LogDeviceVisuals.Accent : ThemeColors.Divider;
 
 	public string ParametersFullSummary =>
-		Parameters.Count == 0 ? "—" : string.Join(" · ", Parameters);
+		Parameters.Count == 0 ? Loc.T("Common_Empty") : string.Join(" · ", Parameters);
 
 	public string ParametersCollapsedSummary
 	{
 		get
 		{
 			if (Parameters.Count == 0)
-				return "—";
+				return Loc.T("Common_Empty");
 			if (InstrumentKind == InstrumentKind.Halo2)
 				return ParametersFullSummary;
 			if (Parameters.Count <= CollapsedVisibleCount)
 				return ParametersFullSummary;
 			return string.Join(" · ", Parameters.Take(CollapsedVisibleCount))
-			       + $" · +{Parameters.Count - CollapsedVisibleCount} more";
+			       + Loc.T("LogHistory_ShowMoreFormat", Parameters.Count - CollapsedVisibleCount);
 		}
 	}
 
@@ -101,7 +110,7 @@ public partial class LogEntryViewModel : ObservableObject
 		InstrumentKind != InstrumentKind.Halo2 && Parameters.Count > CollapsedVisibleCount;
 
 	public string ParametersExpandLabel =>
-		IsParametersExpanded ? "Show less" : "Show all parameters";
+		IsParametersExpanded ? Loc.T("LogHistory_ShowLess") : Loc.T("LogHistory_ShowAll");
 
 	/// <summary>0 = unlimited lines; 1 = single-line summary.</summary>
 	public int ParametersMaxLines =>

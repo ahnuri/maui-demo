@@ -1,6 +1,16 @@
+using HannaUIDemo.Core.Localization;
+
 namespace HannaUIDemo.Core.Devices;
 
-/// <summary>Central catalog of instrument families and their UI metadata.</summary>
+/// <summary>
+/// Central catalog of instrument families and their UI metadata.
+///
+/// All user-visible strings (display name, subtitle, opening message, nav title)
+/// are stored as translation keys in <see cref="InstrumentFamily"/>. Use the
+/// <see cref="GetDisplayName"/>, <see cref="GetSubtitle"/>, <see cref="GetOpeningMessage"/>
+/// and <see cref="GetMeasureNavigationTitle"/> helpers to resolve them through
+/// <see cref="LocalizationService"/>.
+/// </summary>
 public static class InstrumentRegistry
 {
 	// Device-picker icons (PickerIcon). When set, the picker uses an Image control;
@@ -11,31 +21,28 @@ public static class InstrumentRegistry
 	[
 		new(
 			InstrumentKind.Photometer,
-			"HI97115 - Meter",
-			"Wireless photometer",
-			"HI",
-			"photometer_hi97115.png",
+			DisplayNameKey: "Instrument_Photometer_DisplayName",
+			SubtitleKey: "Instrument_Photometer_Subtitle",
+			PickerThumbText: "HI",
+			PickerIcon: "photometer_hi97115.png",
 			PickerUsesTealAccent: true,
-			MeasureNavigationTitleKey: "HI97115 - Meter",
-			OpeningMessage: "Opening photometer…"),
+			OpeningMessageKey: "Instrument_Photometer_OpeningMessage"),
 		new(
 			InstrumentKind.Multimeter,
-			"HI98x94 - Multiparameter",
-			"Log recall & download",
-			"94",
-			"hi98494_multimeter_icon.png",
+			DisplayNameKey: "Instrument_Multimeter_DisplayName",
+			SubtitleKey: "Instrument_Multimeter_Subtitle",
+			PickerThumbText: "94",
+			PickerIcon: "hi98494_multimeter_icon.png",
 			PickerUsesTealAccent: false,
-			MeasureNavigationTitleKey: "HI98x94 - Multiparameter",
-			OpeningMessage: "Opening multiparameter…"),
+			OpeningMessageKey: "Instrument_Multimeter_OpeningMessage"),
 		new(
 			InstrumentKind.Halo2,
-			"Halo 2",
-			"pH · mV · temperature",
-			null,
-			"halo2_device_icon.png",
+			DisplayNameKey: "Instrument_Halo2_DisplayName",
+			SubtitleKey: "Instrument_Halo2_Subtitle",
+			PickerThumbText: null,
+			PickerIcon: "halo2_device_icon.png",
 			PickerUsesTealAccent: false,
-			MeasureNavigationTitleKey: "Shell_Home",
-			OpeningMessage: "Opening Halo 2…")
+			OpeningMessageKey: "Instrument_Halo2_OpeningMessage")
 	];
 
 	public static IReadOnlyList<InstrumentFamily> All => Families;
@@ -43,5 +50,26 @@ public static class InstrumentRegistry
 	public static InstrumentFamily Get(InstrumentKind kind) =>
 		Families.First(f => f.Kind == kind);
 
-	public static string GetOpeningMessage(InstrumentKind kind) => Get(kind).OpeningMessage;
+	/// <summary>Localized display name (e.g. "HI97115 - Meter").</summary>
+	public static string GetDisplayName(InstrumentKind kind, LocalizationService loc) =>
+		loc.T(Get(kind).DisplayNameKey);
+
+	/// <summary>Localized one-line subtitle for the device picker / hub.</summary>
+	public static string GetSubtitle(InstrumentKind kind, LocalizationService loc) =>
+		loc.T(Get(kind).SubtitleKey);
+
+	/// <summary>Localized "Opening &lt;device&gt;…" busy message.</summary>
+	public static string GetOpeningMessage(InstrumentKind kind, LocalizationService loc) =>
+		loc.T(Get(kind).OpeningMessageKey);
+
+	/// <summary>
+	/// Localized navigation-title text for the Measure tab when this instrument is selected.
+	/// Halo 2 uses the global "Hanna Lab" title; the others use the device display name.
+	/// </summary>
+	public static string GetMeasureNavigationTitle(InstrumentKind kind, LocalizationService loc) =>
+		kind switch
+		{
+			InstrumentKind.Halo2 => loc.T("Shell_Home"),
+			_ => GetDisplayName(kind, loc)
+		};
 }

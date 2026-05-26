@@ -1,11 +1,14 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Photometer;
 
 /// <summary>Modal sheet to pick tank (1–100) with search and grouped list styling.</summary>
 public sealed class TankPickerPage : ContentPage
 {
+	readonly LocalizationService _loc;
 	readonly Action<int> _onSelected;
 	readonly int _initialTank;
 	readonly VerticalStackLayout _listHost = new() { Spacing = 0 };
@@ -15,17 +18,18 @@ public sealed class TankPickerPage : ContentPage
 
 	public TankPickerPage(int currentTank, Action<int> onSelected)
 	{
+		_loc = ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
 		_onSelected = onSelected;
 		_initialTank = Math.Clamp(currentTank, 1, 100);
-		Title = "Select tank";
+		Title = _loc.T("Photometer_TankPicker_Title");
 		BackgroundColor = ThemeColors.StoreGroupedBackground;
 		Shell.SetNavBarHasShadow(this, false);
 
-		ToolbarItems.Add(new ToolbarItem("Cancel", null, OnCancel));
+		ToolbarItems.Add(new ToolbarItem(_loc.T("Common_Cancel"), null, OnCancel));
 
 		_search = new SearchBar
 		{
-			Placeholder = "Search by number or name…",
+			Placeholder = _loc.T("Photometer_TankPicker_SearchPlaceholder"),
 			Margin = new Thickness(16, 4, 16, 8),
 			TextColor = ThemeColors.OnSurface,
 			PlaceholderColor = ThemeColors.OnSurfaceVariant,
@@ -70,14 +74,14 @@ public sealed class TankPickerPage : ContentPage
 						{
 							new Label
 							{
-								Text = "Choose a tank",
+								Text = _loc.T("Photometer_TankPicker_Heading"),
 								FontSize = 22,
 								FontAttributes = FontAttributes.Bold,
 								TextColor = ThemeColors.OnSurface
 							},
 							new Label
 							{
-								Text = "Tap a tank to select it, or Cancel to keep the current tank.",
+								Text = _loc.T("Photometer_TankPicker_Hint"),
 								FontSize = 14,
 								TextColor = ThemeColors.OnSurfaceVariant,
 								LineBreakMode = LineBreakMode.WordWrap
@@ -103,14 +107,14 @@ public sealed class TankPickerPage : ContentPage
 				return true;
 			if (n.ToString().Contains(q, StringComparison.OrdinalIgnoreCase))
 				return true;
-			return $"Tank {n}".Contains(q, StringComparison.OrdinalIgnoreCase);
+			return _loc.T("LogHistory_TankNameFormat", n).Contains(q, StringComparison.OrdinalIgnoreCase);
 		}).ToList();
 
 		if (matches.Count == 0)
 		{
 			_listHost.Children.Add(new Label
 			{
-				Text = "No tanks match your search.",
+				Text = _loc.T("Photometer_TankPicker_NoResults"),
 				FontSize = 15,
 				TextColor = ThemeColors.OnSurfaceVariant,
 				HorizontalTextAlignment = TextAlignment.Center,
@@ -151,7 +155,7 @@ public sealed class TankPickerPage : ContentPage
 
 		var title = new Label
 		{
-			Text = $"Tank {n}",
+			Text = _loc.T("LogHistory_TankNameFormat", n),
 			FontSize = 17,
 			TextColor = ThemeColors.OnSurface,
 			VerticalOptions = LayoutOptions.Center
@@ -168,7 +172,7 @@ public sealed class TankPickerPage : ContentPage
 				StrokeShape = new RoundRectangle { CornerRadius = 6 },
 				Content = new Label
 				{
-					Text = "Last used",
+					Text = _loc.T("Photometer_TankPicker_LastUsed"),
 					FontSize = 11,
 					FontAttributes = FontAttributes.Bold,
 					TextColor = AppConstants.Primary

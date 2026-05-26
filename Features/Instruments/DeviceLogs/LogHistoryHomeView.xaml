@@ -41,7 +41,7 @@
                     </Border>
                     <Label Grid.Column="1" FontAttributes="Bold" FontSize="17" Text="{Binding Title}" TextColor="{DynamicResource OnSurface}" />
                     <Label Grid.Row="1" Grid.Column="1" FontSize="12" Text="{Binding Subtitle}" TextColor="{DynamicResource OnSurfaceVariant}" LineBreakMode="WordWrap" />
-                    <Label Grid.Row="2" Grid.Column="1" FontSize="11" Text="{Binding LastRecordedLabel, StringFormat='Last recorded: {0}'}" TextColor="{DynamicResource OnSurfaceMuted}" />
+                    <Label Grid.Row="2" Grid.Column="1" FontSize="11" Text="{Binding LastRecordedDisplay}" TextColor="{DynamicResource OnSurfaceMuted}" />
                     <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Spacing="12">
                         <Label FontSize="11" Text="{Binding FileCountLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         <Label FontAttributes="Bold" FontSize="11" Text="{Binding RecordCountLabel}" TextColor="{Binding Accent}" />
@@ -71,7 +71,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16,12,16,24" Spacing="8">
-            <Label FontSize="13" Text="Select a device type to view saved logs" TextColor="{DynamicResource OnSurfaceVariant}" />
+            <Label FontSize="13" Text="{Binding EmptyHint}" TextColor="{DynamicResource OnSurfaceVariant}" />
             <VerticalStackLayout BindableLayout.ItemTemplate="{StaticResource DeviceTypeCardTemplate}" BindableLayout.ItemsSource="{Binding DeviceTypeCards}" Spacing="0" />
         </VerticalStackLayout>
     </ScrollView>

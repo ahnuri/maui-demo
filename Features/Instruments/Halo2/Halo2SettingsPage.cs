@@ -1,3 +1,4 @@
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
 
 namespace HannaUIDemo.Features.Instruments.Halo2;
@@ -22,7 +23,8 @@ public sealed class Halo2SettingsPage : ContentPage
 	{
 		_viewModel = viewModel;
 		BindingContext = viewModel;
-		Title = "Device Settings";
+		var loc = viewModel.Loc;
+		Title = loc.T("Halo_Settings_PageTitle");
 		ApplyChrome();
 		Halo2Routes.ConfigureSubPageChrome(this);
 
@@ -34,26 +36,26 @@ public sealed class Halo2SettingsPage : ContentPage
 				Spacing = 20,
 				Children =
 				{
-					DeviceSummary(),
+					DeviceSummary(loc),
 					Group(
-						ActionRow("Last Calibration", "Calibrate", Emerald, async () => await _viewModel.OpenCalibrationCommand.ExecuteAsync(null)),
-						LogActionsRow()),
+						ActionRow(loc.T("Halo_Settings_LastCalibration"), loc.T("Halo_Tab_Calibrate"), Emerald, async () => await _viewModel.OpenCalibrationCommand.ExecuteAsync(null)),
+						LogActionsRow(loc)),
 					Group(
-						SettingsRow("Measure Mode", BuildMeasureModeSegment()),
-						SettingsRow("Resolution", BuildResolutionSegment()),
-						SettingsRow("Temperature Units", BuildTemperatureUnitSegment()),
-						SettingsRow("Temperature Compensation", ValueWithChevron("ATC"))),
-					SectionTitle("VIEW"),
+						SettingsRow(loc.T("Halo_Settings_MeasureMode"), BuildMeasureModeSegment(loc)),
+						SettingsRow(loc.T("Halo_Settings_Resolution"), BuildResolutionSegment()),
+						SettingsRow(loc.T("Halo_Settings_TemperatureUnits"), BuildTemperatureUnitSegment(loc)),
+						SettingsRow(loc.T("Halo_Settings_TemperatureCompensation"), ValueWithChevron(loc.T("Halo_Settings_Atc")))),
+					SectionTitle(loc.T("Halo_Settings_ViewSection")),
 					Group(
-						SettingsRow("View Mode", BuildViewModeSegment()),
-						SettingsRow("Display", BuildDisplaySegment()),
-						SettingsRow("Graph Display", BuildGraphDisplaySegment()),
-						SettingsRow("Stability Criteria", BuildStabilitySegment())),
-					SectionTitle("CALIBRATION"),
+						SettingsRow(loc.T("Halo_Settings_ViewMode"), BuildViewModeSegment(loc)),
+						SettingsRow(loc.T("Halo_Settings_Display"), BuildDisplaySegment(loc)),
+						SettingsRow(loc.T("Halo_Settings_GraphDisplay"), BuildGraphDisplaySegment(loc)),
+						SettingsRow(loc.T("Halo_Settings_StabilityCriteria"), BuildStabilitySegment(loc))),
+					SectionTitle(loc.T("Halo_Settings_CalibrationSection")),
 					Group(
-						SettingsRow("Calibration Buffers", ValueWithChevron("Hanna")),
-						SettingsRow("Calibration Reminder", ValueWithChevron("None", disabled: true), disabled: true),
-						SettingsRow("Alarm", ValueWithChevron("Off")))
+						SettingsRow(loc.T("Halo_Settings_CalibrationBuffers"), ValueWithChevron(loc.T("Halo_Settings_BufferHanna"))),
+						SettingsRow(loc.T("Halo_Settings_CalibrationReminder"), ValueWithChevron(loc.T("Common_None"), disabled: true), disabled: true),
+						SettingsRow(loc.T("Common_Alarm"), ValueWithChevron(loc.T("Common_Off"))))
 				}
 			}
 		};
@@ -75,7 +77,7 @@ public sealed class Halo2SettingsPage : ContentPage
 		ShellChrome.ApplyLab(this);
 	}
 
-	Border DeviceSummary()
+	Border DeviceSummary(LocalizationService loc)
 	{
 		var icon = new Border
 		{
@@ -89,6 +91,7 @@ public sealed class Halo2SettingsPage : ContentPage
 			Content = new Image
 			{
 				Source = Halo2SettingsViewModel.DeviceIcon,
+				// DeviceIcon is intentionally a const asset name (not a translatable label).
 				Aspect = Aspect.AspectFit,
 				VerticalOptions = LayoutOptions.Center,
 				HorizontalOptions = LayoutOptions.Center
@@ -105,7 +108,7 @@ public sealed class Halo2SettingsPage : ContentPage
 			HorizontalOptions = LayoutOptions.Start,
 			Content = new Label
 			{
-				Text = "CALIBRATED",
+				Text = loc.T("Halo_Settings_Calibrated"),
 				FontSize = 10,
 				FontAttributes = FontAttributes.Bold,
 				TextColor = Emerald,
@@ -121,7 +124,7 @@ public sealed class Halo2SettingsPage : ContentPage
 			{
 				new Label
 				{
-					Text = Halo2SettingsViewModel.DeviceName,
+					Text = _viewModel.DeviceName,
 					FontSize = 20,
 					FontAttributes = FontAttributes.Bold,
 					TextColor = LabPrimaryText,
@@ -196,10 +199,10 @@ public sealed class Halo2SettingsPage : ContentPage
 		return border;
 	}
 
-	static Border LogActionsRow()
+	static Border LogActionsRow(LocalizationService loc)
 	{
 		var grid = BaseRowGrid();
-		grid.Children.Add(new Label { Text = "Log", FontSize = 16, TextColor = LabPrimaryText, VerticalOptions = LayoutOptions.Center });
+		grid.Children.Add(new Label { Text = loc.T("Halo_Log_Section"), FontSize = 16, TextColor = LabPrimaryText, VerticalOptions = LayoutOptions.Center });
 
 		var actions = new HorizontalStackLayout
 		{
@@ -208,9 +211,9 @@ public sealed class Halo2SettingsPage : ContentPage
 			VerticalOptions = LayoutOptions.Center,
 			Children =
 			{
-				LogPill("Clear"),
-				LogPill("Save", primary: true),
-				LogPill("Share")
+				LogPill(loc.T("Halo_Log_Clear")),
+				LogPill(loc.T("Halo_Log_Save"), primary: true),
+				LogPill(loc.T("Halo_Log_Share"))
 			}
 		};
 		grid.Children.Add(actions);
@@ -319,9 +322,9 @@ public sealed class Halo2SettingsPage : ContentPage
 		Content = grid
 	};
 
-	Border BuildMeasureModeSegment() => BuildInteractiveSegment(
+	Border BuildMeasureModeSegment(LocalizationService loc) => BuildInteractiveSegment(
 		_measureModeChips,
-		["pH", "mV", "Both"],
+		[loc.T("Halo_Mode_Ph"), loc.T("Halo_Mode_Mv"), loc.T("Halo_Mode_Both")],
 		IndexFromPreference(Halo2Preferences.GetPrimaryDisplay()),
 		idx =>
 		{
@@ -329,9 +332,9 @@ public sealed class Halo2SettingsPage : ContentPage
 			_deviceSubtitle.Text = _viewModel.DeviceSubtitle;
 		});
 
-	Border BuildTemperatureUnitSegment() => BuildInteractiveSegment(
+	Border BuildTemperatureUnitSegment(LocalizationService loc) => BuildInteractiveSegment(
 		_temperatureUnitChips,
-		["°C", "°F"],
+		[loc.T("Halo_TemperatureUnit_Celsius"), loc.T("Halo_TemperatureUnit_Fahrenheit")],
 		Halo2Preferences.UseFahrenheit() ? 1 : 0,
 		idx =>
 		{
@@ -339,15 +342,31 @@ public sealed class Halo2SettingsPage : ContentPage
 			_deviceSubtitle.Text = _viewModel.DeviceSubtitle;
 		});
 
+	// Numeric resolution values are universal (not translatable).
 	static Border BuildResolutionSegment() => BuildStaticSegment(["0.1", "0.01", "0.001"], selected: 1);
 
-	static Border BuildViewModeSegment() => BuildStaticSegment(["Basic", "GLP", "Full", "Graph", "Table"], selected: 0, compact: true);
+	static Border BuildViewModeSegment(LocalizationService loc) => BuildStaticSegment(
+		[
+			loc.T("Halo_Settings_ViewMode_Basic"),
+			loc.T("Halo_Settings_ViewMode_Glp"),
+			loc.T("Halo_Settings_ViewMode_Full"),
+			loc.T("Halo_Settings_ViewMode_Graph"),
+			loc.T("Halo_Settings_ViewMode_Table"),
+		],
+		selected: 0,
+		compact: true);
 
-	static Border BuildDisplaySegment() => BuildStaticSegment(["All Data", "Tagged"], selected: 0);
+	static Border BuildDisplaySegment(LocalizationService loc) => BuildStaticSegment(
+		[loc.T("Halo_Settings_Display_AllData"), loc.T("Halo_Settings_Display_Tagged")],
+		selected: 0);
 
-	static Border BuildGraphDisplaySegment() => BuildStaticSegment(["pH", "Temp", "Both"], selected: 2);
+	static Border BuildGraphDisplaySegment(LocalizationService loc) => BuildStaticSegment(
+		[loc.T("Halo_Settings_Graph_Ph"), loc.T("Halo_Settings_Graph_Temp"), loc.T("Halo_Settings_Graph_Both")],
+		selected: 2);
 
-	static Border BuildStabilitySegment() => BuildStaticSegment(["Slow", "Medium", "Fast"], selected: 1);
+	static Border BuildStabilitySegment(LocalizationService loc) => BuildStaticSegment(
+		[loc.T("Halo_Settings_Stability_Slow"), loc.T("Halo_Settings_Stability_Medium"), loc.T("Halo_Settings_Stability_Fast")],
+		selected: 1);
 
 	Border BuildInteractiveSegment(List<Border> chipStore, string[] labels, int selected, Action<int> onSelect)
 	{

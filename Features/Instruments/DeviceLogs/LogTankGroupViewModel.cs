@@ -1,11 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HannaUIDemo.Core.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Logs;
 
 /// <summary>Photometer logs grouped by fixed tank id; display name can be renamed.</summary>
 public partial class LogTankGroupViewModel : ObservableObject
 {
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
+
 	public required string DeviceModelId { get; init; }
 	public required int TankId { get; init; }
 	public required int LogFileCount { get; init; }
@@ -18,9 +22,11 @@ public partial class LogTankGroupViewModel : ObservableObject
 
 	internal LogHistoryDeviceLogsViewModel? Owner { get; set; }
 
-	public string TankIdLabel => $"Tank #{TankId}";
-	public string FileCountLabel => LogFileCount == 1 ? "1 log file" : $"{LogFileCount} log files";
-	public string RecordCountLabel => $"{RecordCount:N0} records";
+	public string TankIdLabel => Loc.T("LogHistory_TankHashFormat", TankId);
+	public string FileCountLabel => LogFileCount == 1
+		? Loc.T("LogHistory_FileCount_One")
+		: Loc.T("LogHistory_FileCount_Many", LogFileCount);
+	public string RecordCountLabel => Loc.T("LogHistory_RecordCountFormat", RecordCount);
 
 	public Color AccentBackground => LogDeviceVisuals.AccentBackground;
 
@@ -33,7 +39,7 @@ public partial class LogTankGroupViewModel : ObservableObject
 	public string CloudSyncIconSource => LogDeviceVisuals.CloudSyncIcon(IsUploadedToCloud);
 
 	public string CloudUploadAccessibilityHint =>
-		IsUploadedToCloud ? "Uploaded to cloud" : "Not uploaded to cloud";
+		IsUploadedToCloud ? Loc.T("Cloud_UploadedToCloud") : Loc.T("Cloud_NotUploadedToCloud");
 
 	[RelayCommand]
 	async Task OpenTankAsync()
@@ -51,8 +57,8 @@ public partial class LogTankGroupViewModel : ObservableObject
 			return;
 
 		var name = await page.DisplayPromptAsync(
-			"Rename tank",
-			"Tank name (tank id stays the same)",
+			Loc.T("LogHistory_TankRename_Title"),
+			Loc.T("LogHistory_TankRename_Label"),
 			initialValue: TankName,
 			maxLength: 32);
 

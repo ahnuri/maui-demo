@@ -391,51 +391,51 @@
                     <Border Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x25C9;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Live stream" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Continuous readings and monitoring." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityLiveStream}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityLiveStreamSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x270E;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Tag readings" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Annotate each reading, and notes." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityTagReadings}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityTagReadingsSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="1" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x2713;" TextColor="{StaticResource Success}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Auto/manual logs" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Store records by workflow need." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityAutoManualLogs}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityAutoManualLogsSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x21E9;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="PDF / CSV export" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Create reports and share." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityPdfCsvExport}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityPdfCsvExportSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="2" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x2601;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Cloud sync" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Sync logged data in cloud storage." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityCloudSync}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityCloudSyncSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource DashboardCardStyle}">
                         <VerticalStackLayout Spacing="5">
                             <Label FontSize="20" Text="&#x2699;" TextColor="{StaticResource Primary}" />
-                            <Label FontAttributes="Bold" FontSize="13" Text="Method and unit control" TextColor="{DynamicResource OnSurface}" />
-                            <Label FontSize="11" LineBreakMode="WordWrap" Text="Select and standardize methods with units." TextColor="{DynamicResource OnSurfaceVariant}" />
+                            <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityMethodUnit}" TextColor="{DynamicResource OnSurface}" />
+                            <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityMethodUnitSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource DashboardCardStyle}">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Label FontSize="22" Text="&#x25A6;" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
-                                <Label FontAttributes="Bold" FontSize="13" Text="Table and graph views" TextColor="{DynamicResource OnSurface}" />
-                                <Label FontSize="11" LineBreakMode="WordWrap" Text="Switch between tabular records and visual trends during review." TextColor="{DynamicResource OnSurfaceVariant}" />
+                                <Label FontAttributes="Bold" FontSize="13" Text="{Binding CapabilityTableGraph}" TextColor="{DynamicResource OnSurface}" />
+                                <Label FontSize="11" LineBreakMode="WordWrap" Text="{Binding CapabilityTableGraphSub}" TextColor="{DynamicResource OnSurfaceVariant}" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>

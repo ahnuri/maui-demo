@@ -13,9 +13,9 @@ namespace HannaUIDemo.Features.Instruments.Halo2;
 /// Returning to the Measure tab triggers <c>Halo2MeasureViewModel.SyncFromPreferences()</c>
 /// via <c>Halo2MeasureModule.OnAppearing()</c> so live readings adopt the new preferences.
 /// </summary>
-public partial class Halo2SettingsViewModel : PageViewModelBase
+public partial class Halo2SettingsViewModel : LocalizedViewModelBase
 {
-	public const string DeviceName = "HI12322 • Probe 2";
+	public string DeviceName => Loc.T("Halo_Device_Name");
 	public const string DeviceIcon = "halo2_device_icon.png";
 
 	/// <summary>One-line subtitle like "pH mode • 0.01 resolution • °C • ATC" shown under the device name.</summary>
@@ -60,16 +60,24 @@ public partial class Halo2SettingsViewModel : PageViewModelBase
 		DeviceSubtitle = BuildSubtitle();
 	}
 
+	protected override void ApplyLocalization()
+	{
+		DeviceSubtitle = BuildSubtitle();
+		OnPropertyChanged(nameof(DeviceName));
+	}
+
 	string BuildSubtitle()
 	{
 		var mode = PrimaryDisplay.ToLowerInvariant() switch
 		{
-			"mv" => "mV mode",
-			"both" => "pH & mV mode",
-			_ => "pH mode"
+			"mv" => Loc.T("Halo_Settings_ModeMv"),
+			"both" => Loc.T("Halo_Settings_ModeBoth"),
+			_ => Loc.T("Halo_Settings_ModePh")
 		};
-		var temp = UseFahrenheit ? "°F" : "°C";
+		var temp = UseFahrenheit
+			? Loc.T("Halo_TemperatureUnit_Fahrenheit")
+			: Loc.T("Halo_TemperatureUnit_Celsius");
 		// ATC = Automatic Temperature Compensation (always on for Halo 2).
-		return $"{mode} • 0.01 resolution • {temp} • ATC";
+		return Loc.T("Halo_Settings_StatusFormat", mode, temp);
 	}
 }

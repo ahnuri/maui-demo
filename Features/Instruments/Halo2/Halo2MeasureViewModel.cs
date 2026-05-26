@@ -22,7 +22,7 @@ namespace HannaUIDemo.Features.Instruments.Halo2;
 /// This VM only exposes the latest snapshot for any external consumer (toolbar,
 /// summary cards, accessibility labels, future BLE bridge, etc.).
 /// </summary>
-public partial class Halo2MeasureViewModel : PageViewModelBase
+public partial class Halo2MeasureViewModel : LocalizedViewModelBase
 {
 	/// <summary>Table = historical rows list. Graph = live trend chart.</summary>
 	public enum DisplayMode
@@ -36,8 +36,9 @@ public partial class Halo2MeasureViewModel : PageViewModelBase
 	[ObservableProperty] private double _millivolts = -12.4;
 	[ObservableProperty] private double _temperatureC = 25.3;
 
-	/// <summary>"Stable" or "Drifting" — driven by view's stability heuristic.</summary>
-	[ObservableProperty] private string _stabilityLabel = "Stable";
+	/// <summary>"Stable" or "Drifting" — driven by view's stability heuristic. View pushes the localized
+	/// value so consumers can render it directly.</summary>
+	[ObservableProperty] private string _stabilityLabel = string.Empty;
 
 	[ObservableProperty] private int _batteryPercent = 44;
 
@@ -55,12 +56,12 @@ public partial class Halo2MeasureViewModel : PageViewModelBase
 	[ObservableProperty] private bool _useFahrenheit;
 
 	/// <summary>Hard-coded demo serial; swap for the connected device name when wiring BLE.</summary>
-	public string DeviceLabel => "HI12322 • Probe 2";
+	public string DeviceLabel => Loc.T("Halo_Device_Name");
 
 	/// <summary>Formatted temperature respecting the current unit preference.</summary>
 	public string TemperatureDisplay => UseFahrenheit
-		? $"{CelsiusToFahrenheit(TemperatureC):F1} °F"
-		: $"{TemperatureC:F1} °C";
+		? Loc.T("Halo_TemperatureF_Format", CelsiusToFahrenheit(TemperatureC))
+		: Loc.T("Halo_TemperatureC_Format", TemperatureC);
 
 	// MVVM Toolkit source-generated partial hooks: re-fire TemperatureDisplay when its inputs change.
 	partial void OnTemperatureCChanged(double value) => OnPropertyChanged(nameof(TemperatureDisplay));
@@ -76,6 +77,14 @@ public partial class Halo2MeasureViewModel : PageViewModelBase
 		ShowPh = primary is "ph" or "both";
 		ShowMillivolts = primary is "mv" or "both";
 		UseFahrenheit = Halo2Preferences.UseFahrenheit();
+	}
+
+	protected override void ApplyLocalization()
+	{
+		if (string.IsNullOrEmpty(StabilityLabel))
+			StabilityLabel = Loc.T("Halo_Stability_Stable");
+		OnPropertyChanged(nameof(DeviceLabel));
+		OnPropertyChanged(nameof(TemperatureDisplay));
 	}
 
 	/// <summary>Pushes Shell to the Halo 2 device-settings sub-page (registered in <see cref="Halo2Routes"/>).</summary>

@@ -1,4 +1,5 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Theme;
 
 namespace HannaUIDemo.Features.Instruments.Halo2;
@@ -6,8 +7,9 @@ namespace HannaUIDemo.Features.Instruments.Halo2;
 /// <summary>Modern Halo 2 five-point pH calibration flow.</summary>
 public sealed class Halo2CalibrationPage : ContentPage
 {
-	const string DeviceName = "Halo Demo-1";
-	const string CurrentBuffer = "12.45";
+	readonly LocalizationService _loc;
+	readonly string _deviceName;
+	readonly string _currentBuffer;
 
 	static Color LabCanvas => ThemeColors.LabCanvas;
 	static Color LabCard => ThemeColors.LabCard;
@@ -41,17 +43,20 @@ public sealed class Halo2CalibrationPage : ContentPage
 	public Halo2CalibrationPage(Halo2CalibrationViewModel viewModel)
 	{
 		BindingContext = viewModel;
-		Title = "Calibrate";
+		_loc = viewModel.Loc;
+		_deviceName = _loc.T("Halo_Calibration_DeviceNameDemo");
+		_currentBuffer = _loc.T("Halo_Calibration_CurrentBufferValue");
+		Title = _loc.T("Halo_Calibration_PageTitle");
 		ApplyChrome();
 		Halo2Routes.ConfigureSubPageChrome(this);
 		Shell.SetNavBarIsVisible(this, false);
 
-		_stepEyebrow = LabelText("BUFFER RECOGNIZED", 12, LabMuted, bold: true);
-		_stepTitle = LabelText("Calibrating with pH 12.45 buffer", 24, LabPrimaryText, bold: true, lineBreak: LineBreakMode.WordWrap);
-		_stepBody = LabelText("Wait for a stable reading, then confirm the buffer to add this point to the current calibration.", 15, LabSecondaryText, lineBreak: LineBreakMode.WordWrap);
-		_readingStatus = LabelText("Stable", 13, LabEmerald, bold: true);
+		_stepEyebrow = LabelText(_loc.T("Halo_Calibration_BufferRecognized"), 12, LabMuted, bold: true);
+		_stepTitle = LabelText(_loc.T("Halo_Calibration_CalibratingWithBufferFormat", _currentBuffer), 24, LabPrimaryText, bold: true, lineBreak: LineBreakMode.WordWrap);
+		_stepBody = LabelText(_loc.T("Halo_Calibration_StableHint"), 15, LabSecondaryText, lineBreak: LineBreakMode.WordWrap);
+		_readingStatus = LabelText(_loc.T("Halo_Stability_Stable"), 13, LabEmerald, bold: true);
 
-		_confirmButton = PrimaryButton("Confirm Buffer", AppConstants.Primary);
+		_confirmButton = PrimaryButton(_loc.T("Halo_Calibration_ConfirmBuffer"), AppConstants.Primary);
 		_confirmButton.Clicked += (_, _) => SetConfirmed(true);
 
 		Content = BuildLayout();
@@ -123,15 +128,15 @@ public sealed class Halo2CalibrationPage : ContentPage
 			]
 		};
 
-		var cancel = LabelText("Cancel", 17, AppConstants.Primary);
+		var cancel = LabelText(_loc.T("Common_Cancel"), 17, AppConstants.Primary);
 		cancel.GestureRecognizers.Add(Tap(async () => await Shell.Current.GoToAsync("..")));
 		bar.Children.Add(cancel);
 
-		var title = LabelText("Calibrate", 20, LabPrimaryText, bold: true, horizontal: TextAlignment.Center);
+		var title = LabelText(_loc.T("Halo_Calibration_PageTitle"), 20, LabPrimaryText, bold: true, horizontal: TextAlignment.Center);
 		bar.Children.Add(title);
 		bar.SetColumn(title, 1);
 
-		_saveButton = PrimaryTextButton("Save");
+		_saveButton = PrimaryTextButton(_loc.T("Common_Save"));
 		_saveButton.Clicked += async (_, _) => await Shell.Current.GoToAsync("..");
 		bar.Children.Add(_saveButton);
 		bar.SetColumn(_saveButton, 2);
@@ -170,14 +175,14 @@ public sealed class Halo2CalibrationPage : ContentPage
 			VerticalOptions = LayoutOptions.Center,
 			Children =
 			{
-				LabelText(DeviceName, 18, LabPrimaryText, bold: true, lineBreak: LineBreakMode.TailTruncation),
-				LabelText("50% battery · Condition not reported", 13, LabMuted, lineBreak: LineBreakMode.TailTruncation)
+				LabelText(_deviceName, 18, LabPrimaryText, bold: true, lineBreak: LineBreakMode.TailTruncation),
+				LabelText(_loc.T("Halo_Calibration_DeviceBatteryLine"), 13, LabMuted, lineBreak: LineBreakMode.TailTruncation)
 			}
 		};
 		deviceRow.Children.Add(deviceText);
 		deviceRow.SetColumn(deviceText, 1);
 
-		var status = StatusPill("CONNECTED", AppConstants.Success);
+		var status = StatusPill(_loc.T("Halo_Calibration_Connected"), AppConstants.Success);
 		deviceRow.Children.Add(status);
 		deviceRow.SetColumn(status, 2);
 
@@ -192,8 +197,8 @@ public sealed class Halo2CalibrationPage : ContentPage
 			ColumnSpacing = 12
 		};
 
-		readingGrid.Children.Add(ReadingTile("pH", CurrentBuffer, _readingStatus));
-		var tempTile = ReadingTile("Temperature", "25.1 °C", LabelText("ATC", 13, LabMuted, bold: true));
+		readingGrid.Children.Add(ReadingTile(_loc.T("Halo_Mode_Ph"), _currentBuffer, _readingStatus));
+		var tempTile = ReadingTile(_loc.T("Halo_Calibration_TemperatureLabel"), _loc.T("Halo_Calibration_TempSampleC"), LabelText(_loc.T("Halo_Settings_Atc"), 13, LabMuted, bold: true));
 		readingGrid.Children.Add(tempTile);
 		readingGrid.SetColumn(tempTile, 1);
 
@@ -224,7 +229,7 @@ public sealed class Halo2CalibrationPage : ContentPage
 			Children = { _stepEyebrow, _stepTitle, _stepBody }
 		});
 
-		var beaker = Halo2CalibrationUi.BufferBeaker(CurrentBuffer, 82, 64, calibrated: true);
+		var beaker = Halo2CalibrationUi.BufferBeaker(_currentBuffer, 82, 64, calibrated: true);
 		stepHeader.Children.Add(beaker);
 		stepHeader.SetColumn(beaker, 1);
 
@@ -241,7 +246,7 @@ public sealed class Halo2CalibrationPage : ContentPage
 			ColumnSpacing = 12
 		};
 
-		var clear = SecondaryButton("Clear Calibration");
+		var clear = SecondaryButton(_loc.T("Halo_Calibration_ClearCalibration"));
 		clear.Clicked += (_, _) => SetConfirmed(false);
 		actions.Children.Add(clear);
 
@@ -267,7 +272,7 @@ public sealed class Halo2CalibrationPage : ContentPage
 			{
 				HeightRequest = 8,
 				WidthRequest = 44,
-				BackgroundColor = complete ? AppConstants.Success : point.Buffer == CurrentBuffer ? AppConstants.Primary : LabBorder,
+				BackgroundColor = complete ? AppConstants.Success : point.Buffer == _currentBuffer ? AppConstants.Primary : LabBorder,
 				StrokeThickness = 0,
 				StrokeShape = new RoundRectangle { CornerRadius = 4 }
 			});
@@ -300,8 +305,8 @@ public sealed class Halo2CalibrationPage : ContentPage
 					],
 					Children =
 					{
-						LabelText("Current Calibration", 20, LabPrimaryText, bold: true),
-						StatusPill("5 POINTS", AppConstants.Primary)
+						LabelText(_loc.T("Halo_Calibration_CurrentCalibration"), 20, LabPrimaryText, bold: true),
+						StatusPill(_loc.T("Halo_Calibration_PointsCountFormat", _loc.T("Halo_Calibration_PointsValue")), AppConstants.Primary)
 					}
 				},
 				new ScrollView
@@ -351,12 +356,16 @@ public sealed class Halo2CalibrationPage : ContentPage
 	{
 		_confirmed = confirmed;
 
-		_stepEyebrow.Text = confirmed ? "CALIBRATION COMPLETE" : "BUFFER RECOGNIZED";
+		_stepEyebrow.Text = confirmed
+			? _loc.T("Halo_Calibration_CompleteHeader")
+			: _loc.T("Halo_Calibration_BufferRecognized");
 		_stepEyebrow.TextColor = confirmed ? LabEmerald : LabMuted;
-		_stepTitle.Text = confirmed ? "Calibration complete" : "Calibrating with pH 12.45 buffer";
+		_stepTitle.Text = confirmed
+			? _loc.T("Halo_Calibration_Complete")
+			: _loc.T("Halo_Calibration_CalibratingWithBufferFormat", _currentBuffer);
 		_stepBody.Text = confirmed
-			? "The maximum number of calibration points has been reached. Save calibration to update the probe and return to measurement."
-			: "Wait for a stable reading, then confirm the buffer to add this point to the current calibration.";
+			? _loc.T("Halo_Calibration_CompleteMessage")
+			: _loc.T("Halo_Calibration_StableHint");
 
 		_confirmButton.IsEnabled = !confirmed;
 		_confirmButton.BackgroundColor = confirmed ? LabChipDisabled : AppConstants.Primary;
@@ -365,17 +374,17 @@ public sealed class Halo2CalibrationPage : ContentPage
 		_saveButton.TextColor = confirmed ? AppConstants.Primary : LabMuted;
 
 		foreach (var slot in _slots)
-			ApplySlot(slot, slot.Point.IsSaved || confirmed && slot.Point.Buffer == CurrentBuffer);
+			ApplySlot(slot, slot.Point.IsSaved || confirmed && slot.Point.Buffer == _currentBuffer);
 	}
 
-	static void ApplySlot(CalibrationSlot slot, bool saved)
+	void ApplySlot(CalibrationSlot slot, bool saved)
 	{
 		slot.Root.BackgroundColor = saved ? LabEmerald.MultiplyAlpha(0.08f) : LabCardElevated;
 		slot.Root.Stroke = saved ? LabEmerald.MultiplyAlpha(0.42f) : LabBorder;
 		slot.ValueLabel.TextColor = saved ? LabPrimaryText : LabMuted;
 		slot.ValueLabel.Text = saved
 			? $"{slot.Point.Millivolts}\n{slot.Point.Temperature}\n{Halo2CalibrationDemoData.PointDateDisplay}\n{Halo2CalibrationDemoData.PointTimeDisplay}"
-			: "Empty";
+			: _loc.T("Halo_Calibration_Empty");
 
 		if (slot.Root.Content is VerticalStackLayout stack && stack.Children.Count > 0)
 			stack.Children[0] = Halo2CalibrationUi.BufferBeaker(slot.Point.Buffer, 54, 42, saved);

@@ -41,6 +41,7 @@ namespace HannaUIDemo.Features.Instruments.Halo2;
 public sealed class Halo2MeasureView : ContentView
 {
 	readonly Halo2MeasureViewModel _viewModel;
+	readonly Core.Localization.LocalizationService _loc;
 
 	/// <summary>Local enum mirroring <see cref="Halo2MeasureViewModel.DisplayMode"/> — view-private so VM stays UI-toolkit-agnostic.</summary>
 	enum HaloMode { Table, Graph }
@@ -157,8 +158,13 @@ public sealed class Halo2MeasureView : ContentView
 	public Halo2MeasureView()
 	{
 		_viewModel = AppServices.Get<Halo2MeasureViewModel>();
+		_loc = _viewModel.Loc;
 		BindingContext = _viewModel;
-		_chart = new HaloChartDrawable(() => _history);
+		_chart = new HaloChartDrawable(() => _history)
+		{
+			PhAxisLabel = _loc.T("Halo_Mode_Ph"),
+			TempAxisLabel = _loc.T("Halo_Settings_Graph_Temp"),
+		};
 		SyncSettingsFromPreferences();
 		_showMvPrimary = Halo2Preferences.GetPrimaryDisplay().Equals("mv", StringComparison.OrdinalIgnoreCase);
 		_useFahrenheit = _viewModel.UseFahrenheit;
@@ -309,7 +315,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		if (_primaryChannelLabel is not null)
 		{
-			_primaryChannelLabel.Text = showMvOnPrimary ? "mV" : "pH";
+			_primaryChannelLabel.Text = showMvOnPrimary ? _loc.T("Halo_Mode_Mv") : _loc.T("Halo_Mode_Ph");
 			_primaryChannelLabel.TextColor = primaryColor;
 		}
 
@@ -323,7 +329,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		if (_phStatusLabel is not null)
 		{
-			_phStatusLabel.Text = showMvOnPrimary ? "ORP · glass electrode" : phStatus.Label;
+			_phStatusLabel.Text = showMvOnPrimary ? _loc.T("Halo_PhStatus_Orp") : phStatus.Label;
 			_phStatusLabel.TextColor = primaryColor;
 		}
 
@@ -341,7 +347,7 @@ public sealed class Halo2MeasureView : ContentView
 
 		if (_tempStatusLabel is not null)
 		{
-			_tempStatusLabel.Text = $"{tempStatus.Label} • ATC";
+			_tempStatusLabel.Text = _loc.T("Halo_Temp_AtcFormat", tempStatus.Label);
 			_tempStatusLabel.TextColor = tempColor;
 		}
 
@@ -349,17 +355,21 @@ public sealed class Halo2MeasureView : ContentView
 		{
 			_switchChannelLabel.IsVisible = allowSwitch;
 			if (allowSwitch)
-				_switchChannelLabel.Text = showMvOnPrimary ? "Switch to pH" : "Switch to mV";
+				_switchChannelLabel.Text = showMvOnPrimary
+					? _loc.T("Halo_Mode_SwitchToPh")
+					: _loc.T("Halo_Mode_SwitchToMv");
 		}
 
 		if (_switchTempUnitLabel is not null)
-			_switchTempUnitLabel.Text = _useFahrenheit ? "Switch to °C" : "Switch to °F";
+			_switchTempUnitLabel.Text = _useFahrenheit
+				? _loc.T("Halo_Mode_SwitchToCelsius")
+				: _loc.T("Halo_Mode_SwitchToFahrenheit");
 
 		if (_stabilityPillText is not null && _stabilityPill is not null && _stabilityDot is not null)
 		{
 			if (_isStable)
 			{
-				_stabilityPillText.Text = "Stable";
+				_stabilityPillText.Text = _loc.T("Halo_Stability_Stable");
 				_stabilityPillText.TextColor = Emerald;
 				_stabilityPill.BackgroundColor = EmeraldMuted;
 				_stabilityPill.Stroke = Emerald.MultiplyAlpha(0.35f);
@@ -367,7 +377,7 @@ public sealed class Halo2MeasureView : ContentView
 			}
 			else
 			{
-				_stabilityPillText.Text = "Drifting";
+				_stabilityPillText.Text = _loc.T("Halo_Stability_Drifting");
 				_stabilityPillText.TextColor = LabWarning;
 				_stabilityPill.BackgroundColor = LabWarningMuted;
 				_stabilityPill.Stroke = LabWarning.MultiplyAlpha(0.35f);
@@ -379,20 +389,20 @@ public sealed class Halo2MeasureView : ContentView
 		_tempSparkline?.Invalidate();
 	}
 
-	static (string Label, Color Color) GetPhStatus(double ph) => ph switch
+	(string Label, Color Color) GetPhStatus(double ph) => ph switch
 	{
-		< 5.5 => ("Strong acidic", ThemeColors.LabPhAcidic),
-		< 6.5 => ("Acidic", ThemeColors.LabPhAcidicMid),
-		< 7.5 => ("Neutral", ThemeColors.LabPhNeutral),
-		< 9.0 => ("Basic", ThemeColors.LabPhBasic),
-		_ => ("Strong alkaline", ThemeColors.LabPhAlkaline)
+		< 5.5 => (_loc.T("Halo_Ph_Status_StrongAcidic"), ThemeColors.LabPhAcidic),
+		< 6.5 => (_loc.T("Halo_Ph_Status_Acidic"), ThemeColors.LabPhAcidicMid),
+		< 7.5 => (_loc.T("Halo_Ph_Status_Neutral"), ThemeColors.LabPhNeutral),
+		< 9.0 => (_loc.T("Halo_Ph_Status_Basic"), ThemeColors.LabPhBasic),
+		_ => (_loc.T("Halo_Ph_Status_StrongAlkaline"), ThemeColors.LabPhAlkaline)
 	};
 
-	static (string Label, Color Color) GetTempStatus(double temp) => temp switch
+	(string Label, Color Color) GetTempStatus(double temp) => temp switch
 	{
-		> 80 => ("Critical", ThemeColors.LabPhAcidic),
-		> 60 => ("High", ThemeColors.LabPhAcidicMid),
-		_ => ("Optimal", ThemeColors.LabPhNeutral)
+		> 80 => (_loc.T("Halo_Temp_Status_Critical"), ThemeColors.LabPhAcidic),
+		> 60 => (_loc.T("Halo_Temp_Status_High"), ThemeColors.LabPhAcidicMid),
+		_ => (_loc.T("Halo_Temp_Status_Optimal"), ThemeColors.LabPhNeutral)
 	};
 
 	// ── Alarm helpers ─────────────────────────────────────────────────────────────
@@ -588,10 +598,10 @@ public sealed class Halo2MeasureView : ContentView
 		};
 	}
 
-	static Label CreateTrendCaptionLabel() =>
+	Label CreateTrendCaptionLabel() =>
 		new()
 		{
-			Text = "Trend",
+			Text = _loc.T("Halo_Tab_Trend"),
 			FontSize = 10,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = LabMuted,
@@ -602,7 +612,7 @@ public sealed class Halo2MeasureView : ContentView
 
 
 
-	const string Halo2DeviceName = "HI12322 • Probe 2";
+	string Halo2DeviceName => _loc.T("Halo_Device_Name");
 	const string Halo2DeviceIcon = "halo2_device_icon.png";
 
 	static Label CreateDeviceCardValueLabel(string text, Color color, double fontSize = 15, FontAttributes fontAttributes = FontAttributes.None) =>
@@ -629,12 +639,12 @@ public sealed class Halo2MeasureView : ContentView
 		};
 
 	/// <summary>Maps probe condition % to a short human label (matches the design's "Excellent / Good / Fair / Poor" rubric).</summary>
-	static string GetProbeConditionLabel(int percent) => percent switch
+	string GetProbeConditionLabel(int percent) => percent switch
 	{
-		>= 80 => "Excellent",
-		>= 50 => "Good",
-		>= 30 => "Fair",
-		_ => "Poor"
+		>= 80 => _loc.T("Halo_Probe_Excellent"),
+		>= 50 => _loc.T("Halo_Probe_Good"),
+		>= 30 => _loc.T("Halo_Probe_Fair"),
+		_ => _loc.T("Halo_Probe_Poor")
 	};
 
 	static Color GetProbeConditionColor(int percent) => percent switch
@@ -767,7 +777,7 @@ public sealed class Halo2MeasureView : ContentView
 		var tap = new TapGestureRecognizer();
 		tap.Tapped += async (_, _) => await ConfirmAndDisconnectAsync();
 		button.GestureRecognizers.Add(tap);
-		SemanticProperties.SetDescription(button, "Disconnect device");
+		SemanticProperties.SetDescription(button, _loc.T("Halo_Disconnect_DialogTitle"));
 		return button;
 	}
 
@@ -783,10 +793,10 @@ public sealed class Halo2MeasureView : ContentView
 			return;
 
 		var confirmed = await host.DisplayAlertAsync(
-			"Disconnect device",
-			$"Are you sure you want to disconnect from {Halo2DeviceName}?",
-			"Disconnect",
-			"Cancel");
+			_loc.T("Halo_Disconnect_DialogTitle"),
+			_loc.T("Halo_Disconnect_DialogMessage", Halo2DeviceName),
+			_loc.T("Toolbar_Disconnect"),
+			_loc.T("Common_Cancel"));
 
 		if (confirmed && host is MeasureTabPage measureTab)
 			await measureTab.DisconnectAndOpenDevicesAsync();
@@ -852,7 +862,9 @@ public sealed class Halo2MeasureView : ContentView
 		_viewModel.BatteryPercent = _batteryPercent;
 		_viewModel.ProbeConditionPercent = GetProbeConditionPercent();
 		_viewModel.IsTagged = _tagged;
-		_viewModel.StabilityLabel = _isStable ? "Stable" : "Drifting";
+		_viewModel.StabilityLabel = _isStable
+			? _loc.T("Halo_Stability_Stable")
+			: _loc.T("Halo_Stability_Drifting");
 	}
 
 	int GetProbeConditionPercent() => _tagged ? 50 : 94;
@@ -1033,7 +1045,7 @@ public sealed class Halo2MeasureView : ContentView
 		_stabilityPill.HorizontalOptions = LayoutOptions.Start;
 		_stabilityPill.VerticalOptions = LayoutOptions.Center;
 
-		var settings = IconActionButton(HaloMeasureModeIconKind.Settings, "Settings", () => _ = OpenHaloSettingsAsync());
+		var settings = IconActionButton(HaloMeasureModeIconKind.Settings, _loc.T("Toolbar_Settings"), () => _ = OpenHaloSettingsAsync());
 
 		var topStatusRow = new Grid
 		{
@@ -1244,8 +1256,8 @@ public sealed class Halo2MeasureView : ContentView
 			Padding = 4,
 			BackgroundColor = LabCard
 		};
-		grid.Children.Add(ModeChip("Data", HaloMode.Table, HaloMeasureModeIconKind.Table));
-		var graph = ModeChip("Trends", HaloMode.Graph, HaloMeasureModeIconKind.Chart);
+		grid.Children.Add(ModeChip(_loc.T("Halo_Tab_Data"), HaloMode.Table, HaloMeasureModeIconKind.Table));
+		var graph = ModeChip(_loc.T("Halo_Tab_Trends"), HaloMode.Graph, HaloMeasureModeIconKind.Chart);
 		grid.Children.Add(graph);
 		Grid.SetColumn(graph, 1);
 		var calibrate = CalibrationModeChip();
@@ -1316,7 +1328,7 @@ public sealed class Halo2MeasureView : ContentView
 					Halo2MeasureModeIcons.Create(HaloMeasureModeIconKind.Calibration, () => active ? CyanAccent : LabMuted),
 					new Label
 					{
-						Text = "Calibrate",
+						Text = _loc.T("Halo_Tab_Calibrate"),
 						FontAttributes = active ? FontAttributes.Bold : FontAttributes.None,
 						TextColor = LabPrimaryText,
 						VerticalOptions = LayoutOptions.Center
@@ -1533,10 +1545,10 @@ public sealed class Halo2MeasureView : ContentView
 			Padding = new Thickness(10, 12),
 			BackgroundColor = LabTableHeaderBackground
 		};
-		AddCell(header, "pH", 0, true, LabTableHeaderText);
-		AddCell(header, "mV", 1, true, LabTableHeaderText);
-		AddCell(header, $"Temp ({TempUnitSymbol})", 2, true, LabTableHeaderText);
-		AddCell(header, "Timestamp", 3, true, LabTableHeaderText);
+		AddCell(header, _loc.T("Halo_Table_PhHeader"), 0, true, LabTableHeaderText);
+		AddCell(header, _loc.T("Halo_Table_MvHeader"), 1, true, LabTableHeaderText);
+		AddCell(header, _loc.T("Halo_Table_TempHeaderFormat", TempUnitSymbol), 2, true, LabTableHeaderText);
+		AddCell(header, _loc.T("Halo_Table_TimestampHeader"), 3, true, LabTableHeaderText);
 		stack.Children.Add(header);
 
 		_tableDataRows = new VerticalStackLayout { Spacing = 0 };
@@ -1584,8 +1596,8 @@ public sealed class Halo2MeasureView : ContentView
 			Margin = new Thickness(0, 0, 0, 6),
 			Children =
 			{
-				CreateLegendSwatch("pH", CyanAccent),
-				CreateLegendSwatch($"Temp ({TempUnitSymbol})", OrangeAccent)
+				CreateLegendSwatch(_loc.T("Halo_Mode_Ph"), CyanAccent),
+				CreateLegendSwatch(_loc.T("Halo_Table_TempHeaderFormat", TempUnitSymbol), OrangeAccent)
 			}
 		};
 
@@ -1781,6 +1793,8 @@ public sealed class Halo2MeasureView : ContentView
 		readonly Func<IReadOnlyList<HaloReading>> _getHistory;
 
 		public bool Tagged { get; set; }
+		public string PhAxisLabel { get; set; } = "pH";
+		public string TempAxisLabel { get; set; } = "Temp";
 
 		public HaloChartDrawable(Func<IReadOnlyList<HaloReading>> getHistory) => _getHistory = getHistory;
 
@@ -1838,8 +1852,8 @@ public sealed class Halo2MeasureView : ContentView
 
 			canvas.FontColor = ThemeColors.LabMuted;
 			canvas.FontSize = 12;
-			DrawRotatedAxisTitle(canvas, "pH", 12, plot.Center.Y);
-			DrawRotatedAxisTitle(canvas, "Temp", dirtyRect.Width - 12, plot.Center.Y);
+			DrawRotatedAxisTitle(canvas, PhAxisLabel, 12, plot.Center.Y);
+			DrawRotatedAxisTitle(canvas, TempAxisLabel, dirtyRect.Width - 12, plot.Center.Y);
 		}
 
 		static void DrawRotatedAxisTitle(ICanvas canvas, string title, float centerX, float centerY)

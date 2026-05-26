@@ -25,13 +25,13 @@
     <Style TargetType="Button">
         <Setter Property="TextColor" Value="{StaticResource White}" />
         <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}"/>
         <Setter Property="BorderWidth" Value="0"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}"/>
         <Setter Property="Padding" Value="14,10"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -50,8 +50,8 @@
 
     <Style TargetType="CheckBox">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -69,10 +69,10 @@
     <Style TargetType="DatePicker">
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -90,11 +90,11 @@
     <Style TargetType="Editor">
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -112,11 +112,11 @@
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -136,8 +136,8 @@
         <Setter Property="BorderColor" Value="Transparent"/>
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="0"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -156,8 +156,8 @@
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -190,10 +190,10 @@
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="TitleColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={StaticResource Gray200}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -228,10 +228,10 @@
     <Style TargetType="RadioButton">
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -255,10 +255,10 @@
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
         <Setter Property="CancelButtonColor" Value="{StaticResource Gray500}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -278,8 +278,8 @@
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -358,10 +358,10 @@
     <Style TargetType="TimePicker">
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="BackgroundColor" Value="Transparent"/>
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}"/>
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource IconButtonLg}"/>
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource IconButtonLg}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

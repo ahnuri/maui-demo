@@ -8,7 +8,7 @@
     Shell.BackgroundColor="{DynamicResource StoreGroupedBackground}"
     Shell.FlyoutBehavior="Flyout"
     Shell.NavBarHasShadow="False"
-    Shell.NavBarIsVisible="True"
-    Title="Hanna Lab">
+    Shell.NavBarIsVisible="True">
+    <!-- Title is resolved at runtime through NavToolbar.ConfigureLanding (key: Shell_Home). -->
     <home:HomeView x:Name="RootView" />
 </ContentPage>

@@ -6,7 +6,7 @@ using HannaUIDemo.Features.Device;
 namespace HannaUIDemo.Features.Instruments.Photometer;
 
 /// <summary>Photometer measure flow state (drives <see cref="MeasurePhotometerView"/> UI).</summary>
-public partial class PhotometerMeasureViewModel : PageViewModelBase
+public partial class PhotometerMeasureViewModel : LocalizedViewModelBase
 {
 	public enum MeasureState
 	{
@@ -24,7 +24,9 @@ public partial class PhotometerMeasureViewModel : PageViewModelBase
 	[NotifyPropertyChangedFor(nameof(SelectedTankDisplay))]
 	private int _selectedTankNumber = 1;
 
-	public string SelectedTankDisplay => $"Tank {SelectedTankNumber}";
+	public string SelectedTankDisplay => Loc.T("LogHistory_TankNameFormat", SelectedTankNumber);
+
+	protected override void ApplyLocalization() => OnPropertyChanged(nameof(SelectedTankDisplay));
 
 	public bool IsNewAnalysis => State == MeasureState.NewAnalysis;
 	public bool IsInMeasurementFlow => State != MeasureState.NewAnalysis;

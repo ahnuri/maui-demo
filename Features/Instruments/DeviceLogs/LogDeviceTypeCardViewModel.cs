@@ -1,10 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using HannaUIDemo.Core.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Logs;
 
 /// <summary>Top-level device family card on Log History (Halo 2, HI97115, Multimeter).</summary>
 public partial class LogDeviceTypeCardViewModel : ObservableObject
 {
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
+
 	public required InstrumentKind Kind { get; init; }
 	public required string Title { get; init; }
 	public required string Subtitle { get; init; }
@@ -20,10 +24,15 @@ public partial class LogDeviceTypeCardViewModel : ObservableObject
 	public Color AccentBackground => LogDeviceVisuals.AccentBackground;
 	public Color CloudSyncBackground => CloudSyncColor.MultiplyAlpha(0.1f);
 
-	public string FileCountLabel => FileCount == 1 ? "1 log file" : $"{FileCount} log files";
-	public string RecordCountLabel => $"{RecordCount:N0} records";
+	public string FileCountLabel => FileCount == 1
+		? Loc.T("LogHistory_FileCount_One")
+		: Loc.T("LogHistory_FileCount_Many", FileCount);
+	public string RecordCountLabel => Loc.T("LogHistory_RecordCountFormat", RecordCount);
 	public string ConnectedLabel => ConnectedDeviceCount == 1
-		? "1 device connected"
-		: $"{ConnectedDeviceCount} devices connected";
+		? Loc.T("LogHistory_DeviceCount_One")
+		: Loc.T("LogHistory_DeviceCount_Many", ConnectedDeviceCount);
 	public string CloudSyncLabel => CloudSyncStatus;
+
+	/// <summary>"Last recorded: 09:12 AM" formatted via the localized template.</summary>
+	public string LastRecordedDisplay => Loc.T("LogHistory_LastRecordedFormat", LastRecordedLabel);
 }

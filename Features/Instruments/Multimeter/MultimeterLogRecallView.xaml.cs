@@ -1,5 +1,6 @@
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Helpers;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Theme;
 using Microsoft.Maui.Controls;
@@ -11,10 +12,12 @@ namespace HannaUIDemo.Features.Instruments.Multimeter;
 public partial class MultimeterLogRecallView : ContentView
 {
 	readonly MultimeterLogRecallViewModel _viewModel;
+	readonly LocalizationService _loc;
 
 	public MultimeterLogRecallView()
 	{
 		_viewModel = AppServices.Get<MultimeterLogRecallViewModel>();
+		_loc = _viewModel.Loc;
 		BindingContext = _viewModel;
 		InitializeComponent();
 		_viewModel.LogsChanged += (_, _) => Rebuild();
@@ -65,13 +68,13 @@ public partial class MultimeterLogRecallView : ContentView
 				new ColumnDefinition(GridLength.Star)),
 			ColumnSpacing = 8
 		};
-		var totalCell = BuildStatCell(_viewModel.TotalLogs.ToString(), "Total logs");
+		var totalCell = BuildStatCell(_viewModel.TotalLogs.ToString(), _loc.T("Multimeter_LogRecall_StatsTotal"));
 		stats.Children.Add(totalCell);
 		Grid.SetColumn(totalCell, 0);
-		var lotCell = BuildStatCell(_viewModel.LotLogCount.ToString(), "LOT", AppConstants.Primary);
+		var lotCell = BuildStatCell(_viewModel.LotLogCount.ToString(), _loc.T("Multimeter_LogRecall_StatsLot"), AppConstants.Primary);
 		stats.Children.Add(lotCell);
 		Grid.SetColumn(lotCell, 1);
-		var lodCell = BuildStatCell(_viewModel.LodLogCount.ToString(), "LOD", MultimeterLogItemViewModel.LodAccent);
+		var lodCell = BuildStatCell(_viewModel.LodLogCount.ToString(), _loc.T("Multimeter_LogRecall_StatsLod"), MultimeterLogItemViewModel.LodAccent);
 		stats.Children.Add(lodCell);
 		Grid.SetColumn(lodCell, 2);
 
@@ -112,7 +115,7 @@ public partial class MultimeterLogRecallView : ContentView
 
 		syncInner.Children.Add(new Label
 		{
-			Text = _viewModel.IsSyncing ? "Syncing…" : "Sync from meter",
+			Text = _viewModel.IsSyncing ? _loc.T("Multimeter_LogRecall_Syncing") : _loc.T("Multimeter_LogRecall_SyncButton"),
 			FontAttributes = FontAttributes.Bold,
 			FontSize = 12,
 			TextColor = AppConstants.Primary,
@@ -122,7 +125,7 @@ public partial class MultimeterLogRecallView : ContentView
 		var syncTap = new TapGestureRecognizer();
 		syncTap.Tapped += async (_, _) => await _viewModel.SyncLogsCommand.ExecuteAsync(null);
 		syncBtn.GestureRecognizers.Add(syncTap);
-		SemanticProperties.SetDescription(syncBtn, "Refresh log list from meter");
+		SemanticProperties.SetDescription(syncBtn, _loc.T("Multimeter_LogRecall_SyncHint"));
 
 		var header = new Grid
 		{
@@ -134,14 +137,14 @@ public partial class MultimeterLogRecallView : ContentView
 		var titleCol = new VerticalStackLayout { Spacing = 4 };
 		titleCol.Children.Add(new Label
 		{
-			Text = "Log recall",
+			Text = _loc.T("Multimeter_LogRecall_Title"),
 			FontSize = 22,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = ThemeColors.OnSurface
 		});
 		titleCol.Children.Add(new Label
 		{
-			Text = "Download LOT and LOD files from your HI98494 / HI98594. Tap a file for download or share.",
+			Text = _loc.T("Multimeter_LogRecall_Description"),
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurfaceVariant,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -207,19 +210,22 @@ public partial class MultimeterLogRecallView : ContentView
 				new ColumnDefinition(GridLength.Star)),
 			ColumnSpacing = 10
 		};
-		var allChip = BuildFilterChip("All", MultimeterLogFilter.All, _viewModel.TotalLogs, AppConstants.Primary);
+		var allChip = BuildFilterChip(_loc.T("Multimeter_LogRecall_FilterAll"), "All", MultimeterLogFilter.All, _viewModel.TotalLogs, AppConstants.Primary);
 		grid.Children.Add(allChip);
 		Grid.SetColumn(allChip, 0);
-		var lotChip = BuildFilterChip("LOT", MultimeterLogFilter.Lot, _viewModel.LotLogCount, AppConstants.Primary);
+		var lotChip = BuildFilterChip(_loc.T("Multimeter_LogRecall_StatsLot"), "LOT", MultimeterLogFilter.Lot, _viewModel.LotLogCount, AppConstants.Primary);
 		grid.Children.Add(lotChip);
 		Grid.SetColumn(lotChip, 1);
-		var lodChip = BuildFilterChip("LOD", MultimeterLogFilter.Lod, _viewModel.LodLogCount, MultimeterLogItemViewModel.LodAccent);
+		var lodChip = BuildFilterChip(_loc.T("Multimeter_LogRecall_StatsLod"), "LOD", MultimeterLogFilter.Lod, _viewModel.LodLogCount, MultimeterLogItemViewModel.LodAccent);
 		grid.Children.Add(lodChip);
 		Grid.SetColumn(lodChip, 2);
 		return grid;
 	}
 
-	Border BuildFilterChip(string label, MultimeterLogFilter filter, int count, Color accent)
+	Border BuildFilterChip(string label, MultimeterLogFilter filter, int count, Color accent) =>
+		BuildFilterChip(label, label, filter, count, accent);
+
+	Border BuildFilterChip(string label, string filterId, MultimeterLogFilter filter, int count, Color accent)
 	{
 		var selected = _viewModel.ActiveFilter == filter;
 		var chip = new Border
@@ -246,7 +252,7 @@ public partial class MultimeterLogRecallView : ContentView
 				},
 				new Label
 				{
-					Text = $"{count} files",
+					Text = _loc.T("Multimeter_LogRecall_FileCountFormat", count),
 					FontSize = 11,
 					TextColor = selected ? accent.MultiplyAlpha(0.8f) : ThemeColors.OnSurfaceVariant,
 					HorizontalTextAlignment = TextAlignment.Center
@@ -254,15 +260,15 @@ public partial class MultimeterLogRecallView : ContentView
 			}
 		};
 		var tap = new TapGestureRecognizer();
-		tap.Tapped += (_, _) => _viewModel.SetFilterCommand.Execute(label);
+		tap.Tapped += (_, _) => _viewModel.SetFilterCommand.Execute(filterId);
 		chip.GestureRecognizers.Add(tap);
 		return chip;
 	}
 
-	static Label BuildSectionHeader() =>
+	Label BuildSectionHeader() =>
 		new()
 		{
-			Text = "LOT & LOD files on meter",
+			Text = _loc.T("Multimeter_LogRecall_SectionTitle"),
 			FontAttributes = FontAttributes.Bold,
 			FontSize = 16,
 			TextColor = ThemeColors.OnSurface,
@@ -279,7 +285,7 @@ public partial class MultimeterLogRecallView : ContentView
 			StrokeShape = new RoundRectangle { CornerRadius = 14 },
 			Content = new Label
 			{
-				Text = "No log files match this filter.",
+				Text = _loc.T("Multimeter_LogRecall_EmptyHint"),
 				HorizontalTextAlignment = TextAlignment.Center,
 				TextColor = ThemeColors.OnSurfaceVariant,
 				FontSize = 14
@@ -360,20 +366,20 @@ public partial class MultimeterLogRecallView : ContentView
 		var dates = new VerticalStackLayout { Spacing = 4 };
 		dates.Children.Add(new Label
 		{
-			Text = $"Start · {log.StartRecorded}",
+			Text = _loc.T("Multimeter_LogRecall_StartFormat", log.StartRecorded),
 			FontSize = 12,
 			TextColor = ThemeColors.OnSurfaceVariant
 		});
 		dates.Children.Add(new Label
 		{
-			Text = $"Stop · {log.StopRecorded}",
+			Text = _loc.T("Multimeter_LogRecall_StopFormat", log.StopRecorded),
 			FontSize = 12,
 			TextColor = ThemeColors.OnSurfaceVariant
 		});
 		metaGrid.Children.Add(dates);
 		var countLbl = new Label
 		{
-			Text = $"{log.RecordCount} records",
+			Text = _loc.T("Multimeter_LogRecall_RecordCountFormat", log.RecordCount),
 			FontAttributes = FontAttributes.Bold,
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurface,
@@ -412,7 +418,7 @@ public partial class MultimeterLogRecallView : ContentView
 		stack.Children.Add(metaGrid);
 		stack.Children.Add(new Label
 		{
-			Text = "Parameters",
+			Text = _loc.T("Multimeter_LogRecall_ParametersLabel"),
 			FontSize = 11,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = ThemeColors.OnSurfaceMuted,
@@ -424,7 +430,7 @@ public partial class MultimeterLogRecallView : ContentView
 		{
 			stack.Children.Add(new Label
 			{
-				Text = "Downloaded to Hanna Lab",
+				Text = _loc.T("Multimeter_LogRecall_DownloadedBadge"),
 				FontSize = 11,
 				TextColor = AppConstants.Success,
 				Margin = new Thickness(0, 10, 0, 0)
@@ -450,7 +456,7 @@ public partial class MultimeterLogRecallView : ContentView
 		var tap = new TapGestureRecognizer();
 		tap.Tapped += async (_, _) => await OnLogTappedAsync(log);
 		card.GestureRecognizers.Add(tap);
-		SemanticProperties.SetDescription(card, $"Open actions for {log.Title}");
+		SemanticProperties.SetDescription(card, _loc.T("Multimeter_LogRecall_LogCardHint", log.Title));
 		return card;
 	}
 
@@ -460,16 +466,18 @@ public partial class MultimeterLogRecallView : ContentView
 		if (page is null)
 			return;
 
+		var downloadLabel = _loc.T("Multimeter_LogRecall_ActionDownload");
+		var shareLabel = _loc.T("Multimeter_LogRecall_ActionShare");
 		var action = await page.DisplayActionSheetAsync(
 			log.Title,
-			"Cancel",
+			_loc.T("Common_Cancel"),
 			null,
-			"Download",
-			"Share");
+			downloadLabel,
+			shareLabel);
 
-		if (string.Equals(action, "Download", StringComparison.Ordinal))
+		if (string.Equals(action, downloadLabel, StringComparison.Ordinal))
 			await _viewModel.DownloadLogCommand.ExecuteAsync(log);
-		else if (string.Equals(action, "Share", StringComparison.Ordinal))
+		else if (string.Equals(action, shareLabel, StringComparison.Ordinal))
 			await _viewModel.ShareLogCommand.ExecuteAsync(log);
 	}
 }

@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
@@ -8,9 +7,11 @@ using HannaUIDemo.Theme;
 namespace HannaUIDemo.Features.Instruments.Logs;
 
 /// <summary>Log History landing — device type cards only.</summary>
-public partial class LogHistoryHomeViewModel : PageViewModelBase
+public partial class LogHistoryHomeViewModel : LocalizedViewModelBase
 {
 	public ObservableCollection<LogDeviceTypeCardViewModel> DeviceTypeCards { get; } = new();
+
+	public string EmptyHint => Loc.T("LogHistory_Empty");
 
 	Page? _hostPage;
 
@@ -19,6 +20,12 @@ public partial class LogHistoryHomeViewModel : PageViewModelBase
 	public override void RefreshForTheme() => LoadDeviceTypeCards();
 
 	public void OnAppearing() => LoadDeviceTypeCards();
+
+	protected override void ApplyLocalization()
+	{
+		OnPropertyChanged(nameof(EmptyHint));
+		LoadDeviceTypeCards();
+	}
 
 	void LoadDeviceTypeCards()
 	{
@@ -62,28 +69,28 @@ public partial class LogHistoryHomeViewModel : PageViewModelBase
 		await nav.PushAsync(page);
 	}
 
-	static string TypeTitle(InstrumentKind kind) => kind switch
+	string TypeTitle(InstrumentKind kind) => kind switch
 	{
-		InstrumentKind.Halo2 => "Halo 2",
-		InstrumentKind.Photometer => "HI97115 Photometer",
-		InstrumentKind.Multimeter => "Multimeter",
-		_ => "Logs"
+		InstrumentKind.Halo2 => Loc.T("LogHistory_TypeTitle_Halo2"),
+		InstrumentKind.Photometer => Loc.T("LogHistory_TypeTitle_Photometer"),
+		InstrumentKind.Multimeter => Loc.T("LogHistory_TypeTitle_Multimeter"),
+		_ => Loc.T("LogHistory_TypeTitle_Generic")
 	};
 
-	static (string Status, Color Color) CloudStatusFor(InstrumentKind kind) =>
+	(string Status, Color Color) CloudStatusFor(InstrumentKind kind) =>
 		kind switch
 		{
-			InstrumentKind.Halo2 => ("Up to date", ThemeColors.LabSuccess),
-			InstrumentKind.Photometer => ("2 files pending", AppConstants.Primary),
-			InstrumentKind.Multimeter => ("Up to date", ThemeColors.LabSuccess),
-			_ => ("—", ThemeColors.OnSurfaceVariant)
+			InstrumentKind.Halo2 => (Loc.T("LogHistory_CloudUpToDate"), ThemeColors.LabSuccess),
+			InstrumentKind.Photometer => (Loc.T("LogHistory_CloudPending", 2), AppConstants.Primary),
+			InstrumentKind.Multimeter => (Loc.T("LogHistory_CloudUpToDate"), ThemeColors.LabSuccess),
+			_ => (Loc.T("Common_Empty"), ThemeColors.OnSurfaceVariant)
 		};
 
-	static string TypeSubtitle(InstrumentKind kind) => kind switch
+	string TypeSubtitle(InstrumentKind kind) => kind switch
 	{
-		InstrumentKind.Halo2 => "Same model · multiple devices",
-		InstrumentKind.Photometer => "Same model · tanks per device",
-		InstrumentKind.Multimeter => "Same model · multiple devices",
+		InstrumentKind.Halo2 => Loc.T("LogHistory_TypeSubtitle_MultipleDevices"),
+		InstrumentKind.Photometer => Loc.T("LogHistory_TypeSubtitle_TanksMultipleDevices"),
+		InstrumentKind.Multimeter => Loc.T("LogHistory_TypeSubtitle_MultipleDevices"),
 		_ => string.Empty
 	};
 

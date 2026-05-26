@@ -178,7 +178,7 @@ public sealed class MeasureTabPage : ContentPage, IMeasureTabNavigationHost
 	public void ShowBusy(string? message = null)
 	{
 		_busyDepth++;
-		_busyLabel.Text = message ?? "Loading…";
+		_busyLabel.Text = message ?? Localization.T("Measure_LoadingFallback");
 		_busyLabel.IsVisible = !string.IsNullOrWhiteSpace(message);
 		_busyOverlay.IsVisible = true;
 		_busyOverlay.InputTransparent = false;

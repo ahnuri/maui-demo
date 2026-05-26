@@ -32,7 +32,7 @@ public sealed class Halo2MeasureModule : IInstrumentMeasureModule
 	public bool UsesLabChrome => true;
 
 	public string GetNavigationTitle(LocalizationService loc) =>
-		loc.T(InstrumentRegistry.Get(Kind).MeasureNavigationTitleKey);
+		InstrumentRegistry.GetMeasureNavigationTitle(Kind, loc);
 
 	/// <summary>Rebuilds the view tree so theme-dependent colors and dynamic resources re-evaluate.</summary>
 	public void ApplyTheme() => View.ApplyTheme();

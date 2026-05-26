@@ -1,7 +1,9 @@
 using System.Globalization;
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Theme;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Photometer;
 
@@ -9,6 +11,7 @@ namespace HannaUIDemo.Features.Instruments.Photometer;
 public sealed class PhotometerDeviceSettingsPage : ContentPage
 {
 	readonly PhotometerDeviceSettingsViewModel _vm;
+	readonly LocalizationService _loc;
 
 	public PhotometerDeviceSettingsPage()
 		: this(AppServices.Get<PhotometerDeviceSettingsViewModel>()) { }
@@ -16,14 +19,13 @@ public sealed class PhotometerDeviceSettingsPage : ContentPage
 	public PhotometerDeviceSettingsPage(PhotometerDeviceSettingsViewModel viewModel)
 	{
 		_vm = viewModel;
+		_loc = viewModel.Loc;
 		BindingContext = _vm;
-		Title = "Settings";
+		Title = _loc.T("Photometer_Settings_PageTitle");
 		ApplyChrome();
 
-		var foot1 = Footnote(
-			"Method selection allows the user to select individual methods to run. Method group allows the user to select a predefined group of methods to run.");
-		var foot2 = Footnote(
-			"When the HI97115 Log Recall is synced all readings not saved to Hanna Lab will be added to the Log History.");
+		var foot1 = Footnote(_loc.T("Photometer_Settings_FootnoteMethodGroup"));
+		var foot2 = Footnote(_loc.T("Photometer_Settings_FootnoteSync"));
 
 		var separatorGrid = BuildSeparatorSegment();
 
@@ -85,31 +87,31 @@ public sealed class PhotometerDeviceSettingsPage : ContentPage
 				{
 					new Label
 					{
-						Text = "HI97115 photometer",
+						Text = _loc.T("Photometer_Settings_DeviceHeader"),
 						FontSize = 13,
 						FontAttributes = FontAttributes.Bold,
 						TextColor = ThemeColors.OnSurfaceVariant
 					},
 					GroupedStack(
-						ChevronRow("Start-up View", nameof(PhotometerDeviceSettingsViewModel.StartupViewLabel), _vm,
+						ChevronRow(_loc.T("Photometer_Settings_StartupView"), nameof(PhotometerDeviceSettingsViewModel.StartupViewLabel), _vm,
 							async () => await _vm.OpenStartupViewInfoCommand.ExecuteAsync(null)),
 						foot1,
-						ChevronRowPlaceholder("Chemical Form", "EPA"),
+						ChevronRowPlaceholder(_loc.T("Photometer_Settings_ChemicalForm"), _loc.T("Photometer_Settings_ChemicalFormValue")),
 						SyncRow(_vm),
 						foot2),
-					SectionHeader("DEVICE SETTINGS"),
+					SectionHeader(_loc.T("Photometer_Settings_DeviceSection")),
 					GroupedStack(
-						SliderRow("Backlight", backlightSlider, backlightPct),
+						SliderRow(_loc.T("Photometer_Settings_Backlight"), backlightSlider, backlightPct),
 						Divider(),
-						SliderRow("Contrast", contrastSlider, contrastPct),
+						SliderRow(_loc.T("Photometer_Settings_Contrast"), contrastSlider, contrastPct),
 						Divider(),
-						SegmentRow("Separator", separatorGrid),
+						SegmentRow(_loc.T("Photometer_Settings_Separator"), separatorGrid),
 						Divider(),
-						ChevronRowValue("Language", nameof(PhotometerDeviceSettingsViewModel.DeviceLanguage), _vm),
+						ChevronRowValue(_loc.T("Photometer_Settings_Language"), nameof(PhotometerDeviceSettingsViewModel.DeviceLanguage), _vm),
 						Divider(),
-						SwitchRow("Beep", beepSwitch),
+						SwitchRow(_loc.T("Photometer_Settings_Beep"), beepSwitch),
 						Divider(),
-						SwitchRow("Tutorial", tutorialSwitch))
+						SwitchRow(_loc.T("Photometer_Settings_Tutorial"), tutorialSwitch))
 				}
 			}
 		};
@@ -235,7 +237,7 @@ public sealed class PhotometerDeviceSettingsPage : ContentPage
 		var col = new VerticalStackLayout { Spacing = 2 };
 		col.Children.Add(new Label
 		{
-			Text = "Sync Readings from Log Recall to Hanna Lab",
+			Text = _loc.T("Photometer_Settings_SyncRow"),
 			FontSize = 17,
 			TextColor = ThemeColors.OnSurface,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -307,8 +309,8 @@ public sealed class PhotometerDeviceSettingsPage : ContentPage
 	{
 		var dotBtn = new Border { Padding = new Thickness(18, 8), StrokeShape = new RoundRectangle { CornerRadius = 8 } };
 		var commaBtn = new Border { Padding = new Thickness(18, 8), StrokeShape = new RoundRectangle { CornerRadius = 8 } };
-		dotBtn.Content = new Label { Text = "Dot", FontSize = 15, HorizontalOptions = LayoutOptions.Center };
-		commaBtn.Content = new Label { Text = "Comma", FontSize = 15, HorizontalOptions = LayoutOptions.Center };
+		dotBtn.Content = new Label { Text = _loc.T("Photometer_Settings_SeparatorDot"), FontSize = 15, HorizontalOptions = LayoutOptions.Center };
+		commaBtn.Content = new Label { Text = _loc.T("Photometer_Settings_SeparatorComma"), FontSize = 15, HorizontalOptions = LayoutOptions.Center };
 
 		void StyleButtons(bool commaOn)
 		{
@@ -356,9 +358,10 @@ public sealed class PhotometerDeviceSettingsPage : ContentPage
 	{
 		public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
+			var loc = ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
 			if (value is double d)
-				return $"{(int)Math.Round(Math.Clamp(d, 0, 100))}%";
-			return "0%";
+				return loc.T("Common_PercentFormat", (int)Math.Round(Math.Clamp(d, 0, 100)));
+			return loc.T("Common_PercentFormat", 0);
 		}
 
 		public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>

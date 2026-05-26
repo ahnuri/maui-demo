@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using HannaUIDemo.Core.Auth;
 using HannaUIDemo.Core.Constants;
 using HannaUIDemo.Core.Mvvm;
-using HannaUIDemo.Core.Theme;
 using HannaUIDemo.Features.Localization;
 using HannaUIDemo.Theme;
 

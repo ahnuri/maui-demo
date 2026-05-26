@@ -33,20 +33,20 @@
                 <Label FontAttributes="Bold" FontSize="17" Text="{Binding TankTitle}" TextColor="{DynamicResource OnSurface}" />
                 <Label FontSize="12" Text="{Binding TankSubtitle}" TextColor="{DynamicResource OnSurfaceVariant}" />
             </VerticalStackLayout>
-            <Button BackgroundColor="Transparent" Command="{Binding RenameTankCommand}" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" Text="Rename tank" TextColor="{StaticResource Primary}" />
+            <Button BackgroundColor="Transparent" Command="{Binding RenameTankCommand}" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" Text="{Binding RenameTankLabel}" TextColor="{StaticResource Primary}" />
             <Border Padding="12,10" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10" />
                 </Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
-                    <Label FontSize="12" Text="From:" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Label FontSize="12" Text="{Binding FromLabel}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
                     <Border Grid.Column="1" Padding="10,6" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
                         <Label FontSize="12" Text="{Binding DateFrom}" TextColor="{DynamicResource OnSurface}" />
                     </Border>
-                    <Label Grid.Column="2" FontSize="12" Text="To:" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Label Grid.Column="2" FontSize="12" Text="{Binding ToLabel}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
                     <Border Grid.Column="3" Padding="10,6" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />

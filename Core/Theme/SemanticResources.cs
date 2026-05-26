@@ -41,10 +41,30 @@ public static class SemanticResources
 		r["LabCanvas"] = ThemeColors.LabCanvas;
 		r["LabCard"] = ThemeColors.LabCard;
 		r["LabCardElevated"] = ThemeColors.LabCardElevated;
+		r["LabRowStripe"] = ThemeColors.LabRowStripe;
 		r["LabBorder"] = ThemeColors.LabBorder;
 		r["LabMuted"] = ThemeColors.LabMuted;
 		r["LabPrimaryText"] = ThemeColors.LabPrimaryText;
 		r["LabSecondaryText"] = ThemeColors.LabSecondaryText;
+		r["LabAccentCyan"] = ThemeColors.LabAccentCyan;
+		r["LabAccentOrange"] = ThemeColors.LabAccentOrange;
+		r["LabEmerald"] = ThemeColors.LabEmerald;
+		r["LabEmeraldMuted"] = ThemeColors.LabEmeraldMuted;
+		r["LabIconButtonFill"] = ThemeColors.LabIconButtonFill;
+		r["LabGradientStop"] = ThemeColors.LabGradientStop;
+		r["LabGradientEnd"] = ThemeColors.LabGradientEnd;
+		r["LabGraphPlotFill"] = ThemeColors.LabGraphPlotFill;
+		r["LabModeChipActive"] = ThemeColors.LabModeChipActive;
+		r["LabChipDisabled"] = ThemeColors.LabChipDisabled;
+		r["LabTableHeaderBackground"] = ThemeColors.LabTableHeaderBackground;
+		r["LabTableHeaderText"] = ThemeColors.LabTableHeaderText;
+		// Status / semantic colors
+		r["LabWarning"] = ThemeColors.LabWarning;
+		r["LabWarningMuted"] = ThemeColors.LabWarningMuted;
+		r["LabDanger"] = ThemeColors.LabDanger;
+		r["LabDangerSoft"] = ThemeColors.LabDangerSoft;
+		r["LabDangerMuted"] = ThemeColors.LabDangerMuted;
+		r["LabSuccess"] = ThemeColors.LabSuccess;
 
 		// Home hero banner
 		r["LabHeroGradientStart"] = ThemeColors.LabHeroGradientStart;

@@ -1,11 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HannaUIDemo.Features.Instruments.Multimeter;
 
 /// <summary>One multimeter log recall file on the HI98494 / HI98594.</summary>
 public partial class MultimeterLogItemViewModel : ObservableObject
 {
+	static LocalizationService Loc => ((App)Application.Current!).Services.GetRequiredService<LocalizationService>();
+
 	public required string Id { get; init; }
 	public required string Title { get; init; }
 	public required MultimeterLogFileType FileType { get; init; }
@@ -29,7 +33,7 @@ public partial class MultimeterLogItemViewModel : ObservableObject
 
 	public string ParametersSummary =>
 		Parameters.Count == 0
-			? "No parameters"
+			? Loc.T("Multimeter_LogRecall_NoParameters")
 			: string.Join(" · ", Parameters.Select(p => p.Display));
 
 	public string StatusGlyph => IsDownloading ? "\u21BB" : IsDownloaded ? "\u2713" : "\u2193";

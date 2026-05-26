@@ -10,24 +10,24 @@
 
     <ContentView.Resources>
         <DataTemplate x:Key="ModelFilterChipTemplate" x:DataType="logs:LogModelFilterChipViewModel">
-            <Border HeightRequest="52" Padding="14,10" BackgroundColor="{Binding BackgroundColor}" Stroke="{Binding StrokeColor}" StrokeThickness="1.5" VerticalOptions="Center">
+            <Border HeightRequest="52" Padding="14,10" BackgroundColor="{Binding BackgroundColor}" Stroke="{Binding StrokeColor}" StrokeThickness="{StaticResource StrokeThick}" VerticalOptions="Center">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
                 </Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootDeviceLogsView}, Path=BindingContext.SelectModelFilterCommand}" CommandParameter="{Binding .}" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="3" VerticalOptions="Center">
-                    <Label FontAttributes="{Binding FontAttributes}" FontSize="14" HorizontalTextAlignment="Center" Text="{Binding Label}" TextColor="{Binding TextColor}" />
-                    <Label FontSize="11" HorizontalTextAlignment="Center" Text="{Binding CountLine}" TextColor="{Binding TextColor}" />
+                    <Label FontAttributes="{Binding FontAttributes}" FontSize="{StaticResource FontSizeBodyLarge}" HorizontalTextAlignment="Center" Text="{Binding Label}" TextColor="{Binding TextColor}" />
+                    <Label FontSize="{StaticResource FontSizeCaption}" HorizontalTextAlignment="Center" Text="{Binding CountLine}" TextColor="{Binding TextColor}" />
                 </VerticalStackLayout>
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="TankGroupTemplate" x:DataType="logs:LogTankGroupViewModel">
-            <Border Margin="0,0,0,8" Padding="12" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+            <Border Margin="0,0,0,8" Padding="{StaticResource SpacingMd}" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Divider}" StrokeThickness="{StaticResource StrokeThin}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusMd}" />
                 </Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenTankCommand}" />
@@ -37,19 +37,19 @@
                        Row 1: date → date  . . . . . . . . . . chevron (mid-right)
                        Row 2: file/record summary
                 -->
-                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="3" ColumnSpacing="8">
-                    <HorizontalStackLayout Grid.ColumnSpan="2" Spacing="8" VerticalOptions="Center">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="3" ColumnSpacing="{StaticResource SpacingSm}">
+                    <HorizontalStackLayout Grid.ColumnSpan="2" Spacing="{StaticResource SpacingSm}" VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
-                            FontSize="15"
+                            FontSize="{StaticResource FontSizeSubhead}"
                             LineBreakMode="TailTruncation"
                             MaxLines="1"
                             Text="{Binding TankName}"
                             TextColor="{DynamicResource OnSurface}"
                             VerticalOptions="Center" />
                         <Image
-                            WidthRequest="18"
-                            HeightRequest="18"
+                            WidthRequest="{StaticResource IconSizeSm}"
+                            HeightRequest="{StaticResource IconSizeSm}"
                             Aspect="AspectFit"
                             SemanticProperties.Description="{Binding CloudUploadAccessibilityHint}"
                             Source="{Binding CloudSyncIconSource}"
@@ -57,30 +57,30 @@
                     </HorizontalStackLayout>
                     <Label
                         Grid.Row="1"
-                        FontSize="11"
+                        FontSize="{StaticResource FontSizeCaption}"
                         Text="{Binding DateRangeSummary}"
                         TextColor="{DynamicResource OnSurfaceVariant}"
                         VerticalOptions="Center" />
                     <Label
                         Grid.Row="1"
                         Grid.Column="1"
-                        FontSize="20"
+                        FontSize="{StaticResource FontSizeLargeTitle}"
                         IsVisible="{Binding ShowDetailChevron}"
                         Text="&#x203A;"
                         TextColor="{StaticResource Primary}"
                         VerticalOptions="Center" />
-                    <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Spacing="10">
-                        <Label FontSize="11" Text="{Binding FileCountLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
-                        <Label FontAttributes="Bold" FontSize="11" Text="{Binding RecordCountLabel}" TextColor="{StaticResource Primary}" />
+                    <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Spacing="{StaticResource SpacingSmPlus}">
+                        <Label FontSize="{StaticResource FontSizeCaption}" Text="{Binding FileCountLabel}" TextColor="{DynamicResource OnSurfaceVariant}" />
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeCaption}" Text="{Binding RecordCountLabel}" TextColor="{StaticResource Primary}" />
                     </HorizontalStackLayout>
                 </Grid>
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="LogEntryTemplate" x:DataType="logs:LogEntryViewModel">
-            <Border Margin="0,0,0,8" Padding="12" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{Binding CardStroke}" StrokeThickness="1.5">
+            <Border Margin="0,0,0,8" Padding="{StaticResource SpacingMd}" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{Binding CardStroke}" StrokeThickness="{StaticResource StrokeThick}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusMd}" />
                 </Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenLogCommand}" />
@@ -90,62 +90,62 @@
                        Row 1: date → date  . . . . . . . . . . chevron (mid-right)
                        Row 2: records pill
                 -->
-                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="{StaticResource SpacingSmPlus}" RowSpacing="{StaticResource SpacingXs}">
                     <CheckBox Grid.RowSpan="3" IsChecked="{Binding IsSelected}" IsVisible="{Binding IsEditModeActive}" Color="{StaticResource Primary}" VerticalOptions="Start" />
-                    <HorizontalStackLayout Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" VerticalOptions="Center">
+                    <HorizontalStackLayout Grid.Column="1" Grid.ColumnSpan="2" Spacing="{StaticResource SpacingSm}" VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
-                            FontSize="15"
+                            FontSize="{StaticResource FontSizeSubhead}"
                             LineBreakMode="TailTruncation"
                             MaxLines="1"
                             Text="{Binding Title}"
                             TextColor="{DynamicResource OnSurface}"
                             VerticalOptions="Center" />
                         <Image
-                            WidthRequest="18"
-                            HeightRequest="18"
+                            WidthRequest="{StaticResource IconSizeSm}"
+                            HeightRequest="{StaticResource IconSizeSm}"
                             Aspect="AspectFit"
                             SemanticProperties.Description="{Binding CloudUploadAccessibilityHint}"
                             Source="{Binding CloudSyncIconSource}"
                             VerticalOptions="Center" />
                     </HorizontalStackLayout>
-                    <Label Grid.Row="1" Grid.Column="1" FontSize="11" Text="{Binding DateRangeLabel}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
+                    <Label Grid.Row="1" Grid.Column="1" FontSize="{StaticResource FontSizeCaption}" Text="{Binding DateRangeLabel}" TextColor="{DynamicResource OnSurfaceVariant}" VerticalOptions="Center" />
                     <Label
                         Grid.Row="1"
                         Grid.Column="2"
-                        FontSize="20"
+                        FontSize="{StaticResource FontSizeLargeTitle}"
                         IsVisible="{Binding ShowDetailChevron}"
                         Text="&#x203A;"
                         TextColor="{StaticResource Primary}"
                         VerticalOptions="Center" />
                     <Border Grid.Row="2" Grid.Column="1" Padding="6,3" BackgroundColor="{Binding RecordCountBackground}" HorizontalOptions="Start" IsVisible="{Binding ShowRecordCount}" StrokeThickness="0">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="6" />
+                            <RoundRectangle CornerRadius="{StaticResource RadiusXs}" />
                         </Border.StrokeShape>
-                        <Label FontAttributes="Bold" FontSize="10" Text="{Binding RecordCount, StringFormat='{0} records'}" TextColor="{Binding RecordCountColor}" />
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeCaption}" Text="{Binding RecordCountLabel}" TextColor="{Binding RecordCountColor}" />
                     </Border>
                 </Grid>
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="ModelSectionTemplate" x:DataType="logs:LogModelSectionViewModel">
-            <Border Margin="0,0,0,14" Padding="14" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
+            <Border Margin="0,0,0,14" Padding="{StaticResource SpacingMdPlus}" BackgroundColor="{DynamicResource Surface}" Stroke="{DynamicResource Divider}" StrokeThickness="{StaticResource StrokeThin}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="14" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusXl}" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
+                <VerticalStackLayout Spacing="{StaticResource SpacingSmPlus}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource SpacingMd}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource SpacingXs}">
                         <Image
                             Grid.RowSpan="2"
-                            HeightRequest="28"
-                            WidthRequest="28"
+                            HeightRequest="{StaticResource IconSizeXl}"
+                            WidthRequest="{StaticResource IconSizeXl}"
                             Source="{Binding DeviceIcon}"
                             Aspect="AspectFit"
                             VerticalOptions="Center" />
                         <Label
                             Grid.Column="1"
                             FontAttributes="Bold"
-                            FontSize="15"
+                            FontSize="{StaticResource FontSizeSubhead}"
                             LineBreakMode="TailTruncation"
                             Text="{Binding DeviceLabel}"
                             TextColor="{DynamicResource OnSurface}"
@@ -153,15 +153,15 @@
                         <Label
                             Grid.Column="2"
                             FontAttributes="Bold"
-                            FontSize="11"
+                            FontSize="{StaticResource FontSizeCaption}"
                             HorizontalTextAlignment="End"
                             LineBreakMode="NoWrap"
                             Text="{Binding SummaryLabel}"
                             TextColor="{Binding Accent}"
                             VerticalOptions="Center" />
-                        <Grid Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                        <Grid Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" ColumnDefinitions="*,Auto,*" ColumnSpacing="{StaticResource SpacingSmPlus}">
                             <Label
-                                FontSize="11"
+                                FontSize="{StaticResource FontSizeCaption}"
                                 HorizontalTextAlignment="Start"
                                 LineBreakMode="TailTruncation"
                                 Text="{Binding FirmwareLabel}"
@@ -176,7 +176,7 @@
                                 VerticalOptions="Center" />
                             <Label
                                 Grid.Column="2"
-                                FontSize="11"
+                                FontSize="{StaticResource FontSizeCaption}"
                                 HorizontalOptions="Fill"
                                 HorizontalTextAlignment="End"
                                 LineBreakMode="TailTruncation"
@@ -194,24 +194,24 @@
     </ContentView.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto">
-        <VerticalStackLayout Grid.Row="0" Padding="16,8,16,0" Spacing="8">
-            <Label FontSize="11" Text="{Binding ModelFilterHint}" TextColor="{DynamicResource OnSurfaceMuted}" />
+        <VerticalStackLayout Grid.Row="0" Padding="16,8,16,0" Spacing="{StaticResource SpacingSm}">
+            <Label FontSize="{StaticResource FontSizeCaption}" Text="{Binding ModelFilterHint}" TextColor="{DynamicResource OnSurfaceMuted}" />
             <ScrollView HeightRequest="56" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-                <HorizontalStackLayout BindableLayout.ItemTemplate="{StaticResource ModelFilterChipTemplate}" BindableLayout.ItemsSource="{Binding ModelFilters}" Spacing="8" VerticalOptions="Center" />
+                <HorizontalStackLayout BindableLayout.ItemTemplate="{StaticResource ModelFilterChipTemplate}" BindableLayout.ItemsSource="{Binding ModelFilters}" Spacing="{StaticResource SpacingSm}" VerticalOptions="Center" />
             </ScrollView>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding ShowLogActionRow}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingSm}" IsVisible="{Binding ShowLogActionRow}">
                 <Label
-                    FontSize="12"
+                    FontSize="{StaticResource FontSizeSmall}"
                     IsVisible="{Binding ShowEditModeActions}"
-                    Text="Tap logs to select"
+                    Text="{Binding TapToSelectHint}"
                     TextColor="{DynamicResource OnSurfaceVariant}"
                     VerticalOptions="Center" />
-                <HorizontalStackLayout Grid.Column="1" Spacing="16" HorizontalOptions="End" VerticalOptions="Center">
+                <HorizontalStackLayout Grid.Column="1" Spacing="{StaticResource SpacingLg}" HorizontalOptions="End" VerticalOptions="Center">
                     <Label
                         FontAttributes="Bold"
-                        FontSize="12"
+                        FontSize="{StaticResource FontSizeSmall}"
                         IsVisible="{Binding ShowEditModeActions}"
-                        Text="Select all"
+                        Text="{Binding SelectAllLabel}"
                         TextColor="{StaticResource Primary}"
                         VerticalOptions="Center">
                         <Label.GestureRecognizers>
@@ -219,9 +219,9 @@
                         </Label.GestureRecognizers>
                     </Label>
                     <Label
-                        FontSize="12"
+                        FontSize="{StaticResource FontSizeSmall}"
                         IsVisible="{Binding ShowClearSelection}"
-                        Text="Clear"
+                        Text="{Binding ClearLabel}"
                         TextColor="{DynamicResource OnSurfaceVariant}"
                         VerticalOptions="Center">
                         <Label.GestureRecognizers>
@@ -230,7 +230,7 @@
                     </Label>
                     <Label
                         FontAttributes="Bold"
-                        FontSize="12"
+                        FontSize="{StaticResource FontSizeSmall}"
                         Text="{Binding EditModeButtonText}"
                         TextColor="{StaticResource Primary}"
                         VerticalOptions="Center">
@@ -246,13 +246,13 @@
             <VerticalStackLayout Padding="16,8,16,24" BindableLayout.ItemTemplate="{StaticResource ModelSectionTemplate}" BindableLayout.ItemsSource="{Binding ModelSections}" Spacing="0" />
         </ScrollView>
 
-        <Border Grid.Row="2" Padding="14,10" BackgroundColor="{DynamicResource Surface}" IsVisible="{Binding ShowSelectionBar}" Stroke="{DynamicResource Divider}" StrokeThickness="1">
-            <VerticalStackLayout Spacing="8">
-                <Label FontAttributes="Bold" FontSize="13" Text="{Binding SelectionSummary}" TextColor="{DynamicResource OnSurface}" />
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                    <Button BackgroundColor="{StaticResource Primary}" Command="{Binding ShareSelectedCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" Text="Share" TextColor="White" />
-                    <Button Grid.Column="1" BackgroundColor="Transparent" BorderColor="{DynamicResource Divider}" BorderWidth="1" Command="{Binding DeleteSelectedCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" Text="Delete" TextColor="{DynamicResource OnSurface}" />
-                    <Button Grid.Column="2" BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="1.5" Command="{Binding SyncSelectedToCloudCommand}" CornerRadius="10" FontAttributes="Bold" FontSize="12" HeightRequest="40" IsEnabled="{Binding IsSyncing, Converter={StaticResource InvertedBoolConverter}}" Text="Sync" TextColor="{StaticResource Primary}" />
+        <Border Grid.Row="2" Padding="14,10" BackgroundColor="{DynamicResource Surface}" IsVisible="{Binding ShowSelectionBar}" Stroke="{DynamicResource Divider}" StrokeThickness="{StaticResource StrokeThin}">
+            <VerticalStackLayout Spacing="{StaticResource SpacingSm}">
+                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" Text="{Binding SelectionSummary}" TextColor="{DynamicResource OnSurface}" />
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource SpacingSm}">
+                    <Button BackgroundColor="{StaticResource Primary}" Command="{Binding ShareSelectedCommand}" CornerRadius="{StaticResource RadiusMd}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HeightRequest="{StaticResource ButtonHeightSm}" Text="{Binding ShareLabel}" TextColor="White" />
+                    <Button Grid.Column="1" BackgroundColor="Transparent" BorderColor="{DynamicResource Divider}" BorderWidth="{StaticResource StrokeThin}" Command="{Binding DeleteSelectedCommand}" CornerRadius="{StaticResource RadiusMd}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HeightRequest="{StaticResource ButtonHeightSm}" Text="{Binding DeleteLabel}" TextColor="{DynamicResource OnSurface}" />
+                    <Button Grid.Column="2" BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="{StaticResource StrokeThick}" Command="{Binding SyncSelectedToCloudCommand}" CornerRadius="{StaticResource RadiusMd}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HeightRequest="{StaticResource ButtonHeightSm}" IsEnabled="{Binding IsSyncing, Converter={StaticResource InvertedBoolConverter}}" Text="{Binding SyncLabel}" TextColor="{StaticResource Primary}" />
                 </Grid>
             </VerticalStackLayout>
         </Border>

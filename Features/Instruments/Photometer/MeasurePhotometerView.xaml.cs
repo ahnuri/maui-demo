@@ -1,4 +1,5 @@
 using HannaUIDemo.Core.Constants;
+using HannaUIDemo.Core.Localization;
 using HannaUIDemo.Core.Mvvm;
 using HannaUIDemo.Features.Device;
 using HannaUIDemo.Core.Helpers;
@@ -18,6 +19,7 @@ public partial class MeasurePhotometerView : ContentView
 	enum MethodStatus { Pending, Active, Done }
 
 	readonly PhotometerMeasureViewModel _viewModel;
+	readonly LocalizationService _loc;
 
 	class MethodItem
 	{
@@ -83,11 +85,11 @@ public partial class MeasurePhotometerView : ContentView
 		}
 	}
 
-	static string GetPhotometerHeaderName(DeviceListItem? device)
+	string GetPhotometerHeaderName(DeviceListItem? device)
 	{
 		if (!string.IsNullOrWhiteSpace(device?.Serial))
-			return $"HI97115 · {device.Serial}";
-		return "HI97115";
+			return _loc.T("Photometer_Header_NameSerialFormat", device.Serial);
+		return _loc.T("Photometer_Header_NameDefault");
 	}
 
 	static View BuildPhotometerBatteryGlyph(int percent, bool known = true)
@@ -227,7 +229,7 @@ public partial class MeasurePhotometerView : ContentView
 		};
 		ctaRow.Children.Add(new Label
 		{
-			Text = "Begin measurement",
+			Text = _loc.T("Photometer_Header_BeginButton"),
 			FontAttributes = FontAttributes.Bold,
 			VerticalTextAlignment = TextAlignment.Center,
 			HorizontalTextAlignment = TextAlignment.Center,
@@ -256,7 +258,7 @@ public partial class MeasurePhotometerView : ContentView
 		tap.Tapped += (_, _) => BeginMeasurement();
 		button.GestureRecognizers.Add(tap);
 		SemanticProperties.SetDescription(button,
-			$"Begin measurement for {_viewModel.SelectedTankDisplay}. Opens the full method queue.");
+			_loc.T("Photometer_Header_BeginButtonHint", _viewModel.SelectedTankDisplay));
 		return button;
 	}
 
@@ -264,7 +266,7 @@ public partial class MeasurePhotometerView : ContentView
 	{
 		var label = new Label
 		{
-			Text = "Disconnect",
+			Text = _loc.T("Photometer_Header_Disconnect"),
 			FontSize = 13,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = ThemeColors.LabDangerSoft,
@@ -287,7 +289,7 @@ public partial class MeasurePhotometerView : ContentView
 				await measureTab.DisconnectAndOpenDevicesAsync();
 		};
 		button.GestureRecognizers.Add(tap);
-		SemanticProperties.SetDescription(button, "Disconnect photometer");
+		SemanticProperties.SetDescription(button, _loc.T("Photometer_Header_DisconnectHint"));
 		return button;
 	}
 
@@ -312,7 +314,7 @@ public partial class MeasurePhotometerView : ContentView
 		var settingsIconTap = new TapGestureRecognizer();
 		settingsIconTap.Tapped += async (_, _) => await OpenSettings();
 		settingsIcon.GestureRecognizers.Add(settingsIconTap);
-		SemanticProperties.SetDescription(settingsIcon, "Photometer instrument settings");
+		SemanticProperties.SetDescription(settingsIcon, _loc.T("Photometer_Header_SettingsHint"));
 
 		var deviceName = new Label
 		{
@@ -352,21 +354,21 @@ public partial class MeasurePhotometerView : ContentView
 				: ThemeColors.OnSurface;
 
 		var batteryGroup = CreatePhotometerMetricGroup(
-			"Battery:",
+			_loc.T("Photometer_Header_BatteryLabel"),
 			BuildPhotometerBatteryGlyph(battPct, battKnown),
-			battKnown ? $"{battPct}%" : "—",
+			battKnown ? _loc.T("Common_PercentFormat", battPct) : _loc.T("Common_Dash"),
 			batteryColor);
 
 		var tankGroup = CreatePhotometerTextMetric(
-			"Active tank:",
+			_loc.T("Photometer_Header_ActiveTankLabel"),
 			_viewModel.SelectedTankDisplay,
 			AppConstants.Primary,
 			showChevron: true);
 		var tankTap = new TapGestureRecognizer();
 		tankTap.Tapped += async (_, _) => await OpenTankPickerAsync();
 		tankGroup.GestureRecognizers.Add(tankTap);
-		SemanticProperties.SetDescription(tankGroup, "Change active tank");
-		SemanticProperties.SetHint(tankGroup, "Opens tank selection");
+		SemanticProperties.SetDescription(tankGroup, _loc.T("Photometer_Header_TankChangeHint"));
+		SemanticProperties.SetHint(tankGroup, _loc.T("Photometer_Header_TankChangeOpens"));
 
 		var metricsDivider = new BoxView
 		{
@@ -400,7 +402,7 @@ public partial class MeasurePhotometerView : ContentView
 		{
 			panelChildren.Add(new Label
 			{
-				Text = "Tap Active tank to change it, then run the full method queue. Quick measurement presets below use the same tank.",
+				Text = _loc.T("Photometer_Header_NewAnalysisHint"),
 				FontSize = 12,
 				LineHeight = 1.35,
 				TextColor = ThemeColors.OnSurfaceVariant,
@@ -523,6 +525,7 @@ public partial class MeasurePhotometerView : ContentView
 	public MeasurePhotometerView()
 	{
 		_viewModel = AppServices.Get<PhotometerMeasureViewModel>();
+		_loc = _viewModel.Loc;
 		BindingContext = _viewModel;
 		InitializeComponent();
 		_viewModel.StateChanged += (_, _) => Rebuild();
@@ -681,10 +684,10 @@ public partial class MeasurePhotometerView : ContentView
 			return;
 
 		var wantsRerun = await page.DisplayAlertAsync(
-			"Finish sequence",
-			"Do you want to re-run the measurement?",
-			"Yes",
-			"No");
+			_loc.T("Photometer_Finish_DialogTitle"),
+			_loc.T("Photometer_Finish_DialogMessage"),
+			_loc.T("Common_Yes"),
+			_loc.T("Common_No"));
 
 		if (!wantsRerun)
 		{
@@ -717,9 +720,9 @@ public partial class MeasurePhotometerView : ContentView
 		if (options.Count == 0)
 		{
 			await page.DisplayAlertAsync(
-				"Re-run measurements",
-				"No completed parameters are available to re-run.",
-				"OK");
+				_loc.T("Photometer_Rerun_DialogTitle"),
+				_loc.T("Photometer_Rerun_DialogNone"),
+				_loc.T("Common_OK"));
 			return;
 		}
 
@@ -769,11 +772,11 @@ public partial class MeasurePhotometerView : ContentView
 
 	void BuildNewAnalysis()
 	{
-		BodyStack.Children.Add(SectionHeaderWithGlyph(PhotometerActionIconKind.QuickBolt, "Quick Measurement Presets"));
+		BodyStack.Children.Add(SectionHeaderWithGlyph(PhotometerActionIconKind.QuickBolt, _loc.T("Photometer_NewAnalysis_PresetsTitle")));
 		BodyStack.Children.Add(new BoxView { HeightRequest = 12 });
 		BodyStack.Children.Add(BuildPresetGrid());
 		BodyStack.Children.Add(new BoxView { HeightRequest = 24 });
-		BodyStack.Children.Add(SectionHeaderWithAsset("log_history", "Recent Measurements"));
+		BodyStack.Children.Add(SectionHeaderWithAsset("log_history", _loc.T("Photometer_NewAnalysis_RecentTitle")));
 		BodyStack.Children.Add(new BoxView { HeightRequest = 12 });
 		BodyStack.Children.Add(RecentTile("Alkalinity Marine", "11/12/25 • 11:33:56 AM", "9.65 dKH"));
 		BodyStack.Children.Add(new BoxView { HeightRequest = 10 });
@@ -790,17 +793,17 @@ public partial class MeasurePhotometerView : ContentView
 			RowSpacing = 12
 		};
 
-		var c1 = MakePresetCard("Daily Check", "3 methods", PhotometerActionIconKind.DailySun, () => SelectPreset("Daily Check"));
+		var c1 = MakePresetCard(_loc.T("Photometer_Preset_DailyCheckTitle"), _loc.T("Photometer_Preset_MethodCountFormat", 3), PhotometerActionIconKind.DailySun, () => SelectPreset("Daily Check"));
 		grid.Children.Add(c1);
 		Grid.SetRow(c1, 0);
 		Grid.SetColumn(c1, 0);
 
-		var c2 = MakePresetCard("Weekly Check", "6 methods", PhotometerActionIconKind.WeeklyCalendar, () => SelectPreset("Weekly Check"));
+		var c2 = MakePresetCard(_loc.T("Photometer_Preset_WeeklyCheckTitle"), _loc.T("Photometer_Preset_MethodCountFormat", 6), PhotometerActionIconKind.WeeklyCalendar, () => SelectPreset("Weekly Check"));
 		grid.Children.Add(c2);
 		Grid.SetRow(c2, 0);
 		Grid.SetColumn(c2, 1);
 
-		var c3 = MakePresetCard("All Methods", "9 methods", PhotometerActionIconKind.AllMethodsGrid, () => SelectPreset("All Methods"));
+		var c3 = MakePresetCard(_loc.T("Photometer_Preset_AllMethodsTitle"), _loc.T("Photometer_Preset_MethodCountFormat", 9), PhotometerActionIconKind.AllMethodsGrid, () => SelectPreset("All Methods"));
 		grid.Children.Add(c3);
 		Grid.SetRow(c3, 1);
 		Grid.SetColumn(c3, 0);
@@ -885,7 +888,7 @@ public partial class MeasurePhotometerView : ContentView
 				},
 				new Label
 				{
-					Text = "Custom sequence",
+					Text = _loc.T("Photometer_Preset_CustomTitle"),
 					FontSize = 12,
 					HorizontalTextAlignment = TextAlignment.Center,
 					FontAttributes = FontAttributes.Bold,
@@ -895,7 +898,7 @@ public partial class MeasurePhotometerView : ContentView
 				},
 				new Label
 				{
-					Text = "Build your own queue",
+					Text = _loc.T("Photometer_Preset_CustomSubtitle"),
 					FontSize = 12,
 					HorizontalTextAlignment = TextAlignment.Center,
 					TextColor = ThemeColors.OnSurfaceVariant
@@ -1063,10 +1066,10 @@ public partial class MeasurePhotometerView : ContentView
 		top.Children.Add(close);
 		Grid.SetColumn(close, 0);
 		var setupTitleCol = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
-		setupTitleCol.Children.Add(new Label { Text = "Review methods", FontAttributes = FontAttributes.Bold, FontSize = 20 });
+		setupTitleCol.Children.Add(new Label { Text = _loc.T("Photometer_Setup_Title"), FontAttributes = FontAttributes.Bold, FontSize = 20 });
 		setupTitleCol.Children.Add(new Label
 		{
-			Text = $"{_viewModel.SelectedTankDisplay} · {_selectedMethods.Count} parameters · Change tank from New measurement on the overview.",
+			Text = _loc.T("Photometer_Setup_SubtitleFormat", _viewModel.SelectedTankDisplay, _selectedMethods.Count),
 			FontSize = 12,
 			TextColor = ThemeColors.OnSurfaceVariant,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -1077,8 +1080,8 @@ public partial class MeasurePhotometerView : ContentView
 		BodyStack.Children.Add(top);
 
 		BodyStack.Children.Add(FlowStepHeader(
-			"Step 2 of 4 · Method queue",
-			$"Parameters run sequentially on the instrument for {_viewModel.SelectedTankDisplay}."));
+			_loc.T("Photometer_Setup_StepHeader"),
+			_loc.T("Photometer_Setup_StepSubtitleFormat", _viewModel.SelectedTankDisplay)));
 
 		var list = new VerticalStackLayout { Spacing = 12, Margin = new Thickness(0, 4, 0, 0) };
 		for (var i = 0; i < _selectedMethods.Count; i++)
@@ -1091,7 +1094,7 @@ public partial class MeasurePhotometerView : ContentView
 		FooterHost.IsVisible = true;
 		var startBtn = new Button
 		{
-			Text = "Continue to confirm",
+			Text = _loc.T("Photometer_Setup_ContinueButton"),
 			HeightRequest = AppConstants.ButtonHeight,
 			BackgroundColor = AppConstants.Primary,
 			TextColor = Colors.White,
@@ -1130,13 +1133,13 @@ public partial class MeasurePhotometerView : ContentView
 		var head = new VerticalStackLayout { Spacing = 4 };
 		head.Children.Add(new Label
 		{
-			Text = "Ready to start",
+			Text = _loc.T("Photometer_Start_Title"),
 			FontSize = 22,
 			FontAttributes = FontAttributes.Bold
 		});
 		head.Children.Add(new Label
 		{
-			Text = "Verify tank and method order. The HI97115 will execute one parameter at a time.",
+			Text = _loc.T("Photometer_Start_Subtitle"),
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurfaceVariant,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -1149,8 +1152,8 @@ public partial class MeasurePhotometerView : ContentView
 		BodyStack.Children.Add(top);
 		BodyStack.Children.Add(new BoxView { HeightRequest = 4 });
 		BodyStack.Children.Add(FlowStepHeader(
-			"Step 3 of 4 · Pre-flight",
-			"Starting sends the first method to the photometer; the rest follow in order."));
+			_loc.T("Photometer_Start_StepHeader"),
+			_loc.T("Photometer_Start_StepSubtitle")));
 
 		BodyStack.Children.Add(new BoxView { HeightRequest = 8 });
 
@@ -1165,7 +1168,7 @@ public partial class MeasurePhotometerView : ContentView
 		tankSummary.Shadow = new Shadow { Brush = new SolidColorBrush(ThemeColors.SoftShadow), Offset = new Point(0, 4), Radius = 16, Opacity = 1 };
 
 		var tankTxt = new VerticalStackLayout { Spacing = 6 };
-		tankTxt.Children.Add(new Label { Text = "Measuring for", FontSize = 12, TextColor = ThemeColors.OnSurfaceVariant });
+		tankTxt.Children.Add(new Label { Text = _loc.T("Photometer_Start_MeasuringFor"), FontSize = 12, TextColor = ThemeColors.OnSurfaceVariant });
 		tankTxt.Children.Add(new Label
 		{
 			Text = _viewModel.SelectedTankDisplay,
@@ -1174,7 +1177,7 @@ public partial class MeasurePhotometerView : ContentView
 		});
 		tankTxt.Children.Add(new Label
 		{
-			Text = $"{_selectedMethods.Count} parameters queued. Go back to edit, or return home and use New measurement to change tank.",
+			Text = _loc.T("Photometer_Start_QueueSubtitleFormat", _selectedMethods.Count),
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurfaceMuted,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -1185,7 +1188,7 @@ public partial class MeasurePhotometerView : ContentView
 		BodyStack.Children.Add(new BoxView { HeightRequest = 16 });
 		BodyStack.Children.Add(new Label
 		{
-			Text = "Parameter queue",
+			Text = _loc.T("Photometer_Start_ParameterQueue"),
 			FontAttributes = FontAttributes.Bold,
 			FontSize = 15,
 			Margin = new Thickness(0, 0, 0, 8)
@@ -1201,7 +1204,7 @@ public partial class MeasurePhotometerView : ContentView
 		FooterHost.IsVisible = true;
 		var startMeasurementBtn = new Button
 		{
-			Text = "Start on photometer",
+			Text = _loc.T("Photometer_Start_StartButton"),
 			HeightRequest = AppConstants.ButtonHeight,
 			BackgroundColor = AppConstants.Primary,
 			TextColor = Colors.White,
@@ -1213,7 +1216,7 @@ public partial class MeasurePhotometerView : ContentView
 
 		var edit = new Button
 		{
-			Text = "Edit queue",
+			Text = _loc.T("Photometer_Start_EditButton"),
 			HeightRequest = 48,
 			BackgroundColor = Colors.Transparent,
 			TextColor = AppConstants.Primary,
@@ -1365,7 +1368,7 @@ public partial class MeasurePhotometerView : ContentView
 		var head = new VerticalStackLayout { Spacing = 8, Margin = new Thickness(0, 8, 0, 12) };
 		head.Children.Add(new Label
 		{
-			Text = "Step 4 of 4 · In progress",
+			Text = _loc.T("Photometer_Running_StepHeader"),
 			FontSize = 12,
 			FontAttributes = FontAttributes.Bold,
 			CharacterSpacing = 0.3,
@@ -1374,8 +1377,8 @@ public partial class MeasurePhotometerView : ContentView
 		head.Children.Add(new Label
 		{
 			Text = allDone
-				? $"{_viewModel.SelectedTankDisplay} · All parameters recorded"
-				: $"{_viewModel.SelectedTankDisplay} · Parameter {step} of {total}",
+				? _loc.T("Photometer_Running_AllRecordedFormat", _viewModel.SelectedTankDisplay)
+				: _loc.T("Photometer_Running_ParameterOfFormat", _viewModel.SelectedTankDisplay, step, total),
 			FontSize = 18,
 			FontAttributes = FontAttributes.Bold
 		});
@@ -1384,8 +1387,8 @@ public partial class MeasurePhotometerView : ContentView
 		head.Children.Add(new Label
 		{
 			Text = allDone
-				? "Review recorded results below. Tap Finish sequence when you are ready to save this run."
-				: "The HI97115 measures each parameter in order and sends results back automatically. You can finish the sequence at any time.",
+				? _loc.T("Photometer_Running_AllRecordedBody")
+				: _loc.T("Photometer_Running_InProgressBody"),
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurfaceVariant,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -1400,8 +1403,8 @@ public partial class MeasurePhotometerView : ContentView
 		if (!allDone)
 		{
 			var measuring = string.IsNullOrEmpty(currentName)
-				? "Communicating with photometer…"
-				: $"Measuring {currentName} on photometer…";
+				? _loc.T("Photometer_Running_Communicating")
+				: _loc.T("Photometer_Running_MeasuringFormat", currentName);
 			var progRow = new HorizontalStackLayout { HorizontalOptions = LayoutOptions.Center, Spacing = 12 };
 			progRow.Children.Add(new ActivityIndicator { IsRunning = true, Color = AppConstants.Primary, WidthRequest = 24, HeightRequest = 24 });
 			progRow.Children.Add(new Label
@@ -1416,7 +1419,7 @@ public partial class MeasurePhotometerView : ContentView
 
 		var finish = new Button
 		{
-			Text = "Finish sequence",
+			Text = _loc.T("Photometer_Running_FinishButton"),
 			HeightRequest = AppConstants.ButtonHeight,
 			BackgroundColor = AppConstants.Primary,
 			TextColor = Colors.White,
@@ -1442,11 +1445,11 @@ public partial class MeasurePhotometerView : ContentView
 			m.Status = MethodStatus.Done;
 	}
 
-	static string FormatCompletionValue(MethodItem method)
+	string FormatCompletionValue(MethodItem method)
 	{
 		var v = method.Value;
 		if (v is "\u2014" or "—" || string.IsNullOrWhiteSpace(v))
-			return "—";
+			return _loc.T("Common_Dash");
 		if (!string.IsNullOrWhiteSpace(method.Unit)
 		    && !v.Contains(method.Unit, StringComparison.OrdinalIgnoreCase))
 			return $"{v} {method.Unit}";
@@ -1476,21 +1479,21 @@ public partial class MeasurePhotometerView : ContentView
 		var textCol = new VerticalStackLayout { Spacing = 4 };
 		textCol.Children.Add(new Label
 		{
-			Text = "Measurement complete",
+			Text = _loc.T("Photometer_Complete_SummaryTitle"),
 			FontSize = 20,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = ThemeColors.OnSurface
 		});
 		textCol.Children.Add(new Label
 		{
-			Text = $"{_viewModel.SelectedTankDisplay} · {parameterCount} parameters",
+			Text = _loc.T("Photometer_Complete_SummaryCountFormat", _viewModel.SelectedTankDisplay, parameterCount),
 			FontSize = 15,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = AppConstants.Primary
 		});
 		textCol.Children.Add(new Label
 		{
-			Text = "Review the readings below, then save to your log or discard this run.",
+			Text = _loc.T("Photometer_Complete_SummaryBody"),
 			FontSize = 13,
 			TextColor = ThemeColors.OnSurfaceVariant,
 			LineBreakMode = LineBreakMode.WordWrap
@@ -1565,7 +1568,9 @@ public partial class MeasurePhotometerView : ContentView
 				},
 				new Label
 				{
-					Text = string.IsNullOrWhiteSpace(method.Unit) ? "Recorded" : $"Recorded · {method.Unit}",
+					Text = string.IsNullOrWhiteSpace(method.Unit)
+						? _loc.T("Photometer_Complete_Recorded")
+						: _loc.T("Photometer_Complete_RecordedUnitFormat", method.Unit),
 					FontSize = 12,
 					TextColor = ThemeColors.OnSurfaceVariant
 				}
@@ -1623,15 +1628,15 @@ public partial class MeasurePhotometerView : ContentView
 		var count = _selectedMethods.Count;
 
 		BodyStack.Children.Add(FlowStepHeader(
-			"Step 4 of 4 · Complete",
-			$"All parameters for {_viewModel.SelectedTankDisplay} have been recorded on the photometer."));
+			_loc.T("Photometer_Complete_StepHeader"),
+			_loc.T("Photometer_Complete_StepSubtitleFormat", _viewModel.SelectedTankDisplay)));
 
 		BodyStack.Children.Add(BuildCompletionSummaryCard(count));
 		BodyStack.Children.Add(new BoxView { HeightRequest = 16 });
 
 		BodyStack.Children.Add(new Label
 		{
-			Text = "Recorded results",
+			Text = _loc.T("Photometer_Complete_ResultsTitle"),
 			FontAttributes = FontAttributes.Bold,
 			FontSize = 15,
 			Margin = new Thickness(0, 0, 0, 8)
@@ -1663,7 +1668,7 @@ public partial class MeasurePhotometerView : ContentView
 
 		var save = new Button
 		{
-			Text = "Save to log",
+			Text = _loc.T("Photometer_Complete_SaveButton"),
 			HeightRequest = AppConstants.ButtonHeight,
 			BackgroundColor = AppConstants.Success,
 			TextColor = Colors.White,
@@ -1675,7 +1680,7 @@ public partial class MeasurePhotometerView : ContentView
 
 		var discard = new Button
 		{
-			Text = "Discard run",
+			Text = _loc.T("Photometer_Complete_DiscardButton"),
 			HeightRequest = 48,
 			BackgroundColor = Colors.Transparent,
 			TextColor = ThemeColors.OnSurface,

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Numeric design tokens for XAML. Mirrors `Core/Theme/Tokens.cs` so that
+    code-built UI (C#) and XAML reference the same scale.
+
+    Naming: PascalCase concatenation, e.g. {StaticResource FontSizeBody},
+    {StaticResource SpacingLg}, {StaticResource RadiusMd},
+    {StaticResource IconSizeMd}, {StaticResource IconButtonMd}.
+
+    Do NOT use literals in XAML for these properties — add a token here first.
+    Color resources live in Colors.xaml (theme-fixed) and are pushed to
+    Application.Resources at runtime by SemanticResources.Update().
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sys="clr-namespace:System;assembly=netstandard">
+
+    <!-- ──────────────── Font families ──────────────── -->
+    <sys:String x:Key="FontFamilyRegular">OpenSansRegular</sys:String>
+    <sys:String x:Key="FontFamilySemibold">OpenSansSemibold</sys:String>
+
+    <!-- ──────────────── Font sizes ─────────────────── -->
+    <x:Double x:Key="FontSizeCaption">11</x:Double>
+    <x:Double x:Key="FontSizeSmall">12</x:Double>
+    <x:Double x:Key="FontSizeBody">13</x:Double>
+    <x:Double x:Key="FontSizeBodyLarge">14</x:Double>
+    <x:Double x:Key="FontSizeSubhead">15</x:Double>
+    <x:Double x:Key="FontSizeSubheadLarge">16</x:Double>
+    <x:Double x:Key="FontSizeTitle">17</x:Double>
+    <x:Double x:Key="FontSizeSectionTitle">18</x:Double>
+    <x:Double x:Key="FontSizeLargeTitle">20</x:Double>
+    <x:Double x:Key="FontSizeHero">22</x:Double>
+    <x:Double x:Key="FontSizeDisplay">26</x:Double>
+    <x:Double x:Key="FontSizeMeasureHero">46</x:Double>
+
+    <!-- ──────────────── Spacing scale ──────────────── -->
+    <x:Double x:Key="SpacingXs">4</x:Double>
+    <x:Double x:Key="SpacingXxs">6</x:Double>
+    <x:Double x:Key="SpacingSm">8</x:Double>
+    <x:Double x:Key="SpacingSmPlus">10</x:Double>
+    <x:Double x:Key="SpacingMd">12</x:Double>
+    <x:Double x:Key="SpacingMdPlus">14</x:Double>
+    <x:Double x:Key="SpacingLg">16</x:Double>
+    <x:Double x:Key="SpacingXl">20</x:Double>
+    <x:Double x:Key="SpacingXxl">24</x:Double>
+    <x:Double x:Key="SpacingXxxl">28</x:Double>
+
+    <!-- ──────────────── Corner radii ───────────────── -->
+    <x:Double x:Key="RadiusXs">6</x:Double>
+    <x:Double x:Key="RadiusSm">8</x:Double>
+    <x:Double x:Key="RadiusMd">10</x:Double>
+    <x:Double x:Key="RadiusLg">12</x:Double>
+    <x:Double x:Key="RadiusXl">14</x:Double>
+    <x:Double x:Key="RadiusXxl">16</x:Double>
+    <x:Double x:Key="RadiusXxxl">18</x:Double>
+    <x:Double x:Key="RadiusPill">22</x:Double>
+    <x:Double x:Key="RadiusHero">28</x:Double>
+
+    <!-- ──────────────── Stroke widths ──────────────── -->
+    <x:Double x:Key="StrokeHairline">0.5</x:Double>
+    <x:Double x:Key="StrokeThin">1</x:Double>
+    <x:Double x:Key="StrokeThinPlus">1.2</x:Double>
+    <x:Double x:Key="StrokeThick">1.5</x:Double>
+    <x:Double x:Key="StrokeHeavy">2</x:Double>
+
+    <!-- ──────────────── Icon image sizes ───────────── -->
+    <x:Double x:Key="IconSizeXs">16</x:Double>
+    <x:Double x:Key="IconSizeSm">18</x:Double>
+    <x:Double x:Key="IconSizeSmPlus">20</x:Double>
+    <x:Double x:Key="IconSizeMd">22</x:Double>
+    <x:Double x:Key="IconSizeMdPlus">24</x:Double>
+    <x:Double x:Key="IconSizeLg">26</x:Double>
+    <x:Double x:Key="IconSizeXl">28</x:Double>
+    <x:Double x:Key="IconSizeXxl">32</x:Double>
+    <x:Double x:Key="IconSizeHero">40</x:Double>
+    <x:Double x:Key="IconSizeHeroLarge">54</x:Double>
+
+    <!-- ──────────────── Icon-button squares ────────── -->
+    <x:Double x:Key="IconButtonSm">36</x:Double>
+    <x:Double x:Key="IconButtonSmPlus">38</x:Double>
+    <x:Double x:Key="IconButtonMd">40</x:Double>
+    <x:Double x:Key="IconButtonLg">44</x:Double>
+
+    <!-- ──────────────── Circular avatars ───────────── -->
+    <x:Double x:Key="AvatarSm">40</x:Double>
+    <x:Double x:Key="AvatarMd">44</x:Double>
+    <x:Double x:Key="AvatarLg">52</x:Double>
+    <x:Double x:Key="AvatarXl">56</x:Double>
+
+    <!-- ──────────────── Button heights ─────────────── -->
+    <x:Double x:Key="ButtonHeightSm">40</x:Double>
+    <x:Double x:Key="ButtonHeightMd">48</x:Double>
+    <x:Double x:Key="ButtonHeightLg">54</x:Double>
+
+</ResourceDictionary>
