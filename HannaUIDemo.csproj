@@ -99,6 +99,16 @@
 		<MauiImage Update="Resources\Images\log_history.svg" BaseSize="28,28" />
 		<MauiImage Update="Resources\Images\help_icon.svg" BaseSize="28,28" />
 		<MauiImage Update="Resources\Images\app_settings_icon.svg" BaseSize="28,28" />
+		<!-- Landing page icons (Home dashboard hero, How-It-Works workflow, Supported Devices, footer). -->
+		<MauiImage Update="Resources\Images\cloud_save_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\export_pdf_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\shield_check_icon.svg" BaseSize="28,28" />
+		<MauiImage Update="Resources\Images\chevron_right_icon.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\arrow_right_icon.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\signal_dot_icon.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\chart_bar_icon.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\plus_icon.svg" BaseSize="24,24" />
+		<MauiImage Update="Resources\Images\bluetooth_icon_white.svg" BaseSize="24,24" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
