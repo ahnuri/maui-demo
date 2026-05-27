@@ -1065,19 +1065,19 @@ public partial class MeasurePhotometerView : ContentView
 
 		top.Children.Add(close);
 		Grid.SetColumn(close, 0);
-		var setupTitleCol = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
-		setupTitleCol.Children.Add(new Label { Text = _loc.T("Photometer_Setup_Title"), FontAttributes = FontAttributes.Bold, FontSize = 20 });
-		setupTitleCol.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Setup_SubtitleFormat", _viewModel.SelectedTankDisplay, _selectedMethods.Count),
-			FontSize = 12,
-			TextColor = ThemeColors.OnSurfaceVariant,
-			LineBreakMode = LineBreakMode.WordWrap
-		});
-		top.Children.Add(setupTitleCol);
-		Grid.SetColumn(setupTitleCol, 1);
+		// var setupTitleCol = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
+		// setupTitleCol.Children.Add(new Label { Text = _loc.T("Photometer_Setup_Title"), FontAttributes = FontAttributes.Bold, FontSize = 20 });
+		// setupTitleCol.Children.Add(new Label
+		// {
+		// 	Text = _loc.T("Photometer_Setup_SubtitleFormat", _viewModel.SelectedTankDisplay, _selectedMethods.Count),
+		// 	FontSize = 12,
+		// 	TextColor = ThemeColors.OnSurfaceVariant,
+		// 	LineBreakMode = LineBreakMode.WordWrap
+		// });
+		// top.Children.Add(setupTitleCol);
+		// Grid.SetColumn(setupTitleCol, 1);
 
-		BodyStack.Children.Add(top);
+		// BodyStack.Children.Add(top);
 
 		BodyStack.Children.Add(FlowStepHeader(
 			_loc.T("Photometer_Setup_StepHeader"),
