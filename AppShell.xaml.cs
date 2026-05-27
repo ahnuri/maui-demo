@@ -156,6 +156,8 @@ public partial class AppShell : Shell
 	/// overlay (used by the bottom-sheet device picker, where the slower
 	/// transition is part of the picker's choreography).
 	/// </summary>
+	/// 
+	/// Navigation to the Measure tab can be triggered from many places in the app, so this helper centralizes the logic of showing a "navigating to device" message when appropriate,
 	public async Task NavigateToMeasureDeviceAsync(InstrumentKind device, bool animate)
 	{
 		var showNavigating = animate && !IsOnMeasureTab();
@@ -165,7 +167,7 @@ public partial class AppShell : Shell
 		try
 		{
 			_pendingMeasureDevice = device;
-			await GoToAsync("//measure", animate);
+			await GoToAsync("//measure", animate); //
 
 			if (_pendingMeasureDevice is not null && GetMeasureTabPage() is MeasureTabPage mp)
 			{

@@ -12,7 +12,6 @@ public partial class PhotometerMeasureViewModel : LocalizedViewModelBase
 	{
 		NewAnalysis,
 		Setup,
-		StartMeasurement,
 		Running,
 		Completed
 	}
@@ -31,7 +30,6 @@ public partial class PhotometerMeasureViewModel : LocalizedViewModelBase
 	public bool IsNewAnalysis => State == MeasureState.NewAnalysis;
 	public bool IsInMeasurementFlow => State != MeasureState.NewAnalysis;
 	public bool IsSetup => State == MeasureState.Setup;
-	public bool IsStartMeasurement => State == MeasureState.StartMeasurement;
 	public bool IsRunning => State == MeasureState.Running;
 	public bool IsCompleted => State == MeasureState.Completed;
 
@@ -40,7 +38,6 @@ public partial class PhotometerMeasureViewModel : LocalizedViewModelBase
 		OnPropertyChanged(nameof(IsNewAnalysis));
 		OnPropertyChanged(nameof(IsInMeasurementFlow));
 		OnPropertyChanged(nameof(IsSetup));
-		OnPropertyChanged(nameof(IsStartMeasurement));
 		OnPropertyChanged(nameof(IsRunning));
 		OnPropertyChanged(nameof(IsCompleted));
 		StateChanged?.Invoke(this, value);
@@ -56,8 +53,7 @@ public partial class PhotometerMeasureViewModel : LocalizedViewModelBase
 		State = State switch
 		{
 			MeasureState.Setup => MeasureState.NewAnalysis,
-			MeasureState.StartMeasurement => MeasureState.Setup,
-			MeasureState.Running => MeasureState.StartMeasurement,
+			MeasureState.Running => MeasureState.Setup,
 			MeasureState.Completed => MeasureState.NewAnalysis,
 			_ => State
 		};

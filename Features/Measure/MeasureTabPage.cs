@@ -88,6 +88,11 @@ public sealed class MeasureTabPage : ContentPage, IMeasureTabNavigationHost
 
 	public void SetTitleView(View titleView) => Shell.SetTitleView(this, titleView);
 
+	public void SetDeviceSwitcherTitleView(string title, string? subtitle = null, ImageSource? iconSource = null, bool enabled = true)
+	{
+		Shell.SetTitleView(this, BuildDeviceSwitcherTitleView(title, subtitle, iconSource, enabled));
+	}
+
 	public void EnableFlyout()
 	{
 		Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
@@ -102,8 +107,19 @@ public sealed class MeasureTabPage : ContentPage, IMeasureTabNavigationHost
 		_backBehavior ??= new BackButtonBehavior();
 		_backBehavior.IsVisible = true;
 		_backBehavior.IsEnabled = true;
+		_backBehavior.IconOverride = ImageSource.FromFile("chevron_left_icon");
 		_backBehavior.TextOverride = string.Empty;
 		_backBehavior.Command = command;
+		Shell.SetBackButtonBehavior(this, _backBehavior);
+	}
+
+	public void HideBackButton()
+	{
+		_backBehavior ??= new BackButtonBehavior();
+		_backBehavior.IsVisible = false;
+		_backBehavior.IsEnabled = false;
+		_backBehavior.IconOverride = null;
+		_backBehavior.Command = null;
 		Shell.SetBackButtonBehavior(this, _backBehavior);
 	}
 
@@ -160,13 +176,18 @@ public sealed class MeasureTabPage : ContentPage, IMeasureTabNavigationHost
 
 		if (_viewModel.HasActiveDevice && _activeModule is not null)
 		{
-			ClearTitleView();
 			Title = _activeModule.GetNavigationTitle(Localization);
+			var family = InstrumentRegistry.Get(_viewModel.ActiveDevice!.Value);
+			SetDeviceSwitcherTitleView(
+				Title,
+				iconSource: string.IsNullOrWhiteSpace(family.PickerIcon)
+					? null
+					: ImageSource.FromFile(family.PickerIcon));
 			return;
 		}
 
-		ClearTitleView();
 		Title = Localization.T("Shell_Measure");
+		SetDeviceSwitcherTitleView(Title);
 	}
 
 	public async Task DisconnectAndOpenDevicesAsync()
@@ -248,6 +269,87 @@ public sealed class MeasureTabPage : ContentPage, IMeasureTabNavigationHost
 		ApplyNavigationChrome();
 		RefreshShellNavigation();
 		_activeModule?.OnAppearing();
+	}
+
+	View BuildDeviceSwitcherTitleView(string title, string? subtitle, ImageSource? iconSource, bool enabled)
+	{
+		var row = new HorizontalStackLayout
+		{
+			Spacing = 8,
+			VerticalOptions = LayoutOptions.Center,
+			HorizontalOptions = LayoutOptions.Center
+		};
+
+		if (iconSource is not null)
+		{
+			row.Children.Add(new Image
+			{
+				Source = iconSource,
+				Aspect = Aspect.AspectFit,
+				WidthRequest = 22,
+				HeightRequest = 22,
+				VerticalOptions = LayoutOptions.Center
+			});
+		}
+
+		var textStack = new VerticalStackLayout
+		{
+			Spacing = 1,
+			VerticalOptions = LayoutOptions.Center,
+			HorizontalOptions = LayoutOptions.Center
+		};
+		var titleLabel = new Label
+		{
+			Text = title,
+			FontSize = 17,
+			FontAttributes = FontAttributes.Bold,
+			HorizontalTextAlignment = TextAlignment.Center,
+			LineBreakMode = LineBreakMode.TailTruncation
+		};
+		titleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurface");
+		textStack.Children.Add(titleLabel);
+
+		if (!string.IsNullOrWhiteSpace(subtitle))
+		{
+			var subtitleLabel = new Label
+			{
+				Text = subtitle,
+				FontSize = 13,
+				HorizontalTextAlignment = TextAlignment.Center,
+				LineBreakMode = LineBreakMode.TailTruncation
+			};
+			subtitleLabel.SetDynamicResource(Label.TextColorProperty, "OnSurfaceVariant");
+			textStack.Children.Add(subtitleLabel);
+		}
+
+		row.Children.Add(textStack);
+
+		if (enabled)
+		{
+			row.Children.Add(new Image
+			{
+				Source = "chevron_down_icon",
+				Aspect = Aspect.AspectFit,
+				WidthRequest = 16,
+				HeightRequest = 16,
+				VerticalOptions = LayoutOptions.Center
+			});
+
+			var tap = new TapGestureRecognizer();
+			tap.Tapped += async (_, _) => await OpenDeviceSwitcherAsync();
+			row.GestureRecognizers.Add(tap);
+		}
+
+		SemanticProperties.SetDescription(row, enabled
+			? $"{title}. {_viewModel.Loc.T("Measure_TitleSwitchHint")}"
+			: title);
+		return row;
+	}
+
+	async Task OpenDeviceSwitcherAsync()
+	{
+		if (Shell.Current is AppShell appShell)
+			await appShell.PresentMeasureDevicePickerAsync();
 	}
 
 	public void ApplyTheme()

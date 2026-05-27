@@ -255,7 +255,7 @@ public partial class MeasurePhotometerView : ContentView
 			}
 		};
 		var tap = new TapGestureRecognizer();
-		tap.Tapped += (_, _) => BeginMeasurement();
+		tap.Tapped += async (_, _) => await BeginMeasurementWithTankConfirmAsync();
 		button.GestureRecognizers.Add(tap);
 		SemanticProperties.SetDescription(button,
 			_loc.T("Photometer_Header_BeginButtonHint", _viewModel.SelectedTankDisplay));
@@ -554,6 +554,19 @@ public partial class MeasurePhotometerView : ContentView
 			_ = StartAutoMeasurementLoopAsync();
 	}
 
+	public void NavigateBackInFlow()
+	{
+		var target = _viewModel.State switch
+		{
+			PhotometerState.Setup => PhotometerState.NewAnalysis,
+			PhotometerState.Running => PhotometerState.Setup,
+			PhotometerState.Completed => PhotometerState.NewAnalysis,
+			_ => _viewModel.State
+		};
+
+		SetState(target);
+	}
+
 	bool AllRunningMethodsDone() =>
 		_selectedMethods.Count > 0 && _selectedMethods.All(m => m.Status == MethodStatus.Done);
 
@@ -675,6 +688,23 @@ public partial class MeasurePhotometerView : ContentView
 			_ = StartAutoMeasurementLoopAsync();
 	}
 
+	void MoveSelectedMethodQueue(int fromIndex, int toIndex)
+	{
+		if (fromIndex == toIndex)
+			return;
+
+		if (fromIndex < 0 || fromIndex >= _selectedMethods.Count)
+			return;
+
+		if (toIndex < 0 || toIndex >= _selectedMethods.Count)
+			return;
+
+		var item = _selectedMethods[fromIndex];
+		_selectedMethods.RemoveAt(fromIndex);
+		_selectedMethods.Insert(toIndex, item);
+		Rebuild();
+	}
+
 	async Task OnFinishSequenceAsync()
 	{
 		StopAutoMeasurementLoop();
@@ -730,6 +760,7 @@ public partial class MeasurePhotometerView : ContentView
 		await page.Navigation.PushModalAsync(new NavigationPage(picker));
 	}
 
+//It clear the current method and UI state, allowing the user to start fresh or select new methods without the previous results interfering.
 	void Rebuild()
 	{
 		BodyStack.Children.Clear();
@@ -741,19 +772,16 @@ public partial class MeasurePhotometerView : ContentView
 
 		switch (_viewModel.State)
 		{
-			case PhotometerState.NewAnalysis:
+			case PhotometerState.NewAnalysis: // New analysis: presets and recents.
 				BuildNewAnalysis();
 				break;
-			case PhotometerState.Setup:
+			case PhotometerState.Setup: // Setup flow: selected methods, order, start.
 				BuildSetup();
 				break;
-			case PhotometerState.StartMeasurement:
-				BuildStartMeasurement();
-				break;
-			case PhotometerState.Running:
+			case PhotometerState.Running: // Running flow: active parameter, progress, cancel.
 				BuildRunning();
 				break;
-			case PhotometerState.Completed:
+			case PhotometerState.Completed: // Completed flow: results, rerun, new analysis.
 				BuildCompleted();
 				break;
 		}
@@ -1040,45 +1068,6 @@ public partial class MeasurePhotometerView : ContentView
 
 	void BuildSetup()
 	{
-		var top = new Grid
-		{
-			ColumnDefinitions = new ColumnDefinitionCollection(
-				new ColumnDefinition(GridLength.Auto),
-				new ColumnDefinition(GridLength.Star)),
-			Padding = new Thickness(16, 12),
-			BackgroundColor = ThemeColors.Surface,
-			ColumnSpacing = 12
-		};
-
-		var close = new Border
-		{
-			WidthRequest = 40,
-			HeightRequest = 40,
-			BackgroundColor = ThemeColors.CloseButtonBg,
-			StrokeThickness = 0,
-			Content = new Label { Text = "\u2715", HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center },
-			StrokeShape = new RoundRectangle { CornerRadius = 20 }
-		};
-		var closeTap = new TapGestureRecognizer();
-		closeTap.Tapped += (_, _) => SetState(PhotometerState.NewAnalysis);
-		close.GestureRecognizers.Add(closeTap);
-
-		top.Children.Add(close);
-		Grid.SetColumn(close, 0);
-		// var setupTitleCol = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
-		// setupTitleCol.Children.Add(new Label { Text = _loc.T("Photometer_Setup_Title"), FontAttributes = FontAttributes.Bold, FontSize = 20 });
-		// setupTitleCol.Children.Add(new Label
-		// {
-		// 	Text = _loc.T("Photometer_Setup_SubtitleFormat", _viewModel.SelectedTankDisplay, _selectedMethods.Count),
-		// 	FontSize = 12,
-		// 	TextColor = ThemeColors.OnSurfaceVariant,
-		// 	LineBreakMode = LineBreakMode.WordWrap
-		// });
-		// top.Children.Add(setupTitleCol);
-		// Grid.SetColumn(setupTitleCol, 1);
-
-		// BodyStack.Children.Add(top);
-
 		BodyStack.Children.Add(FlowStepHeader(
 			_loc.T("Photometer_Setup_StepHeader"),
 			_loc.T("Photometer_Setup_StepSubtitleFormat", _viewModel.SelectedTankDisplay)));
@@ -1087,7 +1076,29 @@ public partial class MeasurePhotometerView : ContentView
 		for (var i = 0; i < _selectedMethods.Count; i++)
 		{
 			var m = _selectedMethods[i];
-			list.Children.Add(MethodNumberTile(i + 1, m.Title, m.Unit));
+			var toIndex = i;
+			var tile = MethodNumberTile(i + 1, m.Title, m.Unit);
+
+			// Drag/drop reorder for the method queue.
+			var fromIndex = i;
+			var drag = new DragGestureRecognizer { CanDrag = true };
+			drag.DragStarting += (_, e) => e.Data.Properties["methodIndex"] = fromIndex;
+
+			var drop = new DropGestureRecognizer { AllowDrop = true };
+			drop.Drop += (_, e) =>
+			{
+				if (e.Data.Properties.TryGetValue("methodIndex", out var obj)
+				    && obj is int from && from != toIndex)
+				{
+					MoveSelectedMethodQueue(from, toIndex);
+					e.Handled = true;
+				}
+			};
+
+			tile.GestureRecognizers.Add(drag);
+			tile.GestureRecognizers.Add(drop);
+
+			list.Children.Add(tile);
 		}
 		BodyStack.Children.Add(list);
 
@@ -1101,188 +1112,22 @@ public partial class MeasurePhotometerView : ContentView
 			CornerRadius = (int)AppConstants.RadiusButton,
 			FontAttributes = FontAttributes.Bold
 		};
-		startBtn.Clicked += (_, _) => SetState(PhotometerState.StartMeasurement);
+		startBtn.Clicked += async (_, _) =>
+		{
+			var page = ViewNavigation.FindHostPage(this);
+			if (page is null)
+				return;
+
+			var wantsSend = await page.DisplayAlertAsync(
+				_loc.T("Photometer_SendMethodsConfirm_Title"),
+				_loc.T("Photometer_SendMethodsConfirm_MessageFormat", _viewModel.SelectedTankDisplay, _selectedMethods.Count),
+				_loc.T("Common_Yes"),
+				_loc.T("Common_No"));
+
+			if (wantsSend)
+				SetState(PhotometerState.Running);
+		};
 		FooterHost.Children.Add(startBtn);
-	}
-
-	void BuildStartMeasurement()
-	{
-		var top = new Grid
-		{
-			ColumnDefinitions = new ColumnDefinitionCollection(
-				new ColumnDefinition(GridLength.Auto),
-				new ColumnDefinition(GridLength.Star)),
-			Padding = new Thickness(4, 12, 4, 8),
-			ColumnSpacing = 12
-		};
-
-		var back = new Border
-		{
-			WidthRequest = 40,
-			HeightRequest = 40,
-			BackgroundColor = ThemeColors.CloseButtonBg,
-			StrokeThickness = 0,
-			Content = new Label { Text = "\u2039", FontSize = 22, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center },
-			StrokeShape = new RoundRectangle { CornerRadius = 20 },
-			VerticalOptions = LayoutOptions.Center
-		};
-		var backTap = new TapGestureRecognizer();
-		backTap.Tapped += (_, _) => SetState(PhotometerState.Setup);
-		back.GestureRecognizers.Add(backTap);
-
-		var head = new VerticalStackLayout { Spacing = 4 };
-		head.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Start_Title"),
-			FontSize = 22,
-			FontAttributes = FontAttributes.Bold
-		});
-		head.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Start_Subtitle"),
-			FontSize = 13,
-			TextColor = ThemeColors.OnSurfaceVariant,
-			LineBreakMode = LineBreakMode.WordWrap
-		});
-
-		top.Children.Add(back);
-		top.Children.Add(head);
-		Grid.SetColumn(head, 1);
-
-		BodyStack.Children.Add(top);
-		BodyStack.Children.Add(new BoxView { HeightRequest = 4 });
-		BodyStack.Children.Add(FlowStepHeader(
-			_loc.T("Photometer_Start_StepHeader"),
-			_loc.T("Photometer_Start_StepSubtitle")));
-
-		BodyStack.Children.Add(new BoxView { HeightRequest = 8 });
-
-		var tankSummary = new Border
-		{
-			Padding = new Thickness(20, 18),
-			BackgroundColor = ThemeColors.Surface,
-			StrokeThickness = 1,
-			Stroke = AppConstants.Primary.MultiplyAlpha(0.2f),
-			StrokeShape = new RoundRectangle { CornerRadius = 20 }
-		};
-		tankSummary.Shadow = new Shadow { Brush = new SolidColorBrush(ThemeColors.SoftShadow), Offset = new Point(0, 4), Radius = 16, Opacity = 1 };
-
-		var tankTxt = new VerticalStackLayout { Spacing = 6 };
-		tankTxt.Children.Add(new Label { Text = _loc.T("Photometer_Start_MeasuringFor"), FontSize = 12, TextColor = ThemeColors.OnSurfaceVariant });
-		tankTxt.Children.Add(new Label
-		{
-			Text = _viewModel.SelectedTankDisplay,
-			FontSize = 22,
-			FontAttributes = FontAttributes.Bold
-		});
-		tankTxt.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Start_QueueSubtitleFormat", _selectedMethods.Count),
-			FontSize = 13,
-			TextColor = ThemeColors.OnSurfaceMuted,
-			LineBreakMode = LineBreakMode.WordWrap
-		});
-		tankSummary.Content = tankTxt;
-		BodyStack.Children.Add(tankSummary);
-
-		BodyStack.Children.Add(new BoxView { HeightRequest = 16 });
-		BodyStack.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Start_ParameterQueue"),
-			FontAttributes = FontAttributes.Bold,
-			FontSize = 15,
-			Margin = new Thickness(0, 0, 0, 8)
-		});
-
-		var methodStack = new VerticalStackLayout { Spacing = 10 };
-		foreach (var m in _selectedMethods)
-		{
-			methodStack.Children.Add(StartMeasurementMethodRow(m.Title, m.Unit));
-		}
-		BodyStack.Children.Add(methodStack);
-
-		FooterHost.IsVisible = true;
-		var startMeasurementBtn = new Button
-		{
-			Text = _loc.T("Photometer_Start_StartButton"),
-			HeightRequest = AppConstants.ButtonHeight,
-			BackgroundColor = AppConstants.Primary,
-			TextColor = Colors.White,
-			CornerRadius = (int)AppConstants.RadiusButton,
-			FontAttributes = FontAttributes.Bold
-		};
-		startMeasurementBtn.Clicked += (_, _) => SetState(PhotometerState.Running);
-		FooterHost.Children.Add(startMeasurementBtn);
-
-		var edit = new Button
-		{
-			Text = _loc.T("Photometer_Start_EditButton"),
-			HeightRequest = 48,
-			BackgroundColor = Colors.Transparent,
-			TextColor = AppConstants.Primary,
-			BorderColor = AppConstants.Primary.MultiplyAlpha(0.35f),
-			BorderWidth = 1.5,
-			CornerRadius = (int)AppConstants.RadiusButton,
-			FontAttributes = FontAttributes.Bold,
-			Margin = new Thickness(0, 10, 0, 0)
-		};
-		edit.Clicked += (_, _) => SetState(PhotometerState.Setup);
-		FooterHost.Children.Add(edit);
-	}
-
-	Border StartMeasurementMethodRow(string title, string unit)
-	{
-		var initials = MethodInitials(title);
-		var avatar = new Border
-		{
-			WidthRequest = 40,
-			HeightRequest = 40,
-			BackgroundColor = InitialDiskBg(title),
-			StrokeThickness = 0,
-			Content = new Label
-			{
-				Text = initials,
-				FontSize = 13,
-				FontAttributes = FontAttributes.Bold,
-				TextColor = InitialDiskFg(title),
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
-			},
-			StrokeShape = new Ellipse(),
-			VerticalOptions = LayoutOptions.Center
-		};
-
-		var col = new VerticalStackLayout
-		{
-			VerticalOptions = LayoutOptions.Center,
-			Spacing = 2,
-			Children =
-			{
-				new Label { Text = title, FontAttributes = FontAttributes.Bold, LineBreakMode = LineBreakMode.TailTruncation, MaxLines = 1 },
-				new Label { Text = unit, FontSize = 12, TextColor = ThemeColors.OnSurfaceVariant }
-			}
-		};
-
-		var row = new Grid
-		{
-			ColumnDefinitions = new ColumnDefinitionCollection(
-				new ColumnDefinition(GridLength.Auto),
-				new ColumnDefinition(GridLength.Star)),
-			ColumnSpacing = 12,
-			Padding = 14,
-			BackgroundColor = ThemeColors.Surface
-		};
-		row.Children.Add(avatar);
-		row.Children.Add(col);
-		Grid.SetColumn(col, 1);
-
-		return new Border
-		{
-			StrokeThickness = 0,
-			Content = row,
-			StrokeShape = new RoundRectangle { CornerRadius = 14 },
-			Shadow = new Shadow { Brush = new SolidColorBrush(ThemeColors.SoftShadow), Offset = new Point(0, 2), Radius = 8, Opacity = 1 }
-		};
 	}
 
 	Border MethodNumberTile(int index, string title, string unit)
@@ -1365,7 +1210,7 @@ public partial class MeasurePhotometerView : ContentView
 		var currentName = GetRunningMethodName();
 		var allDone = AllRunningMethodsDone();
 
-		var head = new VerticalStackLayout { Spacing = 8, Margin = new Thickness(0, 8, 0, 12) };
+		var head = new VerticalStackLayout { Spacing = 8 };
 		head.Children.Add(new Label
 		{
 			Text = _loc.T("Photometer_Running_StepHeader"),
@@ -1382,40 +1227,61 @@ public partial class MeasurePhotometerView : ContentView
 			FontSize = 18,
 			FontAttributes = FontAttributes.Bold
 		});
-		if (!allDone && !string.IsNullOrEmpty(currentName))
-			head.Children.Add(new Label { Text = currentName, FontSize = 16, TextColor = ThemeColors.OnSurface, FontAttributes = FontAttributes.Bold });
-		head.Children.Add(new Label
+		if (allDone)
 		{
-			Text = allDone
-				? _loc.T("Photometer_Running_AllRecordedBody")
-				: _loc.T("Photometer_Running_InProgressBody"),
-			FontSize = 13,
-			TextColor = ThemeColors.OnSurfaceVariant,
-			LineBreakMode = LineBreakMode.WordWrap
-		});
+			head.Children.Add(new Label
+			{
+				Text = _loc.T("Photometer_Running_AllRecordedBody"),
+				FontSize = 13,
+				TextColor = ThemeColors.OnSurfaceVariant,
+				LineBreakMode = LineBreakMode.WordWrap
+			});
+		}
+
 		BodyStack.Children.Add(head);
-
-		for (var i = 0; i < _selectedMethods.Count; i++)
-			BodyStack.Children.Add(BuildRunningResultTile(i, _selectedMethods[i]));
-
-		BodyStack.Children.Add(new BoxView { HeightRequest = 20 });
+		BodyStack.Children.Add(new BoxView { HeightRequest = 14 });
 
 		if (!allDone)
 		{
 			var measuring = string.IsNullOrEmpty(currentName)
 				? _loc.T("Photometer_Running_Communicating")
 				: _loc.T("Photometer_Running_MeasuringFormat", currentName);
-			var progRow = new HorizontalStackLayout { HorizontalOptions = LayoutOptions.Center, Spacing = 12 };
-			progRow.Children.Add(new ActivityIndicator { IsRunning = true, Color = AppConstants.Primary, WidthRequest = 24, HeightRequest = 24 });
-			progRow.Children.Add(new Label
+			var progRow = new Grid
+			{
+				ColumnDefinitions = new ColumnDefinitionCollection(
+					new ColumnDefinition(GridLength.Auto),
+					new ColumnDefinition(GridLength.Star)),
+				ColumnSpacing = 12,
+				HorizontalOptions = LayoutOptions.Center
+			};
+			var spinner = new ActivityIndicator { IsRunning = true, Color = AppConstants.Primary, WidthRequest = 24, HeightRequest = 24 };
+			var measuringLabel = new Label
 			{
 				Text = measuring,
 				TextColor = ThemeColors.OnSurfaceVariant,
-				VerticalOptions = LayoutOptions.Center
+				VerticalOptions = LayoutOptions.Center,
+				LineBreakMode = LineBreakMode.WordWrap
+			};
+			progRow.Children.Add(spinner);
+			progRow.Children.Add(measuringLabel);
+			Grid.SetColumn(measuringLabel, 1);
+
+			BodyStack.Children.Add(new Border
+			{
+				Padding = new Thickness(16, 14),
+				BackgroundColor = AppConstants.Primary.MultiplyAlpha(0.07f),
+				Stroke = AppConstants.Primary.MultiplyAlpha(0.22f),
+				StrokeThickness = 1,
+				StrokeShape = new RoundRectangle { CornerRadius = 16 },
+				Content = progRow
 			});
-			BodyStack.Children.Add(progRow);
-			BodyStack.Children.Add(new BoxView { HeightRequest = 16 });
+			BodyStack.Children.Add(new BoxView { HeightRequest = 14 });
 		}
+
+		for (var i = 0; i < _selectedMethods.Count; i++)
+			BodyStack.Children.Add(BuildRunningResultTile(i, _selectedMethods[i]));
+
+		BodyStack.Children.Add(new BoxView { HeightRequest = 12 });
 
 		var finish = new Button
 		{
@@ -1428,7 +1294,8 @@ public partial class MeasurePhotometerView : ContentView
 			IsEnabled = true
 		};
 		finish.Clicked += async (_, _) => await OnFinishSequenceAsync();
-		BodyStack.Children.Add(finish);
+		FooterHost.IsVisible = true;
+		FooterHost.Children.Add(finish);
 	}
 
 	Border BuildRunningResultTile(int index, MethodItem method) =>
@@ -1486,17 +1353,18 @@ public partial class MeasurePhotometerView : ContentView
 		});
 		textCol.Children.Add(new Label
 		{
+			Text = _loc.T("Photometer_Complete_StepHeader"),
+			FontSize = 13,
+			TextColor = ThemeColors.OnSurfaceVariant,
+			FontAttributes = FontAttributes.Bold,
+			LineBreakMode = LineBreakMode.WordWrap
+		});
+		textCol.Children.Add(new Label
+		{
 			Text = _loc.T("Photometer_Complete_SummaryCountFormat", _viewModel.SelectedTankDisplay, parameterCount),
 			FontSize = 15,
 			FontAttributes = FontAttributes.Bold,
 			TextColor = AppConstants.Primary
-		});
-		textCol.Children.Add(new Label
-		{
-			Text = _loc.T("Photometer_Complete_SummaryBody"),
-			FontSize = 13,
-			TextColor = ThemeColors.OnSurfaceVariant,
-			LineBreakMode = LineBreakMode.WordWrap
 		});
 
 		var inner = new Grid
@@ -1627,12 +1495,8 @@ public partial class MeasurePhotometerView : ContentView
 		FinalizeRunForCompletion();
 		var count = _selectedMethods.Count;
 
-		BodyStack.Children.Add(FlowStepHeader(
-			_loc.T("Photometer_Complete_StepHeader"),
-			_loc.T("Photometer_Complete_StepSubtitleFormat", _viewModel.SelectedTankDisplay)));
-
 		BodyStack.Children.Add(BuildCompletionSummaryCard(count));
-		BodyStack.Children.Add(new BoxView { HeightRequest = 16 });
+		BodyStack.Children.Add(new BoxView { HeightRequest = 12 });
 
 		BodyStack.Children.Add(new Label
 		{
@@ -1662,7 +1526,7 @@ public partial class MeasurePhotometerView : ContentView
 			}
 		};
 		BodyStack.Children.Add(resultsCard);
-		BodyStack.Children.Add(new BoxView { HeightRequest = 20 });
+		BodyStack.Children.Add(new BoxView { HeightRequest = 12 });
 
 		FooterHost.IsVisible = true;
 
@@ -1670,7 +1534,7 @@ public partial class MeasurePhotometerView : ContentView
 		{
 			Text = _loc.T("Photometer_Complete_SaveButton"),
 			HeightRequest = AppConstants.ButtonHeight,
-			BackgroundColor = AppConstants.Success,
+			BackgroundColor = AppConstants.Primary,
 			TextColor = Colors.White,
 			CornerRadius = (int)AppConstants.RadiusButton,
 			FontAttributes = FontAttributes.Bold
@@ -1696,48 +1560,68 @@ public partial class MeasurePhotometerView : ContentView
 
 	Border ResultTile(string title, string unit, string value, bool done, bool active)
 	{
-		Color border = Colors.Transparent;
-		Color bg = ThemeColors.Surface;
-		Color iconBg = ThemeColors.ResultIconBgNeutral;
-		Color iconFg = ThemeColors.OnSurfaceVariant;
-		string glyph = "\u25CB";
-
-		if (done)
-		{
-			border = AppConstants.Success;
-			bg = AppConstants.Success.MultiplyAlpha(0.06f);
-			iconBg = AppConstants.Success.MultiplyAlpha(0.15f);
-			iconFg = AppConstants.Success;
-			glyph = "\u2713";
-		}
-		else if (active)
-		{
-			border = AppConstants.Primary;
-			bg = AppConstants.Primary.MultiplyAlpha(0.06f);
-			iconBg = AppConstants.Primary.MultiplyAlpha(0.15f);
-			iconFg = AppConstants.Primary;
-			glyph = "\u21BB";
-		}
-
 		var inner = new Grid
 		{
 			ColumnDefinitions = new ColumnDefinitionCollection(
 				new ColumnDefinition(GridLength.Auto),
 				new ColumnDefinition(GridLength.Star),
 				new ColumnDefinition(GridLength.Auto)),
-			ColumnSpacing = 14,
-			Padding = 16,
-			BackgroundColor = bg
+			ColumnSpacing = 12,
+			Padding = 12,
+			BackgroundColor = ThemeColors.Surface
 		};
+
+		// Indicator-only styling: avoids painting the whole row green/blue.
+		Color circleBg = ThemeColors.ResultIconBgNeutral;
+		View indicator;
+		if (done)
+		{
+			circleBg = AppConstants.Success.MultiplyAlpha(0.12f);
+			indicator = new Label
+			{
+				Text = "\u2713",
+				FontSize = 18,
+				FontAttributes = FontAttributes.Bold,
+				TextColor = AppConstants.Success,
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center
+			};
+		}
+		else if (active)
+		{
+			circleBg = AppConstants.Primary.MultiplyAlpha(0.10f);
+			indicator = new ActivityIndicator
+			{
+				IsRunning = true,
+				Color = AppConstants.Primary,
+				WidthRequest = 18,
+				HeightRequest = 18,
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center
+			};
+		}
+		else
+		{
+			indicator = new Label
+			{
+				Text = "\u2713",
+				FontSize = 18,
+				FontAttributes = FontAttributes.Bold,
+				TextColor = ThemeColors.OnSurfaceVariant.MultiplyAlpha(0.45f),
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center
+			};
+		}
 
 		var circle = new Border
 		{
-			WidthRequest = 44,
-			HeightRequest = 44,
-			BackgroundColor = iconBg,
+			WidthRequest = 36,
+			HeightRequest = 36,
+			BackgroundColor = circleBg,
 			StrokeThickness = 0,
-			Content = new Label { Text = glyph, FontSize = 20, TextColor = iconFg, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center },
-			StrokeShape = new Ellipse()
+			Content = indicator,
+			StrokeShape = new Ellipse(),
+			VerticalOptions = LayoutOptions.Center
 		};
 
 		var col = new VerticalStackLayout
@@ -1759,27 +1643,42 @@ public partial class MeasurePhotometerView : ContentView
 		{
 			Text = value,
 			FontAttributes = FontAttributes.Bold,
-			FontSize = 16,
+			FontSize = 15,
 			TextColor = dim ? ThemeColors.OnSurfaceVariant.MultiplyAlpha(0.55f) : ThemeColors.OnSurface,
 			VerticalOptions = LayoutOptions.Center
 		};
 		inner.Children.Add(valLbl);
 		Grid.SetColumn(valLbl, 2);
 
-		var wrap = new Border
+		return new Border
 		{
-			Stroke = border,
-			StrokeThickness = border == Colors.Transparent ? 0 : 1.5,
-			BackgroundColor = bg,
+			Stroke = ThemeColors.Divider,
+			StrokeThickness = 1,
+			BackgroundColor = ThemeColors.Surface,
 			Content = inner,
 			StrokeShape = new RoundRectangle { CornerRadius = AppConstants.RadiusCardSmall }
 		};
-		if (border != Colors.Transparent)
-			wrap.Shadow = new Shadow { Brush = new SolidColorBrush(border.MultiplyAlpha(0.15f)), Offset = new Point(0, 2), Radius = 8, Opacity = 1 };
-		return wrap;
 	}
 
 	void BeginMeasurement() => SelectPreset("All Methods");
+
+	async Task BeginMeasurementWithTankConfirmAsync()
+	{
+		var page = ViewNavigation.FindHostPage(this);
+		if (page is null)
+			return;
+
+		var wantsContinue = await page.DisplayAlertAsync(
+			_loc.T("Photometer_TankConfirm_Title"),
+			_loc.T("Photometer_TankConfirm_MessageFormat", _viewModel.SelectedTankDisplay),
+			_loc.T("Photometer_TankConfirm_ContinueButton"),
+			_loc.T("Photometer_TankConfirm_ChangeButton"));
+
+		if (!wantsContinue)
+			return;
+
+		BeginMeasurement();
+	}
 
 	async Task OpenTankPickerAsync()
 	{

@@ -5,8 +5,8 @@
              BackgroundColor="{DynamicResource AppBackground}">
     <Grid RowDefinitions="*, Auto">
         <ScrollView x:Name="BodyScroll" Grid.Row="0">
-            <VerticalStackLayout x:Name="BodyStack" Padding="18,12,18,20" Spacing="0" />
+            <VerticalStackLayout x:Name="BodyStack" Padding="18,10,18,14" Spacing="0" />
         </ScrollView>
-        <VerticalStackLayout x:Name="FooterHost" Grid.Row="1" Padding="18,10,18,28" Spacing="10" IsVisible="False" />
+        <VerticalStackLayout x:Name="FooterHost" Grid.Row="1" Padding="18,10,18,20" Spacing="10" IsVisible="False" />
     </Grid>
 </ContentView>

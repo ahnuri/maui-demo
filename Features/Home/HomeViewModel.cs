@@ -60,7 +60,7 @@ public partial class HomeViewModel : LocalizedViewModelBase
 	Task ScanDevicesAsync() => OpenDevicesAsync();
 
 	[RelayCommand]
-	Task OpenDevicesAsync()
+	Task OpenDevicesAsync() // Opens the device list page, but could also trigger a scan and show a popup with results, etc.
 	{
 		if (Shell.Current?.CurrentPage?.Navigation is not { } nav)
 			return Task.CompletedTask;

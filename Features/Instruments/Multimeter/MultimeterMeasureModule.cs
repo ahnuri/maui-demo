@@ -39,37 +39,9 @@ public sealed class MultimeterMeasureModule : IInstrumentMeasureModule
 		// Clear the string title so the TitleView is the only text rendered (otherwise some
 		// platforms render both, producing duplicate text in the nav bar).
 		host.SetTitle(string.Empty);
-		host.SetTitleView(BuildTitleView(viewModel.Loc.T("Instrument_Multimeter_NavTitle")));
+		host.SetDeviceSwitcherTitleView(
+			viewModel.Loc.T("Instrument_Multimeter_NavTitle"),
+			iconSource: ImageSource.FromFile(NavigationIcon));
 		return true;
-	}
-
-	static View BuildTitleView(string titleText)
-	{
-		var icon = new Image
-		{
-			Source = NavigationIcon,
-			Aspect = Aspect.AspectFit,
-			WidthRequest = 22,
-			HeightRequest = 22,
-			VerticalOptions = LayoutOptions.Center
-		};
-
-		var label = new Label
-		{
-			Text = titleText,
-			FontSize = 17,
-			FontAttributes = FontAttributes.Bold,
-			VerticalOptions = LayoutOptions.Center,
-			LineBreakMode = LineBreakMode.TailTruncation
-		};
-		label.SetDynamicResource(Label.TextColorProperty, "OnSurface");
-
-		return new HorizontalStackLayout
-		{
-			Spacing = 8,
-			VerticalOptions = LayoutOptions.Center,
-			HorizontalOptions = LayoutOptions.Center,
-			Children = { icon, label }
-		};
 	}
 }

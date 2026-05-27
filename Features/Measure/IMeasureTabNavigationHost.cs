@@ -18,11 +18,15 @@ public interface IMeasureTabNavigationHost
 
 	void SetTitleView(View titleView);
 
+	void SetDeviceSwitcherTitleView(string title, string? subtitle = null, ImageSource? iconSource = null, bool enabled = true);
+
 	void EnableFlyout();
 
 	void DisableFlyout();
 
 	void SetBackCommand(ICommand command);
+
+	void HideBackButton();
 
 	void ClearBackBehavior();
 
