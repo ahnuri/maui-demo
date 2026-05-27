@@ -10,8 +10,8 @@
     <!--
         Landing page (Hanna Lab home).
         Sections (top → bottom):
-          1. Hero card  – brand badge, title, subtitle, device portraits, two
-             stat tiles, primary "Connect Device" CTA.
+          1. Hero card  – brand badge, title, subtitle, device portraits,
+             merged measurement status card, primary "Connect Device" CTA.
           2. How It Works – horizontal 4-step workflow inside one card.
           3. Supported Hanna Devices – horizontal chip list + "More" pill.
           4. Trust footer – "Secure. Reliable. Connected." banner.
@@ -125,7 +125,7 @@
                       Row 0 · Status badge (full width, left-aligned pill)
                       Row 1 · Title  +  device-portrait stack (side by side)
                       Row 2 · Subtitle (full width, gets full hero width)
-                      Row 3 · Stat tiles (responsive — see HomeView.xaml.cs)
+                      Row 3 · Merged measurement status card
                       Row 4 · Connect Device CTA
 
                     Splitting subtitle out of the title column means the
@@ -245,42 +245,42 @@
                         Text="{Binding HeroSubtitle}"
                         TextColor="{DynamicResource LabHeroMuted}" />
 
-                    <!--
-                        Row 3 — Stat tiles (Connected devices + Today's records).
-                        Layout is responsive: on regular and larger phones the two
-                        tiles sit side-by-side; on iPhone SE / 12 mini width the
-                        code-behind switches the grid to a single column with the
-                        records tile reflowed to row 1 of this sub-grid.
-                        See HomeView.xaml.cs.
-                    -->
-                    <Grid
-                        x:Name="StatsGrid"
+                    <!--  Row 3 — Merged measurement status (connected + today's records).  -->
+                    <Border
                         Grid.Row="3"
-                        ColumnDefinitions="*,*"
-                        ColumnSpacing="{StaticResource SpacingSmPlus}"
-                        Margin="0,4,0,0"
-                        RowDefinitions="Auto"
-                        RowSpacing="{StaticResource SpacingSmPlus}">
-
-                        <Border x:Name="ConnectedTile" Style="{StaticResource LabTileStyle}">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpacingSm}">
+                        Margin="0,2,0,0"
+                        Padding="14,12"
+                        Style="{StaticResource LabTileStyle}">
+                        <VerticalStackLayout Spacing="10">
+                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                                 <Border
-                                    HeightRequest="{StaticResource IconButtonSm}"
-                                    WidthRequest="{StaticResource IconButtonSm}"
+                                    HeightRequest="32"
+                                    WidthRequest="32"
                                     BackgroundColor="{DynamicResource FlyoutIconBadge}"
                                     Stroke="{DynamicResource Divider}"
                                     StrokeThickness="{StaticResource StrokeHairline}"
-                                    VerticalOptions="Start">
+                                    VerticalOptions="Center">
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="18" />
+                                        <RoundRectangle CornerRadius="8" />
                                     </Border.StrokeShape>
                                     <Image
                                         Aspect="AspectFit"
-                                        HeightRequest="{StaticResource IconSizeSm}"
-                                        Source="signal_dot_icon"
-                                        WidthRequest="{StaticResource IconSizeSm}" />
+                                        HeightRequest="18"
+                                        Source="chart_bar_icon"
+                                        WidthRequest="18" />
                                 </Border>
-                                <VerticalStackLayout Grid.Column="1" Spacing="{StaticResource SpacingXs}">
+                                <Label
+                                    FontFamily="{StaticResource FontFamilySemibold}"
+                                    FontAttributes="Bold"
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding MeasurementStatusTitle}"
+                                    TextColor="{DynamicResource LabHeroText}"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Grid ColumnDefinitions="*,1,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
                                     <Label
                                         FontSize="{StaticResource FontSizeCaption}"
                                         Text="{Binding ConnectedLabel}"
@@ -290,35 +290,16 @@
                                         FontAttributes="Bold"
                                         FontSize="{StaticResource FontSizeDisplay}"
                                         Text="{Binding ConnectedDevicesCount}"
-                                        TextColor="{DynamicResource LabHeroText}" />
-                                    <Label
-                                        FontSize="{StaticResource FontSizeCaption}"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding ConnectedSub}"
-                                        TextColor="{DynamicResource LabHeroMuted}" />
+                                        TextColor="{StaticResource Primary}" />
                                 </VerticalStackLayout>
-                            </Grid>
-                        </Border>
 
-                        <Border x:Name="RecordsTile" Grid.Column="1" Style="{StaticResource LabTileStyle}">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpacingSm}">
-                                <Border
-                                    HeightRequest="{StaticResource IconButtonSm}"
-                                    WidthRequest="{StaticResource IconButtonSm}"
-                                    BackgroundColor="{DynamicResource SubtleGreen}"
-                                    Stroke="{DynamicResource Divider}"
-                                    StrokeThickness="{StaticResource StrokeHairline}"
-                                    VerticalOptions="Start">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="18" />
-                                    </Border.StrokeShape>
-                                    <Image
-                                        Aspect="AspectFit"
-                                        HeightRequest="{StaticResource IconSizeSm}"
-                                        Source="chart_bar_icon"
-                                        WidthRequest="{StaticResource IconSizeSm}" />
-                                </Border>
-                                <VerticalStackLayout Grid.Column="1" Spacing="{StaticResource SpacingXs}">
+                                <BoxView
+                                    Grid.Column="1"
+                                    Color="{DynamicResource LabHeroTileStroke}"
+                                    VerticalOptions="Fill"
+                                    WidthRequest="1" />
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="4">
                                     <Label
                                         FontSize="{StaticResource FontSizeCaption}"
                                         Text="{Binding RecordsTodayLabel}"
@@ -327,16 +308,12 @@
                                         FontFamily="{StaticResource FontFamilySemibold}"
                                         FontAttributes="Bold"
                                         FontSize="{StaticResource FontSizeDisplay}"
-                                        Text="{Binding TodayLogsCount}"
-                                        TextColor="{DynamicResource LabHeroText}" />
-                                    <Label
-                                        FontSize="{StaticResource FontSizeCaption}"
-                                        Text="{Binding RecordsTodaySub}"
-                                        TextColor="{DynamicResource LabHeroMuted}" />
+                                        Text="{Binding RecordsTodayDisplay}"
+                                        TextColor="{StaticResource Success}" />
                                 </VerticalStackLayout>
                             </Grid>
-                        </Border>
-                    </Grid>
+                        </VerticalStackLayout>
+                    </Border>
 
                     <!--
                         Row 4 — Primary CTA. Implemented as a Border (not Button) so we

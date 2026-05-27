@@ -24,10 +24,16 @@ public partial class HomeViewModel : LocalizedViewModelBase
 	public string HeroBadge { get; private set; } = string.Empty;
 	public string HeroTitle { get; private set; } = string.Empty;
 	public string HeroSubtitle { get; private set; } = string.Empty;
+	public string MeasurementStatusTitle { get; private set; } = string.Empty;
 	public string ConnectedLabel { get; private set; } = string.Empty;
 	public string ConnectedSub { get; private set; } = string.Empty;
 	public string RecordsTodayLabel { get; private set; } = string.Empty;
 	public string RecordsTodaySub { get; private set; } = string.Empty;
+
+	/// <summary>Compact count for the merged status card (e.g. 24, 23K).</summary>
+	public string RecordsTodayDisplay => TodayLogsCount >= 1000
+		? $"{TodayLogsCount / 1000}K"
+		: TodayLogsCount.ToString();
 	public string ScanInstrumentsLabel { get; private set; } = string.Empty;
 	public string ScanInstrumentsSub { get; private set; } = string.Empty;
 
@@ -72,6 +78,7 @@ public partial class HomeViewModel : LocalizedViewModelBase
 		HeroBadge = Loc.T("Home_HeroBadge");
 		HeroTitle = Loc.T("Home_HeroTitle");
 		HeroSubtitle = Loc.T("Home_HeroSubtitle");
+		MeasurementStatusTitle = Loc.T("Home_MeasurementStatusTitle");
 		ConnectedLabel = Loc.T("Home_ConnectedLabel");
 		ConnectedSub = Loc.T("Home_ConnectedSub");
 		RecordsTodayLabel = Loc.T("Home_RecordsToday");
@@ -110,10 +117,12 @@ public partial class HomeViewModel : LocalizedViewModelBase
 		OnPropertyChanged(nameof(HeroBadge));
 		OnPropertyChanged(nameof(HeroTitle));
 		OnPropertyChanged(nameof(HeroSubtitle));
+		OnPropertyChanged(nameof(MeasurementStatusTitle));
 		OnPropertyChanged(nameof(ConnectedLabel));
 		OnPropertyChanged(nameof(ConnectedSub));
 		OnPropertyChanged(nameof(RecordsTodayLabel));
 		OnPropertyChanged(nameof(RecordsTodaySub));
+		OnPropertyChanged(nameof(RecordsTodayDisplay));
 		OnPropertyChanged(nameof(ScanInstrumentsLabel));
 		OnPropertyChanged(nameof(ScanInstrumentsSub));
 		OnPropertyChanged(nameof(WorkflowSection));
@@ -138,6 +147,8 @@ public partial class HomeViewModel : LocalizedViewModelBase
 	}
 
 	partial void OnConnectedDevicesCountChanged(int value) => UpdateConnectedSummary();
+
+	partial void OnTodayLogsCountChanged(int value) => OnPropertyChanged(nameof(RecordsTodayDisplay));
 
 	void UpdateConnectedSummary()
 	{

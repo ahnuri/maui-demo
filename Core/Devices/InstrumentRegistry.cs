@@ -69,7 +69,7 @@ public static class InstrumentRegistry
 	public static string GetMeasureNavigationTitle(InstrumentKind kind, LocalizationService loc) =>
 		kind switch
 		{
-			InstrumentKind.Halo2 => loc.T("Shell_Home"),
+			// InstrumentKind.Halo2 => loc.T("Shell_Home"), // Set specific title name
 			_ => GetDisplayName(kind, loc)
 		};
 }

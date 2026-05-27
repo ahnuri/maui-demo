@@ -24,7 +24,7 @@ public static class InstrumentModuleRegistry
 			MeasureUsesCustomShellChrome: false),
 		new(
 			InstrumentKind.Halo2,
-			ProductLine: "Halo 2",
+			ProductLine: "HI12322 Halo 2",
 			HasMeasureTab: true,
 			HasLogHistoryTab: true,
 			GroupsLogsByTank: false,
