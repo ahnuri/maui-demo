@@ -29,24 +29,25 @@ public static class DemoDeviceCatalog
 
 	static IEnumerable<DeviceListItem> ConnectedCatalog() =>
 	[
-		Build("hi97115", "Marine Master Multiparameter Photometer", "HI97105-001", "1.4.2", 92, "2 min ago",
+		Build("hi97115", "HI97115 PMeter3", "Model: HI97105", "1.4.2", 92, "2 min ago",
 			InstrumentKind.Photometer),
-		Build("hi98494", "HI98x94 - Multiparameter", "HI98494-MM", "2.1.0", 78, "8 min ago",
+		Build("hi98494", "HI98494 - MM3", "Model: HI98494", "2.1.0", 78, "8 min ago",
 			InstrumentKind.Multimeter),
-		Build("halo2", "Halo 2", "HI12322", "3.0.1", 44, "Just now",
+		Build("halo2", "HI12322 Halo22", "Model: HI12322", "3.0.1", 44, "Just now",
 			InstrumentKind.Halo2),
 	];
 
 	static IEnumerable<DeviceListItem> AssociatedCatalog() =>
 	[
-		Build("hi97115-pt1", "HI97115-PT1", "HI97115-PT1", null, null, null, null),
-		Build("hi9810391", "HI9810391-Halo", "HI9810391", null, null, null, null),
+		Build("hi97115-pt1", "HI97115 Meter1", null, null, null, null, null),
+		Build("hi9810391", "HI9810391 Halo2", null, null, null, null, null),
 	];
 
 	static IEnumerable<DeviceListItem> AvailableCatalog() =>
 	[
-		Build("hi98494-ak1", "HI98494-AK1", "HI98494-AK1", null, null, null, null, strong: true),
-		Build("hi9810392", "HI9810392-Halo2", "HI9810392", null, null, null, null, strong: false, signalKey: "Device_Signal_Low"),
+		Build("hi98494-ak1", "HI98494 MultiM1", null, null, null, null, null, strong: true),
+		Build("hi9810392", "HI9810392 Halo2", null, null, null, null, null, strong: false, signalKey: "Device_Signal_Low"),
+		Build("hi97115-mm2", "HI97115 Pmeter1", null, null, null, null, null, strong: true),
 	];
 
 	static DeviceListItem Build(

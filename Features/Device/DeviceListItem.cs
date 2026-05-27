@@ -74,6 +74,41 @@ public partial class DeviceListItem : ObservableObject
 
 	public string BatteryPillText => BatteryPercent is { } pct ? Loc.T("Common_PercentFormat", pct) : string.Empty;
 
+	// ── Battery glyph (iOS-style outlined battery with inner fill) ─────────
+	//
+	// The battery icon in the connected row renders as:
+	//   ┌────────┐▌
+	//   │  78%   │
+	//   └────────┘
+	// The body is a fixed-width Border; an inner Border (anchored left, dynamic
+	// width) acts as the fill bar; a small Border on the right is the battery
+	// tip. The percentage text is overlaid on top of the fill at full opacity
+	// so it stays legible regardless of how much of the battery is "full".
+
+	/// <summary>Usable inner width of the battery body in pt (matches the XAML — 26pt inner area).</summary>
+	const double BatteryBodyInnerWidth = 24;
+
+	/// <summary>Width of the inner fill bar in pt, derived from <see cref="BatteryPercent"/>.</summary>
+	public double BatteryFillWidth =>
+		BatteryPercent is { } pct ? Math.Max(2, pct * BatteryBodyInnerWidth / 100.0) : 0;
+
+	/// <summary>Accent color for the outline, tip, and percentage label.</summary>
+	public Color BatteryAccentColor =>
+		BatteryPercent is { } pct ? BatteryColorForLevel(pct) : ThemeColors.Divider;
+
+	/// <summary>Soft fill behind the percentage label (accent at ~22% alpha).</summary>
+	public Color BatteryFillColor => BatteryAccentColor.MultiplyAlpha(0.22f);
+
+	/// <summary>Threshold buckets: ≥60% green, 25-59% amber, &lt;25% red.</summary>
+	static Color BatteryColorForLevel(int pct)
+	{
+		if (pct >= 60)
+			return AppConstants.Success;
+		if (pct >= 25)
+			return ThemeColors.LabWarning;
+		return AppConstants.Error;
+	}
+
 	public string ConnectionButtonText => IsConnected
 		? Loc.T("Device_Action_Disconnect")
 		: Loc.T("Device_Action_Connect");
@@ -82,10 +117,13 @@ public partial class DeviceListItem : ObservableObject
 
 	public void RefreshChrome()
 	{
-		SignalDotColor = IsStrongSignal ? AppConstants.Success : ThemeColors.MutedSignalDot;
-		SignalTextColor = IsConnected && IsStrongSignal
-			? AppConstants.Success
-			: ThemeColors.OnSurfaceVariant;
+		// Signal indicator: only the dot carries the strength color so the
+		// status reads at a glance, while the label itself stays as standard
+		// body text (OnSurface ≈ black in light mode, near-white in dark).
+		//   Strong → success green dot (#22C55E)
+		//   Low/Weak → warning amber dot (#FBBF24)
+		SignalDotColor = IsStrongSignal ? AppConstants.Success : ThemeColors.LabWarning;
+		SignalTextColor = ThemeColors.OnSurface;
 		RowStrokeColor = IsConnected
 			? AppConstants.Success.MultiplyAlpha(0.28f)
 			: Colors.Transparent;
@@ -109,6 +147,9 @@ public partial class DeviceListItem : ObservableObject
 		OnPropertyChanged(nameof(SecondaryLine));
 		OnPropertyChanged(nameof(ShowSecondaryLine));
 		OnPropertyChanged(nameof(BatteryPillText));
+		OnPropertyChanged(nameof(BatteryFillWidth));
+		OnPropertyChanged(nameof(BatteryAccentColor));
+		OnPropertyChanged(nameof(BatteryFillColor));
 		OnPropertyChanged(nameof(ConnectionButtonText));
 		OnPropertyChanged(nameof(CanOpenMeasure));
 		OnPropertyChanged(nameof(ShowMeasureLink));

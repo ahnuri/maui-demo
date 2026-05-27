@@ -13,89 +13,118 @@
         <!-- ── Typography ────────────────────────────────────────────── -->
         <Style x:Key="DeviceNameStyle" TargetType="Label">
             <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeBodyLarge}" />
             <Setter Property="LineBreakMode" Value="TailTruncation" />
             <Setter Property="MaxLines" Value="2" />
             <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         </Style>
 
         <Style x:Key="DeviceMetaStyle" TargetType="Label">
-            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
             <Setter Property="TextColor" Value="{DynamicResource OnSurfaceMuted}" />
         </Style>
 
-        <Style x:Key="SectionTitleStyle" TargetType="Label">
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
-        </Style>
-
         <Style x:Key="SectionSubStyle" TargetType="Label">
-            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
             <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}" />
         </Style>
 
         <!-- ── Card shells ───────────────────────────────────────────── -->
         <Style x:Key="SectionCardStyle" TargetType="Border">
-            <Setter Property="Padding" Value="14" />
+            <Setter Property="Padding" Value="{StaticResource SpacingMdPlus}" />
             <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="StrokeThickness" Value="{StaticResource StrokeHairline}" />
             <Setter Property="Stroke" Value="{DynamicResource Divider}" />
             <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="{StaticResource RadiusXxl}" />
             </Setter>
         </Style>
 
         <!-- Inner row card — neutral (associated / nearby) -->
         <Style x:Key="DeviceRowStyle" TargetType="Border">
             <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="Padding" Value="11,10" />
+            <Setter Property="Padding" Value="12,11" />
             <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
-            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="StrokeThickness" Value="{StaticResource StrokeHairline}" />
             <Setter Property="Stroke" Value="{DynamicResource Divider}" />
             <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="12" />
+                <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
             </Setter>
         </Style>
 
-        <!-- Inner row card — connected (tinted border) -->
-        <Style x:Key="ConnectedRowStyle" TargetType="Border" BasedOn="{StaticResource DeviceRowStyle}">
+        <!-- Inner row card — connected (tinted border, surface bg) -->
+        <Style x:Key="ConnectedRowStyle" TargetType="Border">
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Padding" Value="12,11" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="StrokeThickness" Value="{StaticResource StrokeThinPlus}" />
             <Setter Property="Stroke" Value="{Binding RowStrokeColor}" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
+            </Setter>
         </Style>
 
         <!-- Device icon container -->
         <Style x:Key="DeviceIconBorderStyle" TargetType="Border">
-            <Setter Property="WidthRequest" Value="44" />
-            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="WidthRequest" Value="{StaticResource IconButtonLg}" />
+            <Setter Property="HeightRequest" Value="{StaticResource IconButtonLg}" />
             <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-            <Setter Property="StrokeThickness" Value="0.5" />
+            <Setter Property="StrokeThickness" Value="{StaticResource StrokeHairline}" />
             <Setter Property="StrokeShape">
-                <RoundRectangle CornerRadius="12" />
+                <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
             </Setter>
+        </Style>
+
+        <!--
+            Pill-shaped action button shell.
+            Implemented as a Border + TapGestureRecognizer (NOT a MAUI Button) because
+            iOS's native UIButton doesn't reliably honor CornerRadius when BorderWidth
+            is set, and the implicit Button style enforces a 44pt minimum height that
+            throws off the radius math. A Border with RoundRectangle StrokeShape clips
+            and renders the rounded shape natively on every platform.
+        -->
+        <Style x:Key="PillButtonStyle" TargetType="Border">
+            <Setter Property="Padding" Value="18,7" />
+            <Setter Property="HeightRequest" Value="36" />
+            <Setter Property="StrokeThickness" Value="{StaticResource StrokeThinPlus}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="{StaticResource RadiusPill}" />
+            </Setter>
+        </Style>
+
+        <Style x:Key="PillButtonLabelStyle" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="VerticalTextAlignment" Value="Center" />
         </Style>
 
         <!-- ── Connected device row template ────────────────────────── -->
         <DataTemplate x:Key="ConnectedDeviceTemplate" x:DataType="device:DeviceListItem">
             <Border Style="{StaticResource ConnectedRowStyle}">
-                <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="{StaticResource SpacingSm}">
 
                     <!-- Top row: icon | info | battery -->
-                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10">
+                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{StaticResource SpacingSmPlus}">
 
                         <!-- Device icon / thumb -->
                         <Border Style="{StaticResource DeviceIconBorderStyle}" Stroke="{StaticResource Primary}" VerticalOptions="Start">
                             <Grid>
                                 <Image
                                     Aspect="AspectFit"
-                                    HeightRequest="26"
-                                    WidthRequest="26"
+                                    HeightRequest="{StaticResource IconSizeLg}"
+                                    WidthRequest="{StaticResource IconSizeLg}"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center"
                                     IsVisible="{Binding ShowDeviceIcon}"
                                     Source="{Binding DeviceIcon}" />
                                 <Label
                                     FontAttributes="Bold"
-                                    FontSize="12"
+                                    FontSize="{StaticResource FontSizeSmall}"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center"
                                     IsVisible="{Binding ShowThumb}"
@@ -119,70 +148,144 @@
                                 Text="{Binding SecondaryLine}" />
 
                             <!-- Signal indicator -->
-                            <HorizontalStackLayout Spacing="5" Margin="0,2,0,0">
-                                <BoxView
-                                    CornerRadius="3"
-                                    HeightRequest="6"
-                                    WidthRequest="6"
-                                    VerticalOptions="Center"
-                                    Color="{Binding SignalDotColor}" />
+                            <HorizontalStackLayout Spacing="{StaticResource SpacingXs}" Margin="0,2,0,0">
+                                <!--
+                                    Signal-strength dot.
+                                    Implemented as a Border (not a BoxView) because BoxView.Color
+                                    binding doesn't paint reliably on iOS with small sizes — Border
+                                    with BackgroundColor + RoundRectangle StrokeShape renders the
+                                    coloured dot on every platform.
+                                -->
+                                <Border
+                                    HeightRequest="10"
+                                    WidthRequest="10"
+                                    BackgroundColor="{Binding SignalDotColor}"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5" />
+                                    </Border.StrokeShape>
+                                </Border>
                                 <Label
-                                    FontSize="11"
+                                    FontSize="{StaticResource FontSizeCaption}"
                                     VerticalOptions="Center"
                                     Text="{Binding SignalStatusText}"
                                     TextColor="{Binding SignalTextColor}" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
 
-                        <!-- Battery pill -->
-                        <Border
+                        <!--
+                            Battery glyph (sized to match the native iOS / Android
+                            status-bar battery icon).
+                            Outer footprint ≈ 32 × 14 pt:
+                              • Body: 30 × 14 pt, 1pt accent stroke, 1pt padding,
+                                3pt corner radius.
+                              • Inner usable area: 26 × 10 pt; the fill bar grows
+                                from 0 to 24pt as BatteryPercent goes 0→100%.
+                              • Tip: 2 × 6 pt on the right, accent-colored.
+                              • Label: 8pt bold centered over the fill, accent-colored.
+                            Accent goes green ≥60%, amber 25-59%, red <25%
+                            (see DeviceListItem.BatteryColorForLevel).
+                        -->
+                        <HorizontalStackLayout
                             Grid.Column="2"
-                            Padding="7,3"
-                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
                             IsVisible="{Binding ShowBattery}"
-                            StrokeThickness="0"
+                            Spacing="1"
                             VerticalOptions="Start">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="11"
-                                Text="{Binding BatteryPillText}"
-                                TextColor="{StaticResource Primary}" />
-                        </Border>
+
+                            <!-- Battery body -->
+                            <Border
+                                Padding="1"
+                                BackgroundColor="{DynamicResource Surface}"
+                                HeightRequest="14"
+                                WidthRequest="30"
+                                Stroke="{Binding BatteryAccentColor}"
+                                StrokeThickness="{StaticResource StrokeThin}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="3" />
+                                </Border.StrokeShape>
+                                <Grid>
+                                    <!-- Inner fill bar (left-anchored, dynamic width) -->
+                                    <Border
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Fill"
+                                        WidthRequest="{Binding BatteryFillWidth}"
+                                        BackgroundColor="{Binding BatteryFillColor}"
+                                        StrokeThickness="0">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="1.5" />
+                                        </Border.StrokeShape>
+                                    </Border>
+                                    <!-- Percentage label centered on top -->
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="8"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding BatteryPillText}"
+                                        TextColor="{Binding BatteryAccentColor}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Battery tip -->
+                            <Border
+                                BackgroundColor="{Binding BatteryAccentColor}"
+                                HeightRequest="6"
+                                WidthRequest="2"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="1" />
+                                </Border.StrokeShape>
+                            </Border>
+
+                        </HorizontalStackLayout>
 
                     </Grid>
 
-                    <!-- Action buttons -->
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="6">
-                        <Button
-                            Padding="12,6"
+                    <!--
+                        Action buttons — Border-based pills (see PillButtonStyle).
+                        Outlined "Measure" pill uses the brand primary; the
+                        Connect/Disconnect pill picks its fill/stroke/text from
+                        the DeviceListItem chrome bindings.
+                    -->
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="{StaticResource SpacingSm}">
+
+                        <!-- Measure pill (outlined) -->
+                        <Border
+                            Style="{StaticResource PillButtonStyle}"
                             BackgroundColor="Transparent"
-                            BorderColor="{StaticResource Primary}"
-                            BorderWidth="1"
-                            Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.OpenMeasureCommand}"
-                            CommandParameter="{Binding .}"
-                            CornerRadius="10"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="36"
-                            IsVisible="{Binding ShowMeasureLink}"
-                            Text="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.MeasureButtonText}"
-                            TextColor="{StaticResource Primary}" />
-                        <Button
-                            Padding="12,6"
+                            Stroke="{StaticResource Primary}"
+                            IsVisible="{Binding ShowMeasureLink}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.OpenMeasureCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Label
+                                Style="{StaticResource PillButtonLabelStyle}"
+                                Text="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.MeasureButtonText}"
+                                TextColor="{StaticResource Primary}" />
+                        </Border>
+
+                        <!-- Disconnect pill (uses ConnectionButton* bindings) -->
+                        <Border
+                            Style="{StaticResource PillButtonStyle}"
                             BackgroundColor="{Binding ConnectionButtonBg}"
-                            BorderColor="{Binding ConnectionButtonBorderColor}"
-                            BorderWidth="1"
-                            Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
-                            CommandParameter="{Binding .}"
-                            CornerRadius="10"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="36"
-                            Text="{Binding ConnectionButtonText}"
-                            TextColor="{Binding ConnectionButtonTextColor}" />
+                            Stroke="{Binding ConnectionButtonBorderColor}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Label
+                                Style="{StaticResource PillButtonLabelStyle}"
+                                Text="{Binding ConnectionButtonText}"
+                                TextColor="{Binding ConnectionButtonTextColor}" />
+                        </Border>
+
                     </HorizontalStackLayout>
 
                 </VerticalStackLayout>
@@ -192,22 +295,22 @@
         <!-- ── Discovered / associated device row template ───────────── -->
         <DataTemplate x:Key="DiscoveredDeviceTemplate" x:DataType="device:DeviceListItem">
             <Border Style="{StaticResource DeviceRowStyle}">
-                <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10">
+                <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{StaticResource SpacingSmPlus}">
 
                     <!-- Device icon / thumb -->
                     <Border Style="{StaticResource DeviceIconBorderStyle}" Stroke="{DynamicResource Divider}" VerticalOptions="Center">
                         <Grid>
                             <Image
                                 Aspect="AspectFit"
-                                HeightRequest="26"
-                                WidthRequest="26"
+                                HeightRequest="{StaticResource IconSizeLg}"
+                                WidthRequest="{StaticResource IconSizeLg}"
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 IsVisible="{Binding ShowDeviceIcon}"
                                 Source="{Binding DeviceIcon}" />
                             <Label
                                 FontAttributes="Bold"
-                                FontSize="12"
+                                FontSize="{StaticResource FontSizeSmall}"
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 IsVisible="{Binding ShowThumb}"
@@ -225,37 +328,42 @@
                             IsVisible="{Binding ShowSerialLine}"
                             Text="{Binding SerialNumber}" />
 
-                        <HorizontalStackLayout Spacing="5" Margin="0,2,0,0">
-                            <BoxView
-                                CornerRadius="3"
-                                HeightRequest="6"
-                                WidthRequest="6"
-                                VerticalOptions="Center"
-                                Color="{Binding SignalDotColor}" />
+                        <HorizontalStackLayout Spacing="{StaticResource SpacingXs}" Margin="0,2,0,0">
+                            <!-- Signal-strength dot — Border-based, see ConnectedDeviceTemplate. -->
+                            <Border
+                                HeightRequest="10"
+                                WidthRequest="10"
+                                BackgroundColor="{Binding SignalDotColor}"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="5" />
+                                </Border.StrokeShape>
+                            </Border>
                             <Label
-                                FontSize="11"
+                                FontSize="{StaticResource FontSizeCaption}"
                                 VerticalOptions="Center"
                                 Text="{Binding SignalText}"
                                 TextColor="{Binding SignalTextColor}" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
 
-                    <!-- Connect button -->
-                    <Button
+                    <!-- Connect pill (Border-based, see PillButtonStyle in the resources) -->
+                    <Border
                         Grid.Column="2"
-                        Padding="12,6"
+                        Style="{StaticResource PillButtonStyle}"
                         BackgroundColor="{Binding ConnectionButtonBg}"
-                        BorderColor="{Binding ConnectionButtonBorderColor}"
-                        BorderWidth="1"
-                        Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
-                        CommandParameter="{Binding .}"
-                        CornerRadius="10"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        HeightRequest="36"
-                        Text="{Binding ConnectionButtonText}"
-                        TextColor="{Binding ConnectionButtonTextColor}"
-                        VerticalOptions="Center" />
+                        Stroke="{Binding ConnectionButtonBorderColor}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference RootDeviceView}, Path=BindingContext.ToggleConnectionCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Label
+                            Style="{StaticResource PillButtonLabelStyle}"
+                            Text="{Binding ConnectionButtonText}"
+                            TextColor="{Binding ConnectionButtonTextColor}" />
+                    </Border>
 
                 </Grid>
             </Border>
@@ -265,49 +373,27 @@
 
     <!-- ── Page body ──────────────────────────────────────────────────── -->
     <ScrollView Padding="14,8,14,24">
-        <VerticalStackLayout Spacing="12">
+        <VerticalStackLayout Spacing="{StaticResource SpacingMd}">
 
-            <Border
-                Padding="16,14"
-                BackgroundColor="{DynamicResource Surface}"
-                Stroke="{DynamicResource Divider}"
-                StrokeThickness="0.5">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="6">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="20"
-                        Text="{Binding HeaderTitle}"
-                        TextColor="{DynamicResource OnSurface}" />
-                    <Label
-                        FontSize="13"
-                        LineBreakMode="WordWrap"
-                        Text="{Binding PageSubtitle}"
-                        TextColor="{DynamicResource OnSurfaceVariant}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Scanning banner -->
+            <!-- ════════ Scanning banner ════════ -->
             <Border
                 IsVisible="{Binding ShowScanBanner}"
                 Padding="13,11"
                 BackgroundColor="{DynamicResource PrimarySubtleBanner}"
                 Stroke="{DynamicResource PrimarySubtleStroke}"
-                StrokeThickness="0.5">
+                StrokeThickness="{StaticResource StrokeHairline}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
                 </Border.StrokeShape>
-                <HorizontalStackLayout Spacing="10">
+                <HorizontalStackLayout Spacing="{StaticResource SpacingSmPlus}">
                     <ActivityIndicator
                         IsRunning="True"
-                        WidthRequest="16"
-                        HeightRequest="16"
+                        WidthRequest="{StaticResource IconSizeXs}"
+                        HeightRequest="{StaticResource IconSizeXs}"
                         VerticalOptions="Center"
                         Color="{StaticResource Primary}" />
                     <Label
-                        FontSize="12"
+                        FontSize="{StaticResource FontSizeSmall}"
                         LineBreakMode="WordWrap"
                         Text="{Binding ScanStatusText}"
                         TextColor="{StaticResource Primary}"
@@ -315,94 +401,211 @@
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- ── Connected section ── -->
-            <Border Style="{StaticResource SectionCardStyle}">
-                <VerticalStackLayout Spacing="10">
+            <!-- ════════ iOS-style segmented control ════════ -->
+            <!--
+                Three equal-width segments inside a rounded SurfaceSecondary
+                "track". The active segment renders as an elevated Surface
+                pill with a soft drop shadow; inactive segments stay
+                transparent with muted text. Each label reads "Title (count)"
+                so the count is part of the text, not a separate chip.
+            -->
+            <Border
+                Padding="3"
+                BackgroundColor="{DynamicResource SurfaceSecondary}"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="0" HeightRequest="36">
 
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                        <VerticalStackLayout Spacing="1">
-                            <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding ConnectedTitle}" />
-                            <Label Style="{StaticResource SectionSubStyle}" Text="{Binding ConnectedSubtitle}" />
-                        </VerticalStackLayout>
-                        <Border
-                            Grid.Column="1"
-                            Padding="9,3"
-                            BackgroundColor="{DynamicResource PrimarySubtleFill}"
-                            StrokeThickness="0"
-                            VerticalOptions="Start">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </Border.StrokeShape>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="{Binding ConnectedCount}"
-                                TextColor="{StaticResource Primary}" />
-                        </Border>
-                    </Grid>
+                    <!-- Segment 0 — Connected (dimmed + tap-blocked while scanning) -->
+                    <Border
+                        Grid.Column="0"
+                        BackgroundColor="{Binding ConnectedTabBackground}"
+                        Opacity="{Binding ScanLockedTabOpacity}"
+                        StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{StaticResource RadiusSm}" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="Black"
+                                Opacity="{Binding ConnectedTabShadowOpacity}"
+                                Offset="0,1"
+                                Radius="3" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="0" />
+                        </Border.GestureRecognizers>
+                        <Label
+                            FontSize="{StaticResource FontSizeBody}"
+                            FontAttributes="{Binding ConnectedTabFontAttributes}"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding ConnectedTabLabel}"
+                            TextColor="{Binding ConnectedTabTextColor}"
+                            VerticalOptions="Center" />
+                    </Border>
 
+                    <!-- Segment 1 — Associated (dimmed + tap-blocked while scanning) -->
+                    <Border
+                        Grid.Column="1"
+                        BackgroundColor="{Binding AssociatedTabBackground}"
+                        Opacity="{Binding ScanLockedTabOpacity}"
+                        StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{StaticResource RadiusSm}" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="Black"
+                                Opacity="{Binding AssociatedTabShadowOpacity}"
+                                Offset="0,1"
+                                Radius="3" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="1" />
+                        </Border.GestureRecognizers>
+                        <Label
+                            FontSize="{StaticResource FontSizeBody}"
+                            FontAttributes="{Binding AssociatedTabFontAttributes}"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding AssociatedTabLabel}"
+                            TextColor="{Binding AssociatedTabTextColor}"
+                            VerticalOptions="Center" />
+                    </Border>
+
+                    <!-- Segment 2 — Nearby -->
+                    <Border
+                        Grid.Column="2"
+                        BackgroundColor="{Binding NearbyTabBackground}"
+                        StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{StaticResource RadiusSm}" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="Black"
+                                Opacity="{Binding NearbyTabShadowOpacity}"
+                                Offset="0,1"
+                                Radius="3" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="2" />
+                        </Border.GestureRecognizers>
+                        <Label
+                            FontSize="{StaticResource FontSizeBody}"
+                            FontAttributes="{Binding NearbyTabFontAttributes}"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding NearbyTabLabel}"
+                            TextColor="{Binding NearbyTabTextColor}"
+                            VerticalOptions="Center" />
+                    </Border>
+
+                </Grid>
+            </Border>
+
+            <!-- ════════ Active section subtitle ════════ -->
+            <Label
+                Style="{StaticResource SectionSubStyle}"
+                Margin="4,2,4,0"
+                Text="{Binding ActiveSectionSubtitle}" />
+
+            <!-- ════════ Connected section ════════ -->
+            <Border Style="{StaticResource SectionCardStyle}" IsVisible="{Binding IsConnectedTabSelected}">
+                <VerticalStackLayout Spacing="{StaticResource SpacingSm}">
                     <VerticalStackLayout
                         BindableLayout.ItemTemplate="{StaticResource ConnectedDeviceTemplate}"
                         BindableLayout.ItemsSource="{Binding ConnectedDevices}" />
-
                     <Label
-                        FontSize="12"
+                        FontSize="{StaticResource FontSizeSmall}"
                         HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
                         IsVisible="{Binding ShowNoConnectedHint}"
-                        Padding="0,4"
+                        LineBreakMode="WordWrap"
+                        Padding="0,8"
                         Text="{Binding NoConnectedHint}"
                         TextColor="{DynamicResource OnSurfaceMuted}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- ── Associated section ── -->
-            <Border Style="{StaticResource SectionCardStyle}">
-                <VerticalStackLayout Spacing="10">
-                    <VerticalStackLayout Spacing="1">
-                        <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding AssociatedTitle}" />
-                        <Label Style="{StaticResource SectionSubStyle}" Text="{Binding AssociatedSubtitle}" />
-                    </VerticalStackLayout>
+            <!-- ════════ Associated section ════════ -->
+            <Border Style="{StaticResource SectionCardStyle}" IsVisible="{Binding IsAssociatedTabSelected}">
+                <VerticalStackLayout Spacing="{StaticResource SpacingSm}">
                     <VerticalStackLayout
                         BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
                         BindableLayout.ItemsSource="{Binding AssociatedDevices}" />
+                    <Label
+                        FontSize="{StaticResource FontSizeSmall}"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding ShowNoAssociatedHint}"
+                        LineBreakMode="WordWrap"
+                        Padding="0,8"
+                        Text="{Binding NoAssociatedHint}"
+                        TextColor="{DynamicResource OnSurfaceMuted}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- ── Nearby section ── -->
-            <Border Style="{StaticResource SectionCardStyle}">
-                <VerticalStackLayout Spacing="10">
-                    <VerticalStackLayout Spacing="1">
-                        <Label Style="{StaticResource SectionTitleStyle}" Text="{Binding NearbyTitle}" />
-                        <Label Style="{StaticResource SectionSubStyle}" Text="{Binding NearbySubtitle}" />
-                    </VerticalStackLayout>
+            <!-- ════════ Nearby section ════════ -->
+            <Border Style="{StaticResource SectionCardStyle}" IsVisible="{Binding IsNearbyTabSelected}">
+                <VerticalStackLayout Spacing="{StaticResource SpacingSm}">
                     <VerticalStackLayout
                         BindableLayout.ItemTemplate="{StaticResource DiscoveredDeviceTemplate}"
                         BindableLayout.ItemsSource="{Binding AvailableDevices}" />
+                    <Label
+                        FontSize="{StaticResource FontSizeSmall}"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding ShowNoNearbyHint}"
+                        LineBreakMode="WordWrap"
+                        Padding="0,8"
+                        Text="{Binding NoNearbyHint}"
+                        TextColor="{DynamicResource OnSurfaceMuted}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- ── Hint banner ── -->
+            <!--
+                Scan-hint banner — shown only on the Nearby tab, since it
+                instructs the user to keep Bluetooth on and tap Scan in the
+                toolbar to discover instruments. The Connected / Associated
+                tabs don't need this guidance.
+
+                Layout uses a Grid with "Auto,*" columns (not a HorizontalStack)
+                so the wrapping label has a bounded width and LineBreakMode
+                actually applies — the full text now flows across as many
+                lines as needed instead of getting clipped to one line.
+            -->
             <Border
+                IsVisible="{Binding IsNearbyTabSelected}"
                 Padding="13,11"
                 BackgroundColor="{DynamicResource SurfaceSecondary}"
                 Stroke="{DynamicResource Divider}"
-                StrokeThickness="0.5">
+                StrokeThickness="{StaticResource StrokeHairline}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
+                    <RoundRectangle CornerRadius="{StaticResource RadiusLg}" />
                 </Border.StrokeShape>
-                <HorizontalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpacingSmPlus}">
                     <Label
-                        FontSize="15"
+                        Grid.Column="0"
+                        FontSize="{StaticResource FontSizeSubhead}"
                         Text="&#x2139;"
                         TextColor="{DynamicResource OnSurfaceMuted}"
                         VerticalOptions="Start" />
                     <Label
-                        FontSize="12"
+                        Grid.Column="1"
+                        FontSize="{StaticResource FontSizeSmall}"
                         LineBreakMode="WordWrap"
+                        MaxLines="-1"
                         Text="{Binding HintText}"
                         TextColor="{DynamicResource OnSurfaceMuted}"
                         VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                </Grid>
             </Border>
 
         </VerticalStackLayout>

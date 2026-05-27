@@ -141,17 +141,31 @@ public partial class AppShell : Shell
 	string GetOpeningMessage(InstrumentKind kind) =>
 		InstrumentRegistry.GetOpeningMessage(kind, _localization);
 
-	/// <summary>Switch to Measure tab and open the given device view.</summary>
-	public async Task NavigateToMeasureDeviceAsync(InstrumentKind device)
+	/// <summary>
+	/// Switch to Measure tab and open the given device view. Tab navigation
+	/// is non-animated so the device row's "Measure" button feels instant —
+	/// Shell tab switches have nothing to animate visually anyway (the tab
+	/// content swap is a hard cut) and skipping animation removes the
+	/// default ~150-200ms wait.
+	/// </summary>
+	public Task NavigateToMeasureDeviceAsync(InstrumentKind device) =>
+		NavigateToMeasureDeviceAsync(device, animate: false);
+
+	/// <summary>
+	/// Overload that lets callers opt back into the animated nav + spinner
+	/// overlay (used by the bottom-sheet device picker, where the slower
+	/// transition is part of the picker's choreography).
+	/// </summary>
+	public async Task NavigateToMeasureDeviceAsync(InstrumentKind device, bool animate)
 	{
-		var showNavigating = !IsOnMeasureTab();
+		var showNavigating = animate && !IsOnMeasureTab();
 		if (showNavigating)
 			_measureDevicePicker.ShowNavigating(GetOpeningMessage(device));
 
 		try
 		{
 			_pendingMeasureDevice = device;
-			await GoToAsync("//measure");
+			await GoToAsync("//measure", animate);
 
 			if (_pendingMeasureDevice is not null && GetMeasureTabPage() is MeasureTabPage mp)
 			{
